@@ -94,14 +94,14 @@ h1,h2,h3{margin:0;font-family:var(--sans);font-weight:400;line-height:1.2;letter
 
 /* intro — floating product */
 .intro{padding-block:clamp(56px,8vw,110px);overflow:hidden}
-.intro-grid{display:grid;grid-template-columns:1fr 1fr;gap:clamp(24px,5vw,72px);align-items:center}
+.intro-grid{display:grid;grid-template-columns:minmax(0,600px) auto;justify-content:center;column-gap:clamp(40px,9vw,140px);align-items:center}
 .intro h2{font-family:var(--display);font-weight:400;font-size:clamp(38px,4.4vw,60px);line-height:1.02;letter-spacing:-.005em;color:var(--olive);margin-bottom:22px;max-width:12em}
 :lang(ko) .intro h2,:lang(ja) .intro h2{font-size:clamp(28px,3.2vw,42px);line-height:1.3}
 .intro p{font-size:14px;color:var(--ink-soft);max-width:32em}
 .intro p + p{margin-top:8px}
 .intro .pill{margin-top:30px;background:#8A9278;border-color:#8A9278;color:var(--white);min-height:44px;padding:0 30px}
 .intro .pill:hover{background:var(--olive);border-color:var(--olive)}
-.float{position:relative;justify-self:center;width:clamp(110px,11vw,158px);aspect-ratio:564/1374;margin-block:10px 20px}
+.float{position:relative;justify-self:center;align-self:center;width:clamp(110px,11vw,158px);aspect-ratio:564/1374;margin:0}
 .float img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain}
 .float .bottle{transform:rotate(-12deg);filter:drop-shadow(-6px 14px 14px rgba(50,42,28,.22));z-index:1}
 .float .cast{transform-origin:50% 100%;transform:translate(22%,3%) rotate(-12deg) skewX(-32deg) scaleY(.72);filter:brightness(0) blur(6px);opacity:.18}
@@ -178,8 +178,8 @@ footer{background:var(--night);color:#D8D4C8}
   .nav{display:none}
   .head-bar{grid-template-columns:1fr auto}
   .pdp-grid{grid-template-columns:1fr}
-  .intro-grid{grid-template-columns:1fr}
-  .float{width:clamp(96px,26vw,130px);margin-top:28px}
+  .intro-grid{grid-template-columns:minmax(0,440px) auto;justify-content:center;column-gap:clamp(20px,6vw,56px)}
+  .float{width:clamp(80px,19vw,130px);margin:0}
   .info{position:static}
   .story-grid{grid-template-columns:1fr 1fr}
   .story-text{grid-column:1/-1;padding-top:0}
@@ -191,6 +191,7 @@ footer{background:var(--night);color:#D8D4C8}
   .foot-grid > div:first-child{grid-column:1/-1}
 }
 @media (max-width:640px){
+  .intro .pill{padding:0 20px;font-size:12px}
   .gallery{grid-template-columns:1fr}
   .thumbs{flex-direction:row;order:2}
   .thumbs button{flex:1}
@@ -201,6 +202,11 @@ footer{background:var(--night);color:#D8D4C8}
 @media (max-width:420px){
   .facts{grid-template-columns:1fr}
   .facts div + div{padding-left:0;border-left:0;border-top:1px solid var(--line);margin-top:16px}
+}
+
+@media (max-width:560px){
+  .intro-grid{grid-template-columns:minmax(0,1fr) 84px;column-gap:18px}
+  .float{width:72px;justify-self:end;margin-right:16px}
 }
 @media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}*{transition:none!important}}
 </style>
@@ -257,7 +263,7 @@ footer{background:var(--night);color:#D8D4C8}
       <div>
         <h2 id="intro-h" data-i18n="introTitle">A small, healing ritual for dry nails and skin</h2>
         <p data-i18n="introLead">Olive Skin is about simple care — two cold-pressed plant oils, a light texture that sinks right in, and one drop a day.</p>
-        <p data-i18n="introLead2">Inspired by the olive groves of Napa Valley, made with Korean beauty expertise.</p>
+        <p data-i18n="introLead2">Inspired by the olive groves of Napa Valley.</p>
         <a class="pill" href="#shop" data-i18n="btnShop">Shop Glow Drop — $18</a>
       </div>
       <div class="float" aria-hidden="true">
@@ -290,7 +296,7 @@ footer{background:var(--night);color:#D8D4C8}
       <div class="story-text">
         <h2 id="story-h" data-i18n="storyTitle">A healing oil from Napa Valley</h2>
         <p class="copy-p" data-i18n="storyLead">For centuries, olive oil has been used to soothe hands and skin worn by sun and work. Inspired by the olive trees and golden light of Napa Valley, Olive Skin puts that gentle, healing pause into one small bottle for every day.</p>
-        <p class="copy-p" data-i18n="storyLead2">Made with Korean beauty expertise by Mix and Match, the nail care division of COSMAX.</p>
+        <p class="copy-p" data-i18n="storyLead2">Made by Mix and Match, the nail care division of COSMAX.</p>
         <a class="pill ghost" href="#shop" data-i18n="btnShop2">Shop now</a>
       </div>
       <div class="story-mid">
@@ -432,7 +438,7 @@ footer{background:var(--night);color:#D8D4C8}
       p1:"손톱", p1btn:"글로우 드롭 구매하기", p2:"손", p2btn:"사용 방법", p3:"건조한 피부", p3btn:"글로우 드롭 구매하기",
       storyTitle:"[[나파 밸리]]에서 온 힐링 오일",
       storyLead:"올리브 오일은 오래전부터 햇볕과 일에 지친 손과 피부를 달래는 데 쓰여 온 오일. 나파 밸리의 올리브 나무와 금빛 햇살에서 영감을 받아, 그 다정한 쉼의 시간을 매일 쓰는 작은 한 병에 담음.",
-      storyLead2:"제조는 코스맥스의 네일 전문 계열사 믹스앤매치가 한국의 뷰티 기술로.",
+      storyLead2:"제조는 코스맥스의 네일 전문 계열사 믹스앤매치.",
       capGrove:"해 질 녘 올리브 숲",
       careTitle:"10초면 끝나는 케어.",
       careLead:"손톱, 큐티클, 팔꿈치, 무릎, 뒤꿈치까지. 건조한 곳이라면 어디든 한 병으로.",
@@ -441,7 +447,7 @@ footer{background:var(--night);color:#D8D4C8}
       s3t:"매일 꾸준히", s3d:"아침이나 자기 전, 하루 한 번 이상 사용 권장.",
       introTitle:"건조한 손끝을 위한 작은 힐링 루틴",
       introLead:"올리브 스킨이 추구하는 건 단순한 케어. 콜드프레스 식물성 오일 두 가지, 겉돌지 않고 바로 스며드는 가벼운 텍스처, 그리고 하루 한 방울.",
-      introLead2:"나파 밸리의 올리브 숲에서 영감을 받아, 한국의 뷰티 기술로 완성.",
+      introLead2:"나파 밸리의 올리브 숲에서 영감을 받은 케어.",
       shopLead:"콜드프레스 올리브 오일과 아보카도 오일. 겉돌지 않고 빠르게 스며들어 손톱, 큐티클, 팔꿈치의 건조함을 부드럽게 가꿈.",
       pdpSub:"네일 &amp; 바디 케어 오일 · 15ml / 0.5 fl oz",
       accHow:"사용 방법", accIngr:"성분", accDetails:"제품 정보",
@@ -475,7 +481,7 @@ footer{background:var(--night);color:#D8D4C8}
       p1:"爪", p1btn:"Glow Dropを購入", p2:"手", p2btn:"使い方", p3:"乾燥肌", p3btn:"Glow Dropを購入",
       storyTitle:"[[ナパ・ヴァレー]]から届く、ヒーリングオイル",
       storyLead:"オリーブオイルは古くから、日差しや仕事で荒れた手や肌をいたわるために使われてきました。ナパ・ヴァレーのオリーブの木々と黄金色の光に着想を得て、そのやさしい癒しのひとときを毎日使える小さなボトルに込めました。",
-      storyLead2:"製造はCOSMAXのネイル専門部門Mix and Matchが、韓国のビューティー技術で。",
+      storyLead2:"製造はCOSMAXのネイル専門部門Mix and Match。",
       capGrove:"夕暮れのオリーブの森",
       careTitle:"10秒のケアルーティン。",
       careLead:"爪、甘皮、ひじ、ひざ、かかとまで。乾燥が気になる場所なら、この一本で。",
@@ -484,7 +490,7 @@ footer{background:var(--night);color:#D8D4C8}
       s3t:"毎日つづける", s3d:"朝や寝る前に、1日1回以上のご使用がおすすめです。",
       introTitle:"乾燥した指先のための、小さな癒しの習慣",
       introLead:"オリーブスキンが大切にしているのはシンプルなケア。コールドプレスの植物オイル2種、すっとなじむ軽い質感、そして1日1滴。",
-      introLead2:"ナパ・ヴァレーのオリーブの森に着想を得て、韓国のビューティー技術で仕上げました。",
+      introLead2:"ナパ・ヴァレーのオリーブの森に着想を得たケア。",
       shopLead:"コールドプレスのオリーブオイルとアボカドオイル。肌の上に残らずすっとなじみ、乾燥しがちな爪・甘皮・ひじをやわらかく整えます。",
       pdpSub:"ネイル＆ボディケアオイル · 15ml / 0.5 fl oz",
       accHow:"使い方", accIngr:"成分", accDetails:"製品情報",
