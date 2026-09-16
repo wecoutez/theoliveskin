@@ -25,7 +25,7 @@ button,input,select,textarea{font:inherit;color:inherit}
 :focus-visible{outline:2px solid var(--olive);outline-offset:3px}
 p,figure{margin:0}
 h1,h2,h3{margin:0;font-family:var(--sans);font-weight:400;line-height:1.2;letter-spacing:-.015em;text-wrap:balance}
-.hero h1,.story h2{font-family:var(--display);font-weight:400;letter-spacing:-.005em;line-height:1.02}
+.hero h1,.story h2{font-family:var(--display);font-weight:400;letter-spacing:-.01em;line-height:.98}
 :lang(ko) h1,:lang(ko) h2,:lang(ja) h1,:lang(ja) h2{letter-spacing:-.02em;line-height:1.3}
 :lang(ko) .hero h1,:lang(ja) .hero h1{font-size:clamp(32px,4.4vw,58px)}
 :lang(ko) .story h2,:lang(ja) .story h2{font-size:clamp(28px,3.4vw,44px)}
@@ -95,7 +95,7 @@ h1,h2,h3{margin:0;font-family:var(--sans);font-weight:400;line-height:1.2;letter
 /* intro — floating product */
 .intro{padding-block:clamp(56px,8vw,110px);overflow:hidden}
 .intro-grid{display:grid;grid-template-columns:minmax(0,600px) auto;justify-content:center;column-gap:clamp(40px,9vw,140px);align-items:center}
-.intro h2{font-family:var(--display);font-weight:400;font-size:clamp(38px,4.4vw,60px);line-height:1.02;letter-spacing:-.005em;color:var(--olive);margin-bottom:22px;max-width:12em}
+.intro h2{font-family:var(--display);font-weight:400;font-size:clamp(38px,4.4vw,60px);line-height:.98;letter-spacing:-.005em;color:var(--olive);margin-bottom:22px;max-width:12em}
 :lang(ko) .intro h2,:lang(ja) .intro h2{font-size:clamp(28px,3.2vw,42px);line-height:1.3}
 .intro p{font-size:14px;color:var(--ink-soft);max-width:32em}
 .intro p + p{margin-top:8px}
@@ -107,7 +107,7 @@ h1,h2,h3{margin:0;font-family:var(--sans);font-weight:400;line-height:1.2;letter
 .float .cast{transform-origin:50% 100%;transform:translate(22%,3%) rotate(-12deg) skewX(-32deg) scaleY(.72);filter:brightness(0) blur(6px);opacity:.18}
 
 /* product */
-.pdp{padding-block:clamp(48px,6vw,88px)}
+.pdp{padding-block:clamp(48px,6vw,88px);scroll-margin-top:64px}
 .pdp-grid{display:grid;grid-template-columns:1.1fr .9fr;gap:clamp(28px,5vw,72px);align-items:start}
 .gallery{display:grid;grid-template-columns:64px minmax(0,440px);gap:12px;justify-content:center}
 .thumbs{display:flex;flex-direction:column;gap:10px}
@@ -126,8 +126,8 @@ h1,h2,h3{margin:0;font-family:var(--sans);font-weight:400;line-height:1.2;letter
 .price{font-family:var(--display);font-size:40px;line-height:1;color:var(--olive)}
 .price small{font-family:var(--sans);font-size:12px;color:var(--ink-soft);margin-left:8px;letter-spacing:.1em}
 .lead{font-size:15px;color:var(--ink-soft);max-width:32em}
-.chips{display:flex;flex-wrap:wrap;gap:6px}
-.chips span{font-size:12px;border:1px solid var(--line);border-radius:999px;padding:2px 12px;color:var(--ink-soft);background:var(--white)}
+.specs{display:flex;flex-wrap:wrap;gap:4px 0;font-size:11px;font-weight:400;letter-spacing:.12em;text-transform:uppercase;color:var(--olive);padding-block:12px;border-block:1px solid var(--line)}
+.specs span:not(:last-child)::after{content:"·";margin:0 10px;color:var(--ink-soft)}
 .qty-row{display:flex;align-items:center;gap:14px;font-size:13px}
 .stepper{display:flex;align-items:center;border:1px solid var(--ink);border-radius:999px;background:var(--white)}
 .stepper button{width:40px;height:40px;border:0;background:transparent;cursor:pointer;font-size:16px;border-radius:999px}
@@ -205,8 +205,33 @@ footer{background:var(--night);color:#D8D4C8}
 }
 
 @media (max-width:560px){
-  .intro-grid{grid-template-columns:minmax(0,1fr) 84px;column-gap:18px}
-  .float{width:72px;justify-self:end;margin-right:16px}
+  body{line-height:1.6}
+  .hero{height:min(76svh,620px);min-height:500px}
+  .hero-copy{bottom:64px}
+  .hero h1{font-size:clamp(34px,9.6vw,42px);line-height:1;margin-bottom:14px}
+  .hero-sub{font-size:13px;line-height:1.55;margin-bottom:18px;max-width:22em}
+  .hero-actions .pill{min-height:36px;padding:0 18px;font-size:12px}
+  .hero-meta{bottom:18px}
+  .intro{padding-block:48px 56px}
+  .intro-grid{grid-template-columns:1fr;row-gap:0}
+  .float{order:-1;justify-self:center;width:84px;margin:4px 0 40px}
+  .float::before{content:"";position:absolute;left:50%;top:52%;width:210px;height:210px;transform:translate(-50%,-50%);border-radius:50%;background:radial-gradient(circle,#ECE2D3 0%,#EFE7DB 55%,rgba(239,231,219,0) 72%)}
+  .float::after{content:"";position:absolute;left:50%;bottom:-6px;width:74px;height:10px;transform:translateX(-50%);border-radius:50%;background:radial-gradient(closest-side,rgba(60,52,36,.28),rgba(60,52,36,0))}
+  .float .cast{display:none}
+  .float .bottle{transform:rotate(-6deg);filter:drop-shadow(0 10px 10px rgba(50,42,28,.18))}
+  .intro h2{font-size:34px;line-height:1;margin-bottom:16px}
+  :lang(ko) .intro h2,:lang(ja) .intro h2{font-size:26px;line-height:1.3}
+  .intro p{font-size:14px;line-height:1.6}
+  .intro .pill{margin-top:24px}
+  .pdp{padding-block:40px 56px}
+  .info{gap:14px}
+  .info h2{font-size:48px}
+  .price{font-size:34px}
+  .buy .pill{min-height:46px;font-size:13px}
+  .story h2{font-size:34px}
+  .panel-word{font-size:40px}
+  .panels{margin-top:0}
+  .panel{min-height:320px}
 }
 @media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}*{transition:none!important}}
 </style>
@@ -247,7 +272,6 @@ footer{background:var(--night);color:#D8D4C8}
         <h1 id="hero-h" data-i18n="heroTitle">Good ingredients for a gentler tomorrow</h1>
         <p class="hero-sub" data-i18n="heroSub">A healing daily care oil with cold-pressed olive and avocado — inspired by the olive groves of Napa Valley.</p>
         <div class="hero-actions">
-          <a class="pill" href="#shop" data-i18n="btnShop">Shop Glow Drop — $18</a>
           <a class="pill ghost on-img" style="color:#fff" href="#story" data-i18n="btnStory">Our story</a>
         </div>
       </div>
@@ -273,22 +297,19 @@ footer{background:var(--night);color:#D8D4C8}
     </div>
   </section>
 
-  <section class="panels" aria-label="Where to use">
-    <a class="panel" href="#shop">
+  <section class="panels" aria-hidden="true">
+    <div class="panel">
       <img src="images/bottle.webp" width="300" height="440" alt="A hand holding the Glow Drop bottle" data-i18n-alt="altBottle">
       <p class="panel-word" data-i18n="p1">nails</p>
-      <span class="pill on-img" data-i18n="p1btn">Shop Glow Drop</span>
-    </a>
-    <a class="panel" href="#how">
+    </div>
+    <div class="panel">
       <img src="images/picking.webp" width="430" height="574" alt="Hands picking olives in sunlight" data-i18n-alt="altPicking">
       <p class="panel-word" data-i18n="p2">hands</p>
-      <span class="pill on-img" data-i18n="p2btn">How to use</span>
-    </a>
-    <a class="panel" href="#shop">
+    </div>
+    <div class="panel">
       <img src="images/face.webp" width="470" height="660" alt="Model with dewy skin in sunlight" data-i18n-alt="altFace">
       <p class="panel-word" data-i18n="p3">dry skin</p>
-      <span class="pill on-img" data-i18n="p3btn">Shop Glow Drop</span>
-    </a>
+    </div>
   </section>
 
   <section class="story" id="story" aria-labelledby="story-h">
@@ -297,7 +318,6 @@ footer{background:var(--night);color:#D8D4C8}
         <h2 id="story-h" data-i18n="storyTitle">A healing oil from Napa Valley</h2>
         <p class="copy-p" data-i18n="storyLead">For centuries, olive oil has been used to soothe hands and skin worn by sun and work. Inspired by the olive trees and golden light of Napa Valley, Olive Skin puts that gentle, healing pause into one small bottle for every day.</p>
         <p class="copy-p" data-i18n="storyLead2">Made by Mix and Match, the nail care division of COSMAX.</p>
-        <a class="pill ghost" href="#shop" data-i18n="btnShop2">Shop now</a>
       </div>
       <div class="story-mid">
         <figure>
@@ -333,7 +353,7 @@ footer{background:var(--night);color:#D8D4C8}
         <p class="sub" data-i18n="pdpSub">Nail &amp; body care oil · 15ml / 0.5 fl oz</p>
         <p class="price">$18<small>USD</small></p>
         <p class="lead" data-i18n="shopLead">Cold-pressed olive and avocado oils that sink in fast — never sit on top — softening dry nails, cuticles and elbows.</p>
-        <div class="chips"><span data-i18n="tagVegan">Vegan</span><span data-i18n="tagCF">Cruelty-free</span><span data-i18n="tagFrag">No synthetic fragrance</span><span>Made in Korea</span></div>
+        <p class="specs"><span data-i18n="tagVegan">Vegan</span><span data-i18n="tagCF">Cruelty-free</span><span data-i18n="tagFrag">No synthetic fragrance</span><span>Made in Korea</span></p>
         <div class="qty-row">
           <span data-i18n="qty">Quantity</span>
           <div class="stepper">
