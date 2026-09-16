@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Checkout — Olive Skin Glow Drop</title>
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Noto+Sans+KR:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
   *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
   :root {
@@ -20,11 +20,11 @@
     --white: #ffffff;
     --border: #e0ddd5;
   }
-  body { font-family: 'DM Sans', sans-serif; background: var(--cream); color: var(--dark); min-height: 100vh; }
+  body { font-family: 'Noto Sans KR', sans-serif; background: var(--cream); color: var(--dark); min-height: 100vh; }
 
   /* NAV */
   nav { background: var(--white); border-bottom: 1px solid var(--border); padding: 1.1rem 4rem; display: flex; justify-content: space-between; align-items: center; }
-  .nav-logo { font-family: 'Instrument Serif', serif; font-size: 1.5rem; font-weight: 300; letter-spacing: 0.12em; color: var(--dark); text-decoration: none; }
+  .nav-logo { font-family: 'Cormorant Garamond', 'Noto Sans KR', serif; font-size: 1.5rem; font-weight: 300; letter-spacing: 0.12em; color: var(--dark); text-decoration: none; }
   .nav-logo span { color: var(--olive); }
   .nav-back { font-size: 0.78rem; color: var(--text-muted); text-decoration: none; display: flex; align-items: center; gap: 0.4rem; transition: color 0.3s; }
   .nav-back:hover { color: var(--olive); }
@@ -47,12 +47,12 @@
   .section-label { font-size: 0.65rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--gold); margin-bottom: 1.2rem; display: flex; align-items: center; gap: 0.6rem; }
   .section-label::before { content:''; width:1.5rem; height:1px; background:var(--gold); }
   .form-section { margin-bottom: 2.2rem; }
-  .form-section-title { font-family: 'Instrument Serif', serif; font-size: 1.3rem; color: var(--dark); margin-bottom: 1.2rem; font-weight: 400; }
+  .form-section-title { font-family: 'Cormorant Garamond', 'Noto Sans KR', serif; font-size: 1.3rem; color: var(--dark); margin-bottom: 1.2rem; font-weight: 400; }
   .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 0.9rem; margin-bottom: 0.9rem; }
   .form-row.full { grid-template-columns: 1fr; }
   .form-group { display: flex; flex-direction: column; gap: 0.35rem; }
   label { font-size: 0.72rem; color: var(--text-muted); font-weight: 400; letter-spacing: 0.04em; }
-  input, select { width: 100%; padding: 0.75rem 1rem; border: 1px solid var(--border); border-radius: 14px; font-size: 0.88rem; font-family: 'DM Sans', sans-serif; color: var(--dark); background: var(--white); transition: border-color 0.2s, box-shadow 0.2s; outline: none; appearance: none; }
+  input, select { width: 100%; padding: 0.75rem 1rem; border: 1px solid var(--border); border-radius: 14px; font-size: 0.88rem; font-family: 'Noto Sans KR', sans-serif; color: var(--dark); background: var(--white); transition: border-color 0.2s, box-shadow 0.2s; outline: none; appearance: none; }
   input:focus, select:focus { border-color: var(--olive); box-shadow: 0 0 0 3px rgba(61,90,48,0.08); }
   input::placeholder { color: var(--text-muted); opacity: 0.7; }
   select { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%238a8778'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 1rem center; cursor: pointer; }
@@ -91,7 +91,7 @@
   .card-lock { position: absolute; right: 1rem; top: 50%; transform: translateY(-50%); font-size: 0.85rem; opacity: 0.4; }
 
   /* SUBMIT */
-  .submit-btn { width: 100%; padding: 1.05rem; background: var(--olive); color: var(--white); border: none; border-radius: 100px; font-size: 0.88rem; font-weight: 500; font-family: 'DM Sans', sans-serif; cursor: pointer; transition: all 0.3s; letter-spacing: 0.08em; text-transform: uppercase; display: flex; align-items: center; justify-content: center; gap: 0.6rem; margin-bottom: 0.8rem; }
+  .submit-btn { width: 100%; padding: 1.05rem; background: var(--olive); color: var(--white); border: none; border-radius: 100px; font-size: 0.88rem; font-weight: 500; font-family: 'Noto Sans KR', sans-serif; cursor: pointer; transition: all 0.3s; letter-spacing: 0.08em; text-transform: uppercase; display: flex; align-items: center; justify-content: center; gap: 0.6rem; margin-bottom: 0.8rem; }
   .submit-btn:hover { background: var(--dark); transform: translateY(-1px); box-shadow: 0 6px 20px rgba(30,29,24,0.15); }
   .submit-btn:active { transform: translateY(0); }
   .paypal-submit { background: #FFC439; color: #003087; }
@@ -105,23 +105,23 @@
   .success-overlay.show { display: flex; }
   .success-icon { width: 80px; height: 80px; border-radius: 50%; background: #e8f0d8; display: flex; align-items: center; justify-content: center; font-size: 2rem; margin-bottom: 1.5rem; animation: popIn 0.5s ease; }
   @keyframes popIn { 0%{transform:scale(0)} 70%{transform:scale(1.1)} 100%{transform:scale(1)} }
-  .success-title { font-family: 'Instrument Serif', serif; font-size: 2.5rem; font-weight: 300; color: var(--dark); margin-bottom: 0.6rem; }
+  .success-title { font-family: 'Cormorant Garamond', 'Noto Sans KR', serif; font-size: 2.5rem; font-weight: 300; color: var(--dark); margin-bottom: 0.6rem; }
   .success-title em { font-style: italic; color: var(--olive); }
   .success-sub { font-size: 0.9rem; color: var(--text-muted); max-width: 380px; line-height: 1.7; margin-bottom: 2rem; }
-  .success-back { background: var(--olive); color: var(--white); padding: 0.9rem 2rem; border-radius: 100px; font-size: 0.82rem; letter-spacing: 0.1em; text-transform: uppercase; text-decoration: none; font-family: 'DM Sans', sans-serif; transition: background 0.3s; }
+  .success-back { background: var(--olive); color: var(--white); padding: 0.9rem 2rem; border-radius: 100px; font-size: 0.82rem; letter-spacing: 0.1em; text-transform: uppercase; text-decoration: none; font-family: 'Noto Sans KR', sans-serif; transition: background 0.3s; }
   .success-back:hover { background: var(--dark); }
 
   /* RIGHT PANEL — ORDER SUMMARY */
   .order-summary { background: var(--white); border-left: 1px solid var(--border); padding: 3rem 2.5rem; display: flex; flex-direction: column; }
-  .summary-title { font-family: 'Instrument Serif', serif; font-size: 1.4rem; font-weight: 400; color: var(--dark); margin-bottom: 2rem; }
+  .summary-title { font-family: 'Cormorant Garamond', 'Noto Sans KR', serif; font-size: 1.4rem; font-weight: 400; color: var(--dark); margin-bottom: 2rem; }
   .summary-product { display: flex; gap: 1.1rem; align-items: flex-start; padding-bottom: 1.5rem; border-bottom: 1px solid var(--border); margin-bottom: 1.5rem; }
   .summary-product-img { width: 80px; height: 80px; border-radius: 0.7rem; overflow: hidden; flex-shrink: 0; border: 1px solid var(--border); }
   .summary-product-img img { width: 100%; height: 100%; object-fit: cover; }
   .summary-product-info { flex: 1; }
   .summary-product-brand { font-size: 0.65rem; letter-spacing: 0.15em; text-transform: uppercase; color: var(--text-muted); margin-bottom: 2px; }
-  .summary-product-name { font-family: 'Instrument Serif', serif; font-size: 1.2rem; color: var(--dark); font-weight: 400; margin-bottom: 3px; }
+  .summary-product-name { font-family: 'Cormorant Garamond', 'Noto Sans KR', serif; font-size: 1.2rem; color: var(--dark); font-weight: 400; margin-bottom: 3px; }
   .summary-product-desc { font-size: 0.72rem; color: var(--text-muted); line-height: 1.5; }
-  .summary-product-price { font-family: 'Instrument Serif', serif; font-size: 1.3rem; color: var(--dark); font-weight: 400; flex-shrink: 0; }
+  .summary-product-price { font-family: 'Cormorant Garamond', 'Noto Sans KR', serif; font-size: 1.3rem; color: var(--dark); font-weight: 400; flex-shrink: 0; }
   .summary-qty { display: flex; align-items: center; gap: 0.7rem; margin-top: 0.6rem; }
   .summary-qty-label { font-size: 0.7rem; color: var(--text-muted); }
   .summary-qty-ctrl { display: flex; align-items: center; border: 1px solid var(--border); border-radius: 100px; overflow: hidden; }
@@ -133,7 +133,7 @@
   .summary-line.total { font-size: 1rem; color: var(--dark); font-weight: 500; border-top: 1px solid var(--border); padding-top: 1rem; margin-top: 0.5rem; }
   .promo-row { display: flex; gap: 0.6rem; margin-bottom: 1.5rem; }
   .promo-row input { flex: 1; font-size: 0.82rem; padding: 0.65rem 0.9rem; }
-  .promo-btn { padding: 0.65rem 1.1rem; border: 1px solid var(--border); border-radius: 14px; background: none; font-size: 0.78rem; cursor: pointer; font-family: 'DM Sans', sans-serif; color: var(--mid); transition: all 0.2s; white-space: nowrap; }
+  .promo-btn { padding: 0.65rem 1.1rem; border: 1px solid var(--border); border-radius: 14px; background: none; font-size: 0.78rem; cursor: pointer; font-family: 'Noto Sans KR', sans-serif; color: var(--mid); transition: all 0.2s; white-space: nowrap; }
   .promo-btn:hover { border-color: var(--olive); color: var(--olive); }
   .trust-badges { display: flex; flex-direction: column; gap: 0.6rem; margin-top: auto; padding-top: 2rem; }
   .trust-badge { display: flex; align-items: center; gap: 0.6rem; font-size: 0.75rem; color: var(--text-muted); }
@@ -146,13 +146,14 @@
     .checkout-form{padding:2rem 1.5rem;}
     .form-row{grid-template-columns:1fr;}
   }
+  input, select, textarea, button { font-family: inherit; }
 </style>
 </head>
 <body>
 
 <nav>
-  <a href="olive-skin.html" class="nav-back">← Back to store</a>
-  <a href="olive-skin.html" class="nav-logo">Olive<span>Skin</span></a>
+  <a href="index.html" class="nav-back">← Back to store</a>
+  <a href="index.html" class="nav-logo">Olive<span>Skin</span></a>
   <div class="nav-secure">🔒 Secure Checkout</div>
 </nav>
 
@@ -330,7 +331,7 @@
   <div class="success-icon">🎉</div>
   <h2 class="success-title">Order <em>Confirmed!</em></h2>
   <p class="success-sub">Thank you for your Glow Drop purchase! A confirmation email is on its way. Your skin's glow-up starts now.</p>
-  <a href="olive-skin.html" class="success-back">Back to Olive Skin</a>
+  <a href="index.html" class="success-back">Back to Olive Skin</a>
 </div>
 
 <script>
