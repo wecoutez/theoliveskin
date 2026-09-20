@@ -52,6 +52,8 @@ img{max-width:100%}
 .lines div{display:flex;justify-content:space-between;font-variant-numeric:tabular-nums}
 .lines dt{color:var(--ink-soft)}
 .lines dd{margin:0}
+.lines select{font:inherit;font-size:14px;color:var(--ink);background:transparent;border:1px solid var(--line);border-radius:999px;padding:6px 30px 6px 14px;max-width:62%;appearance:none;-webkit-appearance:none;background-image:linear-gradient(45deg,transparent 50%,currentColor 50%),linear-gradient(135deg,currentColor 50%,transparent 50%);background-position:calc(100% - 16px) 55%,calc(100% - 11px) 55%;background-size:5px 5px;background-repeat:no-repeat;cursor:pointer}
+.lines .ship-row{align-items:center}
 .total{display:flex;justify-content:space-between;align-items:baseline;padding-top:18px}
 .total span:first-child{font-size:14px}
 .total strong{font-family:var(--display);font-weight:400;font-size:40px;line-height:1;color:var(--olive);font-variant-numeric:tabular-nums}
@@ -126,10 +128,12 @@ footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px}
         </div>
         <dl class="lines">
           <div><dt data-i18n="subtotal">Subtotal</dt><dd id="subtotal">$18.00</dd></div>
-          <div><dt data-i18n="shipping">Shipping (US)</dt><dd data-i18n="free">Free</dd></div>
+          <div class="ship-row"><dt><label for="country" data-i18n="shipTo">Ship to</label></dt><dd><select id="country" autocomplete="country"></select></dd></div>
+          <div><dt data-i18n="shipping">Shipping</dt><dd id="ship-amt">—</dd></div>
         </dl>
         <div class="total"><span data-i18n="total">Total (USD)</span><strong id="total">$18.00</strong></div>
         <ul class="notes">
+          <li data-i18n="n4">Shipped from Korea by tracked international mail. Shipping is set by destination and order size.</li>
           <li data-i18n="n1">Your shipping address is collected securely in PayPal.</li>
           <li data-i18n="n2">An order confirmation is emailed by PayPal after payment.</li>
           <li data-i18n="n3">Questions? <a href="mailto:hello@theoliveskin.com">hello@theoliveskin.com</a></li>
@@ -179,7 +183,10 @@ footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px}
     en: {},
     ko: {
       back:"스토어로 돌아가기", title:"결제하기", sub:"네일 &amp; 바디 케어 오일 · 15ml / 0.5 fl oz · $18.00",
-      qty:"수량", subtotal:"상품 금액", shipping:"배송비 (미국)", free:"무료", total:"총 결제 금액 (USD)",
+      qty:"수량", subtotal:"상품 금액", shipTo:"배송 국가", shipping:"배송비", total:"총 결제 금액 (USD)",
+      n4:"한국에서 추적 가능한 국제우편으로 보내드려요. 배송비는 받는 나라와 주문 수량에 따라 정해져요.",
+      shipMismatch:"PayPal에 입력한 배송 국가에 맞춰 배송비를 바꾸지 못했어요. 위에서 배송 국가를 맞게 고른 뒤 다시 결제해 주세요. 금액은 청구되지 않았어요.",
+      noShip:"죄송해요, 이 나라로는 아직 배송하지 않아요. hello@theoliveskin.com으로 문의해 주세요.",
       n1:"배송지는 PayPal 창에서 안전하게 입력해요.", n2:"결제가 끝나면 PayPal이 주문 확인 메일을 보내드려요.", n3:"문의: <a href='mailto:hello@theoliveskin.com'>hello@theoliveskin.com</a>",
       payTitle:"결제 수단", payHint:"PayPal로 결제하거나, '체크카드·신용카드'를 선택하세요. PayPal 계정이 없어도 돼요.",
       loading:"안전한 결제창을 불러오는 중…", secure:"PayPal 안전 결제 · 카드 결제 가능",
@@ -192,7 +199,10 @@ footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px}
     },
     ja: {
       back:"ストアに戻る", title:"お支払い", sub:"ネイル＆ボディケアオイル · 15ml / 0.5 fl oz · $18.00",
-      qty:"数量", subtotal:"小計", shipping:"送料（米国）", free:"無料", total:"合計（USD）",
+      qty:"数量", subtotal:"小計", shipTo:"お届け先の国", shipping:"送料", total:"合計（USD）",
+      n4:"韓国から追跡可能な国際郵便でお届けします。送料はお届け先の国とご注文数によって決まります。",
+      shipMismatch:"PayPalで入力したお届け先の国に合わせて送料を変更できませんでした。上でお届け先の国を選び直してから、もう一度お支払いください。請求は発生していません。",
+      noShip:"申し訳ありません。この国へはまだ発送していません。hello@theoliveskin.com までお問い合わせください。",
       n1:"お届け先はPayPalの画面で安全に入力します。", n2:"お支払い後、PayPalから注文確認メールが届きます。", n3:"お問い合わせ：<a href='mailto:hello@theoliveskin.com'>hello@theoliveskin.com</a>",
       payTitle:"お支払い方法", payHint:"PayPal、または「デビットカード・クレジットカード」をお選びください。PayPalアカウントは不要です。",
       loading:"安全な決済画面を読み込み中…", secure:"PayPalによる安全な決済 · カード利用可",
@@ -210,6 +220,8 @@ footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px}
   T.en.errPay = "Payment didn't go through and you haven't been charged. Please try again, or email hello@theoliveskin.com if it keeps happening.";
   T.en.cancelled = "Payment cancelled. Try again whenever you're ready.";
   T.en.processing = "Confirming your payment. Please keep this page open…";
+  T.en.shipMismatch = "We couldn't update shipping to match the country you entered in PayPal. Please choose the right country above and pay again. You haven't been charged.";
+  T.en.noShip = "Sorry, we don't ship to this country yet. Please email hello@theoliveskin.com.";
 
   var params = new URLSearchParams(location.search);
   var lang = params.get('lang');
@@ -229,18 +241,60 @@ footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px}
     document.getElementById('back').href = 'index.html?lang=' + lang;
     try { localStorage.setItem('os-lang', lang); } catch(e) {}
   }
-  document.querySelectorAll('.lang button').forEach(function(b){ b.addEventListener('click', function(){ setLang(b.dataset.lang); }); });
+  document.querySelectorAll('.lang button').forEach(function(b){ b.addEventListener('click', function(){ setLang(b.dataset.lang); fillCountries(); }); });
 
   function money(n){ return '$' + n.toFixed(2); }
+
+  /* ===== 배송비 표 (우체국 요금 기준) — Apps Script 쪽 표와 같게 유지 ===== */
+  var SHIP = {"base":60,"per":80,"fx":1400,"margin":1.15,"reg":4270,"kp":{"AU":[4670,6080,7500,8920,10360,11460,12560,13660,14770,15890],"BR":[5410,7030,8660,10280,11900,13380,14870,16350,17840,19340],"CA":[5540,7240,8920,10610,12310,13620,14930,16240,17560,18890],"CN":[4680,5920,7140,8370,9620,10600,11580,12570,13540,14530],"FR":[5510,7180,8850,10530,12220,13520,14820,16120,17420,18750],"DE":[5450,7100,8770,10420,12090,13390,14670,15950,17250,18550],"HK":[4160,5250,6340,7420,8540,9410,10280,11140,12010,12890],"ID":[4680,5800,6910,8030,9150,10210,11270,12330,13390,14450],"JP":[4550,5730,6930,8120,9340,10290,11240,12190,13130,14090],"MY":[4880,6040,7210,8380,9540,10650,11750,12860,13960,15070],"NZ":[4560,5950,7330,8720,10120,11200,12270,13350,14430,15520],"PH":[4480,5550,6620,7690,8760,9770,10790,11800,12820,13830],"RU":[5510,7180,8850,10530,12230,13530,14830,16130,17430,18760],"SG":[4710,5830,6960,8090,9210,10280,11340,12410,13480,14540],"ES":[5430,7080,8730,10380,12060,13340,14620,15900,17180,18490],"TW":[4330,5460,6590,7720,8880,9790,10690,11590,12500,13410],"TH":[4620,5720,6830,7930,9040,10090,11130,12180,13220,14270],"GB":[5170,6740,8300,9870,11470,12690,13910,15120,16340,17590],"US":[8090,8980,11060,13170,15280,16910,18530,20160,21780,23430],"VN":[5090,5860,6620,7380,8140,8910,9670,10430,11190,11950]},"sp":{"1":[4460,4990,5520,6050,7130,7840,8550,9260,9970,10680],"2":[5020,5740,6460,7180,8630,9220,9810,10400,10990,11540],"3":[5120,6130,7140,8150,10200,11150,12100,13050,14000,14940],"4":[5450,6580,7710,8840,11140,12550,13960,15370,16780,18230]},"kr":[3110,3350,3590,3830,4070,4310,4550,4790,5030,5270],"z":{"MO":1,"BD":2,"BN":2,"MM":2,"KH":2,"TL":2,"LA":2,"MN":2,"AL":3,"AD":3,"AT":3,"BE":3,"BA":3,"BG":3,"HR":3,"CY":3,"CZ":3,"DK":3,"EE":3,"FI":3,"GR":3,"HU":3,"IS":3,"IE":3,"IT":3,"LV":3,"LI":3,"LT":3,"LU":3,"MT":3,"MD":3,"MC":3,"ME":3,"NL":3,"MK":3,"NO":3,"PL":3,"PT":3,"RO":3,"SM":3,"RS":3,"SK":3,"SI":3,"SE":3,"CH":3,"UA":3,"AE":3,"BH":3,"IL":3,"JO":3,"KW":3,"LB":3,"OM":3,"QA":3,"SA":3,"TR":3,"IQ":3,"IN":3,"NP":3,"PK":3,"LK":3,"MV":3,"BT":3,"KZ":3,"UZ":3,"KG":3,"AZ":3,"AM":3,"GE":3,"PG":3,"GU":3,"MP":3,"MX":4,"AR":4,"CL":4,"CO":4,"PE":4,"UY":4,"EC":4,"BO":4,"PY":4,"CR":4,"PA":4,"GT":4,"HN":4,"SV":4,"NI":4,"DO":4,"JM":4,"TT":4,"BS":4,"BB":4,"PR":4,"ZA":4,"EG":4,"KE":4,"MA":4,"NG":4,"GH":4,"TZ":4,"UG":4,"TN":4,"ET":4,"MU":4,"SN":4,"CI":4,"DZ":4,"RW":4,"BW":4,"NA":4,"ZM":4,"FJ":4,"WS":4,"TO":4,"VU":4,"PF":4,"NC":4}};
+  
+  function shipUSD(cc, qty){
+    cc = String(cc || '').toUpperCase();
+    var g = SHIP.base + SHIP.per * qty;
+    var i = Math.max(0, Math.min(9, Math.ceil(g / 100) - 1));
+    var krw;
+    if (cc === 'KR') krw = SHIP.kr[i];
+    else if (SHIP.kp[cc]) krw = SHIP.kp[cc][i];
+    else if (SHIP.z[cc]) krw = SHIP.sp[String(SHIP.z[cc])][i] + SHIP.reg;
+    else return null;
+    return Math.ceil(krw * SHIP.margin / SHIP.fx);
+  }
+  function shipCountries(){ return ['KR'].concat(Object.keys(SHIP.kp), Object.keys(SHIP.z)); }
+  
+  var countryEl = document.getElementById('country');
+  function guessCountry(){
+    var c = (params.get('country') || '').toUpperCase();
+    if (shipUSD(c, 1) !== null) return c;
+    var langs = (navigator.languages || [navigator.language || '']);
+    for (var i = 0; i < langs.length; i++) {
+      var m = /-([A-Za-z]{2})$/.exec(langs[i] || '');
+      if (m && shipUSD(m[1], 1) !== null) return m[1].toUpperCase();
+    }
+    return lang === 'ko' ? 'KR' : lang === 'ja' ? 'JP' : 'US';
+  }
+  var country = guessCountry();
+  function fillCountries(){
+    var names = null;
+    try { names = new Intl.DisplayNames([lang === 'ko' ? 'ko' : lang === 'ja' ? 'ja' : 'en'], { type: 'region' }); } catch(e) {}
+    var list = shipCountries().map(function(c){ return { c: c, n: names ? (names.of(c) || c) : c }; });
+    list.sort(function(a, b){ return a.n.localeCompare(b.n, lang); });
+    countryEl.innerHTML = '';
+    list.forEach(function(o){ var op = document.createElement('option'); op.value = o.c; op.textContent = o.n; countryEl.appendChild(op); });
+    countryEl.value = country;
+  }
+  countryEl.addEventListener('change', function(){ country = countryEl.value; render(); });
   function render(){
+    var ship = shipUSD(country, qty) || 0;
     document.getElementById('qty').textContent = qty;
     document.getElementById('subtotal').textContent = money(qty * PRICE);
-    document.getElementById('total').textContent = money(qty * PRICE);
+    document.getElementById('ship-amt').textContent = money(ship);
+    document.getElementById('total').textContent = money(qty * PRICE + ship);
   }
   document.getElementById('minus').addEventListener('click', function(){ if (qty > 1) { qty--; render(); } });
   document.getElementById('plus').addEventListener('click', function(){ if (qty < MAX) { qty++; render(); } });
 
   setLang(lang);
+  fillCountries();
   render();
 
   function api(body){
@@ -259,7 +313,9 @@ footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px}
   }
 
   function clientOrder(actions){
-    var total = (qty * PRICE).toFixed(2);
+    var shipAmt = (shipUSD(country, qty) || 0).toFixed(2);
+    var items = (qty * PRICE).toFixed(2);
+    var total = (qty * PRICE + (shipUSD(country, qty) || 0)).toFixed(2);
     return actions.order.create({
       intent: 'CAPTURE',
       purchase_units: [{
@@ -268,8 +324,8 @@ footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px}
           currency_code: 'USD',
           value: total,
           breakdown: {
-            item_total: { currency_code: 'USD', value: total },
-            shipping: { currency_code: 'USD', value: '0.00' }
+            item_total: { currency_code: 'USD', value: items },
+            shipping: { currency_code: 'USD', value: shipAmt }
           }
         },
         items: [{
@@ -298,7 +354,8 @@ footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px}
         dbg('버튼 누름: ' + (data && data.paymentSource || '?') + ' · 수량 ' + qty);
         if (!ORDER_API) return clientOrder(actions);
         // 가격은 뒷단에서 계산 — 여기서는 수량만 보냄
-        return api({ action:'create', qty: qty, lang: lang }).then(function(res){
+        return api({ action:'create', qty: qty, lang: lang, country: country }).then(function(res){
+          if (res && res.error === 'no_ship') { showStatus('noShip'); throw new Error('no_ship'); }
           if (!res || !res.ok || !res.id) throw new Error('create');
           return res.id;
         });
@@ -313,10 +370,26 @@ footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px}
         showStatus('processing', true);
         return api({ action:'capture', orderID: data.orderID }).then(function(res){
           if (res && res.retry) { clearStatus(); return actions.restart(); }
+          if (res && (res.error === 'country_mismatch' || res.error === 'no_ship')) {
+            if (res.country && shipUSD(res.country, qty) !== null) { country = res.country; countryEl.value = country; render(); }
+            showStatus(res.error === 'no_ship' ? 'noShip' : 'shipMismatch');
+            return;
+          }
           if (!res || !res.ok) throw new Error('capture');
           clearStatus();
           showDone(res.id || data.orderID);
         }).catch(function(){ showStatus('errPay'); });
+      },
+      onShippingAddressChange: function (data, actions) {
+        var cc = String((data.shippingAddress && (data.shippingAddress.countryCode || data.shippingAddress.country_code)) || '').toUpperCase();
+        dbg('PayPal 배송 국가: ' + cc);
+        if (!cc || cc === country) return;
+        if (shipUSD(cc, qty) === null) return actions.reject(data.errors && data.errors.COUNTRY_ERROR);
+        if (!ORDER_API) return actions.reject(data.errors && data.errors.COUNTRY_ERROR);
+        return api({ action:'patch', orderID: data.orderID || data.orderId, country: cc }).then(function(res){
+          if (!res || !res.ok) return actions.reject(data.errors && data.errors.COUNTRY_ERROR);
+          country = cc; countryEl.value = cc; render();
+        }).catch(function(){ return actions.reject(data.errors && data.errors.COUNTRY_ERROR); });
       },
       onCancel: function(){ dbg('구매자가 취소함'); showStatus('cancelled'); },
       onError: function(err){ dbg('✕ PayPal 오류: ' + errText(err)); showStatus('errPay'); }
@@ -334,7 +407,7 @@ footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px}
     var sdk = document.createElement('script');
     sdk.src = 'https://www.paypal.com/sdk/js?client-id=' + encodeURIComponent(PAYPAL_CLIENT_ID) +
       '&currency=USD&intent=capture&components=buttons&locale=' + (LOCALE[lang] || 'en_US');
-    dbg('버전 2026-09-20b · 뒷단 ' + (ORDER_API ? '켜짐' : '꺼짐') + ' · 언어 ' + lang);
+    dbg('버전 2026-09-20c · 뒷단 ' + (ORDER_API ? '켜짐' : '꺼짐') + ' · 언어 ' + lang);
     sdk.onload = function(){ dbg('PayPal 불러옴'); mountButtons(); };
     sdk.onerror = function(){ var l = document.getElementById('loading'); if (l) l.remove(); showStatus('errLoad'); };
     document.body.appendChild(sdk);
