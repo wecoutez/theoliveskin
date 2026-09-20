@@ -141,6 +141,7 @@ footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px}
         <p class="hint" data-i18n="payHint">Pay with PayPal, or choose Debit or Credit Card — no PayPal account needed.</p>
         <div id="paypal-buttons"><p class="loading" id="loading" data-i18n="loading">Loading secure checkout…</p></div>
         <p class="status error" id="status" role="alert" hidden></p>
+        <pre id="debug" hidden style="white-space:pre-wrap;font-size:11px;line-height:1.5;background:#FBF7EF;border:1px dashed #C9BFAF;padding:10px;margin:14px 0 0;color:#4B4538;max-height:260px;overflow:auto"></pre>
         <p class="secure" data-i18n="secure">Secure checkout by PayPal · cards accepted</p>
       </section>
     </div>
@@ -166,6 +167,14 @@ footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px}
   var ORDER_API = "https://script.google.com/macros/s/AKfycbxmSmlmpWncaSchQgttNbCoqv7g3kaGwrdwCcmeqUxUf2DQaEoI_VnuC5QMCdn7ee9Wsw/exec";
   /* ======================================= */
   var PRICE = 18, MAX = 10;
+  var DEBUG = /[?&]debug=1/.test(location.search);
+  function dbg(m){
+    if (!DEBUG) return;
+    var el = document.getElementById('debug'); el.hidden = false;
+    var t = new Date().toTimeString().slice(0,8);
+    el.textContent += t + '  ' + (typeof m === 'string' ? m : JSON.stringify(m)) + '\n';
+  }
+  function errText(e){ try { return (e && (e.message || e.toString())) + (e && e.stack ? '' : ''); } catch(x){ return String(e); } }
   var T = {
     en: {},
     ko: {
@@ -236,8 +245,11 @@ footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px}
 
   function api(body){
     // text/plain 으로 보내야 Apps Script 가 사전 요청 없이 받는다 (SKNYUS 와 같은 방식)
+    dbg('→ 뒷단 요청: ' + JSON.stringify(body));
     return fetch(ORDER_API, { method:"POST", headers:{ "Content-Type":"text/plain;charset=utf-8" }, body: JSON.stringify(body) })
-      .then(function(r){ return r.json(); });
+      .then(function(r){ dbg('← 뒷단 응답 코드: ' + r.status); return r.text(); })
+      .then(function(t){ dbg('← 뒷단 응답: ' + t.slice(0, 300)); return JSON.parse(t); })
+      .catch(function(e){ dbg('✕ 뒷단 연결 실패: ' + errText(e)); throw e; });
   }
   function showDone(id){
     document.getElementById('order-id').textContent = id;
@@ -283,6 +295,7 @@ footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px}
       style: { shape: 'pill', color: 'gold', layout: 'vertical', label: 'pay' },
       createOrder: function (data, actions) {
         clearStatus();
+        dbg('버튼 누름: ' + (data && data.paymentSource || '?') + ' · 수량 ' + qty);
         if (!ORDER_API) return clientOrder(actions);
         // 가격은 뒷단에서 계산 — 여기서는 수량만 보냄
         return api({ action:'create', qty: qty, lang: lang }).then(function(res){
@@ -291,6 +304,7 @@ footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px}
         });
       },
       onApprove: function (data, actions) {
+        dbg('PayPal 승인됨: ' + JSON.stringify(data));
         if (!ORDER_API) {
           return actions.order.capture().then(function (details) {
             showDone((details && details.id) || data.orderID);
@@ -304,8 +318,8 @@ footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px}
           showDone(res.id || data.orderID);
         }).catch(function(){ showStatus('errPay'); });
       },
-      onCancel: function(){ showStatus('cancelled'); },
-      onError: function(){ showStatus('errPay'); }
+      onCancel: function(){ dbg('구매자가 취소함'); showStatus('cancelled'); },
+      onError: function(err){ dbg('✕ PayPal 오류: ' + errText(err)); showStatus('errPay'); }
     }).render('#paypal-buttons').then(function(){
       if (loading) loading.remove();
     }).catch(function(){
@@ -320,7 +334,8 @@ footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px}
     var sdk = document.createElement('script');
     sdk.src = 'https://www.paypal.com/sdk/js?client-id=' + encodeURIComponent(PAYPAL_CLIENT_ID) +
       '&currency=USD&intent=capture&components=buttons&locale=' + (LOCALE[lang] || 'en_US');
-    sdk.onload = mountButtons;
+    dbg('버전 2026-09-20b · 뒷단 ' + (ORDER_API ? '켜짐' : '꺼짐') + ' · 언어 ' + lang);
+    sdk.onload = function(){ dbg('PayPal 불러옴'); mountButtons(); };
     sdk.onerror = function(){ var l = document.getElementById('loading'); if (l) l.remove(); showStatus('errLoad'); };
     document.body.appendChild(sdk);
   }
