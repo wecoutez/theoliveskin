@@ -126,8 +126,6 @@ h1,h2,h3{margin:0;font-family:var(--sans);font-weight:400;line-height:1.2;letter
 .price{font-family:var(--display);font-size:40px;line-height:1;color:var(--olive)}
 .price small{font-family:var(--sans);font-size:12px;color:var(--ink-soft);margin-left:8px;letter-spacing:.1em}
 .lead{font-size:15px;color:var(--ink-soft);max-width:32em}
-.specs{display:flex;flex-wrap:wrap;gap:4px 0;font-size:11px;font-weight:400;letter-spacing:.12em;text-transform:uppercase;color:var(--olive);padding-block:12px;border-block:1px solid var(--line)}
-.specs span:not(:last-child)::after{content:"·";margin:0 10px;color:var(--ink-soft)}
 .qty-row{display:flex;align-items:center;gap:14px;font-size:13px}
 .stepper{display:flex;align-items:center;border:1px solid var(--ink);border-radius:999px;background:var(--white)}
 .stepper button{width:40px;height:40px;border:0;background:transparent;cursor:pointer;font-size:16px;border-radius:999px}
@@ -149,6 +147,10 @@ h1,h2,h3{margin:0;font-family:var(--sans);font-weight:400;line-height:1.2;letter
 .steps b{font-weight:500;color:var(--ink)}
 .ingr{display:grid;gap:12px}
 .ingr b{display:block;font-weight:500;color:var(--ink)}
+.inci{margin-top:6px;padding-top:14px;border-top:1px dashed var(--line)}
+.inci b{display:block;font-weight:500;color:var(--ink);margin-bottom:4px}
+.inci p{font-size:13px;line-height:1.75;word-break:keep-all}
+.inci small{display:block;margin-top:8px;font-size:12px;color:var(--ink-soft)}
 .dl{display:grid;grid-template-columns:auto 1fr;gap:6px 18px;margin:0}
 .dl dt{color:var(--ink)}
 .dl dd{margin:0}
@@ -353,7 +355,6 @@ footer{background:var(--night);color:#D8D4C8}
         <p class="sub" data-i18n="pdpSub">Nail &amp; body care oil · 15ml / 0.5 fl oz</p>
         <p class="price">$18<small>USD</small></p>
         <p class="lead" data-i18n="shopLead">Cold-pressed olive and avocado oils that sink in fast — never sit on top — softening dry nails, cuticles and elbows.</p>
-        <p class="specs"><span data-i18n="tagVegan">Vegan</span><span data-i18n="tagCF">Cruelty-free</span><span data-i18n="tagFrag">No synthetic fragrance</span><span>Made in Korea</span></p>
         <div class="qty-row">
           <span data-i18n="qty">Quantity</span>
           <div class="stepper">
@@ -383,6 +384,11 @@ footer{background:var(--night);color:#D8D4C8}
             <div class="panel-body ingr">
               <p><b data-i18n="i1t">Cold-pressed olive oil</b><span data-i18n="i1d">Rich in squalane and antioxidants to wrap the skin barrier in moisture.</span></p>
               <p><b data-i18n="i2t">Avocado oil</b><span data-i18n="i2d">With vitamins A, D and E to smooth rough, stubborn patches.</span></p>
+              <div class="inci" id="inci-ko" lang="ko" hidden>
+                <b>전성분</b>
+                <p>올리브열매오일, 아보카도오일, 향료, 호호바씨오일, 토코페릴아세테이트, 벤질살리실레이트, 리날룰, 시트로넬올, 헥실신남알, 오렌지껍질오일, 로즈힙열매오일, 블랙커민씨오일, 석류씨오일, 유차나무씨오일, 제라니올, 리모넨, 알파‑아이소메틸아이오논, 하이드록시시트로넬알, 신나밀알코올</p>
+                <small>향료 속 알레르기 유발 성분: 벤질살리실레이트, 리날룰, 시트로넬올, 헥실신남알, 제라니올, 리모넨, 알파‑아이소메틸아이오논, 하이드록시시트로넬알, 신나밀알코올</small>
+              </div>
             </div>
           </details>
           <details>
@@ -391,8 +397,7 @@ footer{background:var(--night);color:#D8D4C8}
               <dl class="dl">
                 <dt data-i18n="dSize">Size</dt><dd>15ml / 0.5 fl oz</dd>
                 <dt data-i18n="dFor">For</dt><dd data-i18n="dForV">Nails, cuticles, hands, elbows, knees, heels</dd>
-                <dt data-i18n="dMaker">Made by</dt><dd data-i18n="dMakerV">Mix and Match, the nail care division of COSMAX (Korea)</dd>
-                <dt data-i18n="dClaims">Formula</dt><dd data-i18n="dClaimsV">Vegan · Cruelty-free · No synthetic fragrance</dd>
+                <dt data-i18n="dMaker">Made by</dt><dd data-i18n="dMakerV">Mix and Match, the nail care division of COSMAX</dd>
               </dl>
             </div>
           </details>
@@ -402,7 +407,7 @@ footer{background:var(--night);color:#D8D4C8}
     <div class="facts">
       <div><p class="k">Maker</p><p class="v">Mix and Match</p><p data-i18n="m1">The nail care division of COSMAX.</p></div>
       <div><p class="k">Standard</p><p class="v">COSMAX</p><p data-i18n="m2">Made to global beauty brand standards.</p></div>
-      <div><p class="k">Formula</p><p class="v" data-i18n="m3v">Vegan · Cruelty-free</p><p data-i18n="m3">Plant oils, no synthetic fragrance.</p></div>
+      <div><p class="k">Formula</p><p class="v" data-i18n="m3v">Plant oils</p><p data-i18n="m3">Cold-pressed olive and avocado at the base.</p></div>
       <div><p class="k">Checkout</p><p class="v" data-i18n="m4v">Secure</p><p data-i18n="m4">PayPal · Cards</p></div>
     </div>
   </section>
@@ -427,13 +432,13 @@ footer{background:var(--night);color:#D8D4C8}
       <div>
         <h4>Contact</h4>
         <ul>
-          <li><a href="mailto:olive.skin.care@gmail.com">olive.skin.care@gmail.com</a></li>
-          <li><a href="mailto:olive.skin.care@gmail.com?subject=Wholesale" data-i18n="wholesale">Wholesale inquiries</a></li>
+          <li><a href="mailto:hello@theoliveskin.com">hello@theoliveskin.com</a></li>
+          <li><a href="mailto:hello@theoliveskin.com?subject=Wholesale" data-i18n="wholesale">Wholesale inquiries</a></li>
           <li><a href="checkout.html" data-i18n="checkout">Checkout</a></li>
         </ul>
       </div>
     </div>
-    <div class="copyline"><span>© 2026 Olive Skin. All rights reserved.</span><span>VEGAN · CRUELTY-FREE · CLEAN</span></div>
+    <div class="copyline"><span>© 2026 Olive Skin. All rights reserved.</span></div>
   </div>
 </footer>
 
@@ -454,7 +459,7 @@ footer{background:var(--night);color:#D8D4C8}
       c1tag:"영양<br>데일리 케어", c1name:"글로우 드롭 데일리 케어 오일",
       c2tag:"콜드프레스", c2name:"올리브 오일", c2sub:"스쿠알렌 · 항산화 성분",
       c3tag:"부드럽게<br>매끄럽게", c3name:"아보카도 오일", c3sub:"비타민 A · D · E",
-      c4tag:"비건<br>크루얼티 프리", c4name:"순한 포뮬러", c4sub:"합성 향료 없음",
+      c4name:"순한 포뮬러",
       p1:"손톱", p1btn:"글로우 드롭 구매하기", p2:"손", p2btn:"사용 방법", p3:"건조한 피부", p3btn:"글로우 드롭 구매하기",
       storyTitle:"[[나파 밸리]]에서 온 힐링 오일",
       storyLead:"올리브 오일은 오래전부터 햇볕과 일에 지친 손과 피부를 달래는 데 쓰여 온 오일. 나파 밸리의 올리브 나무와 금빛 햇살에서 영감을 받아, 그 다정한 쉼의 시간을 매일 쓰는 작은 한 병에 담음.",
@@ -470,14 +475,14 @@ footer{background:var(--night);color:#D8D4C8}
       introLead2:"나파 밸리의 올리브 숲에서 영감을 받은 케어.",
       shopLead:"콜드프레스 올리브 오일과 아보카도 오일. 겉돌지 않고 빠르게 스며들어 손톱, 큐티클, 팔꿈치의 건조함을 부드럽게 가꿈.",
       pdpSub:"네일 &amp; 바디 케어 오일 · 15ml / 0.5 fl oz",
+      i1t:"콜드프레스 올리브 오일", i1d:"스쿠알렌과 항산화 성분이 풍부해 피부 장벽을 촉촉하게 감쌈.",
+      i2t:"아보카도 오일", i2d:"비타민 A · D · E를 담아 거칠고 건조한 부위를 매끄럽게 가꿈.",
       accHow:"사용 방법", accIngr:"성분", accDetails:"제품 정보",
       dSize:"용량", dFor:"사용 부위", dForV:"손톱, 큐티클, 손, 팔꿈치, 무릎, 뒤꿈치",
-      dMaker:"제조", dMakerV:"믹스앤매치 (코스맥스 네일 전문 계열사, 한국)",
-      dClaims:"포뮬러", dClaimsV:"비건 · 크루얼티 프리 · 합성 향료 없음",
-      tagVegan:"비건", tagCF:"크루얼티 프리", tagFrag:"합성 향료 없음",
+      dMaker:"제조", dMakerV:"믹스앤매치 (코스맥스 네일 전문 계열사)",
       qty:"수량", buyNow:"바로 구매하기", addBag:"장바구니 담기",
       m1:"코스맥스의 네일 케어 전문 계열사.", m2:"글로벌 뷰티 브랜드와 같은 기준으로 제조.",
-      m3v:"비건 · 크루얼티 프리", m3:"식물성 오일 중심, 합성 향료 없음.",
+      m3v:"식물성 오일", m3:"콜드프레스 올리브 · 아보카도 오일 베이스.",
       m4v:"안전 결제", m4:"PayPal · 카드 결제",
       footAbout:"나파 밸리에서 온 한 방울의 힐링.", wholesale:"도매 문의", checkout:"결제하기",
       added:"장바구니에 담았어요", pause:"영상 일시정지", play:"영상 재생",
@@ -497,7 +502,7 @@ footer{background:var(--night);color:#D8D4C8}
       c1tag:"栄養<br>デイリーケア", c1name:"Glow Drop デイリーケアオイル",
       c2tag:"コールドプレス", c2name:"オリーブオイル", c2sub:"スクワラン・抗酸化成分",
       c3tag:"やわらか<br>なめらか", c3name:"アボカドオイル", c3sub:"ビタミンA・D・E",
-      c4tag:"ヴィーガン<br>クルエルティフリー", c4name:"クリーンな処方", c4sub:"合成香料不使用",
+      c4name:"クリーンな処方",
       p1:"爪", p1btn:"Glow Dropを購入", p2:"手", p2btn:"使い方", p3:"乾燥肌", p3btn:"Glow Dropを購入",
       storyTitle:"[[ナパ・ヴァレー]]から届く、ヒーリングオイル",
       storyLead:"オリーブオイルは古くから、日差しや仕事で荒れた手や肌をいたわるために使われてきました。ナパ・ヴァレーのオリーブの木々と黄金色の光に着想を得て、そのやさしい癒しのひとときを毎日使える小さなボトルに込めました。",
@@ -513,14 +518,14 @@ footer{background:var(--night);color:#D8D4C8}
       introLead2:"ナパ・ヴァレーのオリーブの森に着想を得たケア。",
       shopLead:"コールドプレスのオリーブオイルとアボカドオイル。肌の上に残らずすっとなじみ、乾燥しがちな爪・甘皮・ひじをやわらかく整えます。",
       pdpSub:"ネイル＆ボディケアオイル · 15ml / 0.5 fl oz",
+      i1t:"コールドプレス オリーブオイル", i1d:"スクワランと抗酸化成分が豊富で、肌のバリアをうるおいで包みます。",
+      i2t:"アボカドオイル", i2d:"ビタミンA・D・Eが、ごわつきやすい部分をなめらかに整えます。",
       accHow:"使い方", accIngr:"成分", accDetails:"製品情報",
       dSize:"容量", dFor:"使用部位", dForV:"爪、甘皮、手、ひじ、ひざ、かかと",
-      dMaker:"製造", dMakerV:"Mix and Match（COSMAXのネイル専門部門、韓国）",
-      dClaims:"処方", dClaimsV:"ヴィーガン · クルエルティフリー · 合成香料不使用",
-      tagVegan:"ヴィーガン", tagCF:"クルエルティフリー", tagFrag:"合成香料不使用",
+      dMaker:"製造", dMakerV:"Mix and Match（COSMAXのネイル専門部門）",
       qty:"数量", buyNow:"今すぐ購入", addBag:"カートに入れる",
       m1:"COSMAXのネイルケア専門部門。", m2:"グローバルブランドと同じ基準で製造。",
-      m3v:"ヴィーガン・クルエルティフリー", m3:"植物オイル中心、合成香料不使用。",
+      m3v:"植物オイル", m3:"コールドプレスのオリーブ・アボカドオイルがベース。",
       m4v:"安全なお支払い", m4:"PayPal · カード",
       footAbout:"ナパ・ヴァレーから届く、一滴のヒーリング。", wholesale:"卸売のお問い合わせ", checkout:"お支払い",
       added:"カートに追加しました", pause:"動画を一時停止", play:"動画を再生",
@@ -567,6 +572,7 @@ footer{background:var(--night);color:#D8D4C8}
     nodes.forEach(function(n){ var k=n.getAttribute('data-i18n'); if(d[k]!=null) n.innerHTML=d[k]; });
     altNodes.forEach(function(n){ var k=n.getAttribute('data-i18n-alt'); if(d[k]!=null) n.alt=d[k]; });
     document.documentElement.lang = l;
+    document.getElementById('inci-ko').hidden = (l !== 'ko');
     document.querySelectorAll('.lang button').forEach(function(b){ b.setAttribute('aria-pressed', b.dataset.lang===l ? 'true':'false'); });
     try{ localStorage.setItem('os-lang', l); }catch(e){}
     updateBuy(); filmLabel();

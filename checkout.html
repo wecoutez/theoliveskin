@@ -132,7 +132,7 @@ footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px}
         <ul class="notes">
           <li data-i18n="n1">Your shipping address is collected securely in PayPal.</li>
           <li data-i18n="n2">An order confirmation is emailed by PayPal after payment.</li>
-          <li data-i18n="n3">Questions? olive.skin.care@gmail.com</li>
+          <li data-i18n="n3">Questions? <a href="mailto:hello@theoliveskin.com">hello@theoliveskin.com</a></li>
         </ul>
       </section>
 
@@ -155,44 +155,52 @@ footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px}
   </div>
 </main>
 
-<footer><div class="wrap"><span>© 2026 Olive Skin</span><span>VEGAN · CRUELTY-FREE · CLEAN</span></div></footer>
+<footer><div class="wrap"><span>© 2026 Olive Skin. All rights reserved.</span></div></footer>
 
-<script src="https://www.paypal.com/sdk/js?client-id=BAA1E9HIjTbEoenfNLX-VHnrhfM2BlheMWht6mJL-84-MjnHqUoTY8jGhGb6K5asYkDhvkPf-6dZeOkGPU&currency=USD&intent=capture&components=buttons" data-sdk-integration-source="button-factory"></script>
 <script>
 (function(){
+  /* ===== 설정 — 여기 두 줄만 바꾸면 됨 ===== */
+  // PayPal 개발자 사이트 Live 앱의 Client ID (Apps Script 스크립트 속성과 같은 값)
+  var PAYPAL_CLIENT_ID = "BAA1E9HIjTbEoenfNLX-VHnrhfM2BlheMWht6mJL-84-MjnHqUoTY8jGhGb6K5asYkDhvkPf-6dZeOkGPU";
+  // Apps Script 웹 앱 주소 (…/exec). 비워 두면 예전처럼 브라우저에서만 결제 처리
+  var ORDER_API = "https://script.google.com/macros/s/AKfycbxmSmlmpWncaSchQgttNbCoqv7g3kaGwrdwCcmeqUxUf2DQaEoI_VnuC5QMCdn7ee9Wsw/exec";
+  /* ======================================= */
   var PRICE = 18, MAX = 10;
   var T = {
     en: {},
     ko: {
       back:"스토어로 돌아가기", title:"결제하기", sub:"네일 &amp; 바디 케어 오일 · 15ml / 0.5 fl oz · $18.00",
       qty:"수량", subtotal:"상품 금액", shipping:"배송비 (미국)", free:"무료", total:"총 결제 금액 (USD)",
-      n1:"배송지는 PayPal 창에서 안전하게 입력해요.", n2:"결제가 끝나면 PayPal이 주문 확인 메일을 보내드려요.", n3:"문의: olive.skin.care@gmail.com",
+      n1:"배송지는 PayPal 창에서 안전하게 입력해요.", n2:"결제가 끝나면 PayPal이 주문 확인 메일을 보내드려요.", n3:"문의: <a href='mailto:hello@theoliveskin.com'>hello@theoliveskin.com</a>",
       payTitle:"결제 수단", payHint:"PayPal로 결제하거나, '체크카드·신용카드'를 선택하세요. PayPal 계정이 없어도 돼요.",
       loading:"안전한 결제창을 불러오는 중…", secure:"PayPal 안전 결제 · 카드 결제 가능",
       thanks:"감사합니다", thanksBody:"주문이 완료됐어요. PayPal이 영수증을 메일로 보내드리고, 배송 안내도 같은 주소로 보내드릴게요.",
       orderRef:"주문 번호", continue:"올리브 스킨으로 돌아가기",
       errLoad:"결제창을 불러오지 못했어요. 광고 차단 기능을 끄거나 페이지를 새로고침한 뒤 다시 시도해 주세요.",
-      errPay:"결제가 완료되지 않았어요. 금액은 청구되지 않았으니 다시 시도해 주세요. 계속 안 되면 olive.skin.care@gmail.com으로 알려 주세요.",
-      cancelled:"결제를 취소했어요. 준비되면 다시 시도해 주세요."
+      errPay:"결제가 완료되지 않았어요. 금액은 청구되지 않았으니 다시 시도해 주세요. 계속 안 되면 hello@theoliveskin.com으로 알려 주세요.",
+      cancelled:"결제를 취소했어요. 준비되면 다시 시도해 주세요.",
+      processing:"결제를 확인하고 있어요. 창을 닫지 말아 주세요…"
     },
     ja: {
       back:"ストアに戻る", title:"お支払い", sub:"ネイル＆ボディケアオイル · 15ml / 0.5 fl oz · $18.00",
       qty:"数量", subtotal:"小計", shipping:"送料（米国）", free:"無料", total:"合計（USD）",
-      n1:"お届け先はPayPalの画面で安全に入力します。", n2:"お支払い後、PayPalから注文確認メールが届きます。", n3:"お問い合わせ：olive.skin.care@gmail.com",
+      n1:"お届け先はPayPalの画面で安全に入力します。", n2:"お支払い後、PayPalから注文確認メールが届きます。", n3:"お問い合わせ：<a href='mailto:hello@theoliveskin.com'>hello@theoliveskin.com</a>",
       payTitle:"お支払い方法", payHint:"PayPal、または「デビットカード・クレジットカード」をお選びください。PayPalアカウントは不要です。",
       loading:"安全な決済画面を読み込み中…", secure:"PayPalによる安全な決済 · カード利用可",
       thanks:"ありがとうございます", thanksBody:"ご注文が確定しました。PayPalから領収書が届き、発送のご案内も同じアドレスにお送りします。",
       orderRef:"注文番号", continue:"オリーブスキンに戻る",
       errLoad:"決済画面を読み込めませんでした。広告ブロックをオフにするか、ページを再読み込みしてください。",
-      errPay:"お支払いが完了しませんでした。請求は発生していません。もう一度お試しください。解決しない場合は olive.skin.care@gmail.com までご連絡ください。",
-      cancelled:"お支払いをキャンセルしました。準備ができたら再度お試しください。"
+      errPay:"お支払いが完了しませんでした。請求は発生していません。もう一度お試しください。解決しない場合は hello@theoliveskin.com までご連絡ください。",
+      cancelled:"お支払いをキャンセルしました。準備ができたら再度お試しください。",
+      processing:"お支払いを確認しています。画面を閉じずにお待ちください…"
     }
   };
   var nodes = document.querySelectorAll('[data-i18n]');
   nodes.forEach(function(n){ T.en[n.dataset.i18n] = n.innerHTML; });
   T.en.errLoad = "Checkout couldn't load. Turn off any ad blocker or refresh the page, then try again.";
-  T.en.errPay = "Payment didn't go through and you haven't been charged. Please try again, or email olive.skin.care@gmail.com if it keeps happening.";
+  T.en.errPay = "Payment didn't go through and you haven't been charged. Please try again, or email hello@theoliveskin.com if it keeps happening.";
   T.en.cancelled = "Payment cancelled. Try again whenever you're ready.";
+  T.en.processing = "Confirming your payment. Please keep this page open…";
 
   var params = new URLSearchParams(location.search);
   var lang = params.get('lang');
@@ -201,7 +209,7 @@ footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px}
   var qty = Math.max(1, Math.min(MAX, parseInt(params.get('qty'), 10) || 1));
 
   var statusEl = document.getElementById('status');
-  function showStatus(key){ statusEl.textContent = T[lang][key]; statusEl.hidden = false; }
+  function showStatus(key, info){ statusEl.textContent = T[lang][key]; statusEl.classList.toggle('error', !info); statusEl.hidden = false; }
   function clearStatus(){ statusEl.hidden = true; }
 
   function setLang(l){
@@ -226,6 +234,44 @@ footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px}
   setLang(lang);
   render();
 
+  function api(body){
+    // text/plain 으로 보내야 Apps Script 가 사전 요청 없이 받는다 (SKNYUS 와 같은 방식)
+    return fetch(ORDER_API, { method:"POST", headers:{ "Content-Type":"text/plain;charset=utf-8" }, body: JSON.stringify(body) })
+      .then(function(r){ return r.json(); });
+  }
+  function showDone(id){
+    document.getElementById('order-id').textContent = id;
+    document.getElementById('checkout').hidden = true;
+    document.getElementById('done').hidden = false;
+    window.scrollTo(0, 0);
+  }
+
+  function clientOrder(actions){
+    var total = (qty * PRICE).toFixed(2);
+    return actions.order.create({
+      intent: 'CAPTURE',
+      purchase_units: [{
+        description: 'Olive Skin Glow Drop 15ml',
+        amount: {
+          currency_code: 'USD',
+          value: total,
+          breakdown: {
+            item_total: { currency_code: 'USD', value: total },
+            shipping: { currency_code: 'USD', value: '0.00' }
+          }
+        },
+        items: [{
+          name: 'Glow Drop Daily Care Oil 15ml',
+          sku: 'OS-GLOWDROP-15',
+          unit_amount: { currency_code: 'USD', value: PRICE.toFixed(2) },
+          quantity: String(qty),
+          category: 'PHYSICAL_GOODS'
+        }]
+      }],
+      application_context: { brand_name: 'Olive Skin', shipping_preference: 'GET_FROM_FILE' }
+    });
+  }
+
   function mountButtons(){
     var loading = document.getElementById('loading');
     if (!window.paypal || !paypal.Buttons) {
@@ -237,36 +283,25 @@ footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px}
       style: { shape: 'pill', color: 'gold', layout: 'vertical', label: 'pay' },
       createOrder: function (data, actions) {
         clearStatus();
-        var total = (qty * PRICE).toFixed(2);
-        return actions.order.create({
-          intent: 'CAPTURE',
-          purchase_units: [{
-            description: 'Olive Skin Glow Drop 15ml',
-            amount: {
-              currency_code: 'USD',
-              value: total,
-              breakdown: {
-                item_total: { currency_code: 'USD', value: total },
-                shipping: { currency_code: 'USD', value: '0.00' }
-              }
-            },
-            items: [{
-              name: 'Glow Drop Daily Care Oil 15ml',
-              sku: 'OS-GLOWDROP-15',
-              unit_amount: { currency_code: 'USD', value: PRICE.toFixed(2) },
-              quantity: String(qty),
-              category: 'PHYSICAL_GOODS'
-            }]
-          }],
-          application_context: { brand_name: 'Olive Skin', shipping_preference: 'GET_FROM_FILE' }
+        if (!ORDER_API) return clientOrder(actions);
+        // 가격은 뒷단에서 계산 — 여기서는 수량만 보냄
+        return api({ action:'create', qty: qty, lang: lang }).then(function(res){
+          if (!res || !res.ok || !res.id) throw new Error('create');
+          return res.id;
         });
       },
       onApprove: function (data, actions) {
-        return actions.order.capture().then(function (details) {
-          document.getElementById('order-id').textContent = (details && details.id) || data.orderID;
-          document.getElementById('checkout').hidden = true;
-          document.getElementById('done').hidden = false;
-          window.scrollTo(0, 0);
+        if (!ORDER_API) {
+          return actions.order.capture().then(function (details) {
+            showDone((details && details.id) || data.orderID);
+          }).catch(function(){ showStatus('errPay'); });
+        }
+        showStatus('processing', true);
+        return api({ action:'capture', orderID: data.orderID }).then(function(res){
+          if (res && res.retry) { clearStatus(); return actions.restart(); }
+          if (!res || !res.ok) throw new Error('capture');
+          clearStatus();
+          showDone(res.id || data.orderID);
         }).catch(function(){ showStatus('errPay'); });
       },
       onCancel: function(){ showStatus('cancelled'); },
@@ -278,8 +313,18 @@ footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px}
       showStatus('errLoad');
     });
   }
-  if (document.readyState === 'complete') mountButtons();
-  else window.addEventListener('load', mountButtons);
+
+  // PayPal 결제창을 사이트 언어에 맞춰 불러옴
+  var LOCALE = { en:'en_US', ko:'ko_KR', ja:'ja_JP' };
+  function loadSdk(){
+    var sdk = document.createElement('script');
+    sdk.src = 'https://www.paypal.com/sdk/js?client-id=' + encodeURIComponent(PAYPAL_CLIENT_ID) +
+      '&currency=USD&intent=capture&components=buttons&locale=' + (LOCALE[lang] || 'en_US');
+    sdk.onload = mountButtons;
+    sdk.onerror = function(){ var l = document.getElementById('loading'); if (l) l.remove(); showStatus('errLoad'); };
+    document.body.appendChild(sdk);
+  }
+  loadSdk();
 })();
 </script>
 </body>
