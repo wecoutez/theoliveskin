@@ -252,7 +252,7 @@ const STATUSES=['주문받음','입금 완료','전달 완료'];
 const DEFAULTS={goal:3000,price:6000,upfront:5595000,deadline:''};
 const state={orders:[],settings:{...DEFAULTS},filter:'전체',editing:null,loaded:false};
 /* ===== 설정 — Apps Script 웹 앱 주소(…/exec)를 여기에 붙여 넣기 ===== */
-const API_URL="";
+const API_URL="https://script.google.com/macros/s/AKfycbzJEptWG0-nQ8rsBMArVh3I1vkcissvWY6NVUVmPNzAObLgkVMZJVkjVdF5U422U2SJRQ/exec";
 /* ================================================================ */
 let KEY='';try{KEY=localStorage.getItem('os-admin-key')||'';}catch(e){}
 const $=id=>document.getElementById(id);
