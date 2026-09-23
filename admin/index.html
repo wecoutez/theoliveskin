@@ -65,6 +65,7 @@ a.logo{text-decoration:none}
 .tk.be{color:var(--brown)}.tk.be i{background:var(--brown);width:14px}
 .tk.now{color:var(--olive);font-weight:500;font-size:13px}.tk.now i{width:0;height:0;background:none;border-left:8px solid var(--olive);border-top:5px solid transparent;border-bottom:5px solid transparent;margin-left:-10px}
 .tk em{font-style:normal}
+.facts dd small.sub{display:block;font-size:13px;font-weight:400;color:var(--muted);letter-spacing:0}
 .rev{margin:10px 0 0;font-size:16px;color:var(--muted)}
 .rev-n{font-size:clamp(26px,4vw,36px);font-weight:600;color:var(--ink);letter-spacing:-.02em;margin-right:4px}
 tfoot td{border-bottom:0;border-top:2px solid var(--ink);font-weight:600;color:var(--ink)}
@@ -455,15 +456,19 @@ function drawLine(t,goal,be){
 function render(){
   const s=state.settings,t=totals();
   const goal=Math.max(1,+s.goal||DEFAULTS.goal),price=+s.price||DEFAULTS.price,upfront=+s.upfront||0;
-  const beBase=+s.b2b3||5000; // 본전은 가장 낮은 거래가(B2B 3차) 기준
-  const be=beBase>0?Math.ceil(upfront/beBase):0;
-  $('fBEl').textContent=`본전까지 (거래가 ${num(beBase)}원 기준)`;
+  // 본전: 이미 번 돈은 실제 매출로 빼고, 남은 금액은 앞으로 B2B 2차 가격으로 판다고 보고 계산
+  const beBase=+s.b2b2||6000;
+  const remain=Math.max(0,upfront-t.sales);
+  const more=beBase>0?Math.ceil(remain/beBase):0;
+  const be=t.bottles+more;
+  $('fBEl').textContent=`본전까지 (앞으로 ${num(beBase)}원에 판다면)`;
   countTo($('cBottles'),t.bottles);countTo($('cRev'),t.sales);$('cN').textContent=num(state.orders.length);$('cGoal').textContent=num(goal);
   $('fLeft').textContent=num(Math.max(0,goal-t.bottles))+'병';
   $('fSales').textContent=won(t.sales);$('fPaid').textContent=won(t.paid);
-  $('fBE').textContent=t.bottles>=be?'넘었어요':num(Math.max(0,be-t.bottles))+'병 더';
+  $('fBE').replaceChildren(remain<=0?'넘었어요':num(more)+'병 더');
+  if(remain>0){const sm=document.createElement('small');sm.className='sub';sm.textContent='남은 금액 '+won(remain);$('fBE').append(sm);}
   const pct=t.bottles/goal*100;
-  $('lede').textContent=state.loaded?`목표의 ${pct<10&&pct>0?pct.toFixed(1):Math.round(pct)}%를 채웠어요. 제작비 ${won(upfront)}을 돌려받으려면 한 병 ${won(beBase)} 기준으로 모두 ${num(be)}병이 팔려야 해요.`:'주문 내역을 불러오고 있어요.';
+  $('lede').textContent=state.loaded?`목표의 ${pct<10&&pct>0?pct.toFixed(1):Math.round(pct)}%를 채웠어요. 제작비 ${won(upfront)} 중 ${won(Math.min(t.sales,upfront))}을 벌었어요. 남은 ${won(remain)}은 한 병 ${won(beBase)}에 ${num(more)}병을 더 팔면 채워져요.`:'주문 내역을 불러오고 있어요.';
   if(s.deadline){const days=(new Date(s.deadline)-new Date(today()))/864e5;$('paceBox').hidden=false;
     $('fPace').textContent=days>0?num(Math.ceil(Math.max(0,goal-t.bottles)/(days/7)))+'병씩':'목표일이 지났어요';}else $('paceBox').hidden=true;
 
