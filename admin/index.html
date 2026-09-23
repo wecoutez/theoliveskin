@@ -65,6 +65,9 @@ a.logo{text-decoration:none}
 .tk.be{color:var(--brown)}.tk.be i{background:var(--brown);width:14px}
 .tk.now{color:var(--olive);font-weight:500;font-size:13px}.tk.now i{width:0;height:0;background:none;border-left:8px solid var(--olive);border-top:5px solid transparent;border-bottom:5px solid transparent;margin-left:-10px}
 .tk em{font-style:normal}
+.sum-n{font-size:14px;font-weight:400;color:var(--muted);margin-left:6px}
+.v-bar{display:flex;justify-content:space-between;align-items:center;margin:14px 0 12px;font-size:14px;color:var(--muted)}
+#vendorsBox .vd{background:var(--bg)}
 .vendors{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
 .vd{background:var(--paper);border-radius:18px;padding:18px;box-shadow:0 1px 0 var(--line);display:flex;flex-direction:column;gap:10px}
 .vd-top{display:flex;justify-content:space-between;align-items:flex-start;gap:10px}
@@ -255,33 +258,6 @@ h1,h2{letter-spacing:-.02em}
     <div class="price-grid" id="priceGrid"></div>
   </section>
 
-  <section id="vendorsSec">
-    <div class="sec-head"><h2>제작 정보</h2><p>업체·견적 <button type="button" class="rowbtn" id="addVendor">업체 추가</button></p></div>
-    <div class="vendors" id="vendors"></div>
-    <div class="card" id="vendorWrap" hidden style="margin-top:14px">
-      <form id="vendorForm" autocomplete="off">
-        <label class="c3">회사<input name="name" required></label>
-        <label class="c3">맡은 일<input name="role" placeholder="예: 용기, 내용물"></label>
-        <label class="c2">담당자<input name="contact"></label>
-        <label class="c2">전화<input name="phone" type="tel"></label>
-        <label class="c2">팩스<input name="fax" type="tel"></label>
-        <label class="c3">이메일<input name="email" type="email"></label>
-        <label class="c3">상태<input name="status" list="vStatus" placeholder="예: 재견적 필요"></label>
-        <datalist id="vStatus"><option value="견적 받음"><option value="재견적 필요"><option value="업체 확정 필요"><option value="발주 완료"><option value="납품 완료"></datalist>
-        <label class="c6">주소<input name="address"></label>
-        <label class="c6">품목<input name="item"></label>
-        <label class="c6">단가<input name="price" placeholder="예: 730원 (5,000개 기준)"></label>
-        <label class="c6">포함 내용<input name="includes"></label>
-        <label class="c3">결제 조건<input name="payment"></label>
-        <label class="c3">견적일<input name="quoteDate" placeholder="예: 2026-09-23"></label>
-        <label class="c6">메모<input name="memo"></label>
-        <div class="actions"><span class="msg" id="vMsg" role="status"></span>
-          <button type="button" class="btn ghost" id="vCancel">닫기</button>
-          <button type="submit" class="btn primary" id="vSubmit">저장</button></div>
-      </form>
-    </div>
-  </section>
-
   <section>
     <div class="sec-head"><h2>3,000병 한눈에 보기</h2><p>한 칸이 한 병이에요 · 색은 판매 경로</p></div>
     <div class="card grid-wrap">
@@ -346,6 +322,36 @@ h1,h2{letter-spacing:-.02em}
       </form>
     </details>
   </section>
+  <section id="vendorsSec">
+    <details class="card" id="vendorsBox">
+    <summary>제작 정보 <span class="sum-n" id="vCount"></span></summary>
+    <div class="v-bar"><span>업체와 견적</span><button type="button" class="rowbtn" id="addVendor">업체 추가</button></div>
+    <div class="vendors" id="vendors"></div>
+    <div class="card" id="vendorWrap" hidden style="margin-top:14px">
+      <form id="vendorForm" autocomplete="off">
+        <label class="c3">회사<input name="name" required></label>
+        <label class="c3">맡은 일<input name="role" placeholder="예: 용기, 내용물"></label>
+        <label class="c2">담당자<input name="contact"></label>
+        <label class="c2">전화<input name="phone" type="tel"></label>
+        <label class="c2">팩스<input name="fax" type="tel"></label>
+        <label class="c3">이메일<input name="email" type="email"></label>
+        <label class="c3">상태<input name="status" list="vStatus" placeholder="예: 재견적 필요"></label>
+        <datalist id="vStatus"><option value="견적 받음"><option value="재견적 필요"><option value="업체 확정 필요"><option value="발주 완료"><option value="납품 완료"></datalist>
+        <label class="c6">주소<input name="address"></label>
+        <label class="c6">품목<input name="item"></label>
+        <label class="c6">단가<input name="price" placeholder="예: 730원 (5,000개 기준)"></label>
+        <label class="c6">포함 내용<input name="includes"></label>
+        <label class="c3">결제 조건<input name="payment"></label>
+        <label class="c3">견적일<input name="quoteDate" placeholder="예: 2026-09-23"></label>
+        <label class="c6">메모<input name="memo"></label>
+        <div class="actions"><span class="msg" id="vMsg" role="status"></span>
+          <button type="button" class="btn ghost" id="vCancel">닫기</button>
+          <button type="submit" class="btn primary" id="vSubmit">저장</button></div>
+      </form>
+    </div>
+    </details>
+  </section>
+
 </main>
 
 <script>
@@ -416,7 +422,7 @@ function countTo(el,to){
 }
 const VFIELDS=[['item','품목'],['price','단가'],['includes','포함 내용'],['payment','결제 조건'],['quoteDate','견적일'],['contact','담당자'],['phone','전화'],['fax','팩스'],['email','이메일'],['address','주소'],['memo','메모']];
 function drawVendors(){
-  const el=$('vendors');el.replaceChildren();
+  const el=$('vendors');el.replaceChildren();$('vCount').textContent=state.vendors.length?`${state.vendors.length}곳`:'';
   if(!state.vendors.length){const p=document.createElement('p');p.className='empty-v';p.textContent='아직 등록된 업체가 없어요. "업체 추가"를 눌러 넣어 주세요.';el.append(p);return;}
   for(const v of state.vendors){
     const c=document.createElement('article');c.className='vd';
