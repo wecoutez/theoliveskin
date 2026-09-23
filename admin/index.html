@@ -558,16 +558,39 @@ function apply(j,fromCache){state.orders=j.orders||[];state.settings={...DEFAULT
   render();}
 function loadCache(){try{const c=JSON.parse(localStorage.getItem(CACHE)||'null');if(c&&Array.isArray(c.orders)){apply(c,true);
   $('updated').textContent='새 내용 확인 중…';return true;}}catch(e){}return false;}
-async function api(body){
-  const r=await fetch(API_URL,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({...body,key:KEY})});
-  const j=JSON.parse(await r.text());
-  if(!j.ok){if(j.error==='auth')lockOut('비밀번호가 바뀌었어요. 다시 들어가 주세요.');throw j;}
-  apply(j);return j;
+async function api(body,tries=2){
+  let lastErr;
+  for(let n=0;n<tries;n++){
+    const ctl=new AbortController(),tm=setTimeout(()=>ctl.abort(),20000);
+    try{
+      const r=await fetch(API_URL,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({...body,key:KEY}),signal:ctl.signal});
+      const txt=await r.text(); clearTimeout(tm);
+      let j; try{j=JSON.parse(txt);}catch(x){
+        // 구글이 JSON 대신 오류 화면(HTML)을 보냄 = Apps Script 안에서 오류가 났거나 접근 권한 문제
+        const m=txt.replace(/<[^>]+>/g,' ').replace(/\s+/g,' ').trim().slice(0,160);
+        throw {error:'server',detail:'서버 응답이 올바르지 않아요 ('+r.status+'): '+(m||'빈 응답')};
+      }
+      if(!j.ok){if(j.error==='auth')lockOut('비밀번호가 바뀌었어요. 다시 들어가 주세요.');throw j;}
+      apply(j);return j;
+    }catch(e){
+      clearTimeout(tm);
+      lastErr=e?.name==='AbortError'?{error:'timeout',detail:'서버가 20초 안에 답하지 않았어요.'}:(e?.error?e:{error:'network',detail:'서버에 연결하지 못했어요 (접근 권한 또는 인터넷 문제).'});
+      if(lastErr.error==='auth'||lastErr.error==='locked')throw lastErr;
+      if(n<tries-1)await new Promise(r=>setTimeout(r,1200));
+    }
+  }
+  throw lastErr;
+}
+function showError(e){
+  const n=$('notice'); n.replaceChildren();
+  n.append('주문 내역을 불러오지 못했어요. '+(e?.detail||''));
+  const b=document.createElement('button');b.type='button';b.className='rowbtn';b.textContent='다시 시도';b.onclick=()=>{n.style.display='none';$('updated').textContent='불러오는 중…';refresh();};
+  n.append(' ',b); n.style.display='block'; $('updated').textContent='불러오지 못함';
 }
 function showApp(){$('lock').hidden=true;$('app').hidden=false;endEdit();render();}
 function lockOut(msg){KEY='';try{localStorage.removeItem('os-admin-key');localStorage.removeItem(CACHE);}catch(e){}$('app').hidden=true;$('lock').hidden=false;$('lockMsg').textContent=msg||'';$('lockKey').value='';$('lockKey').focus();}
 async function refresh(){try{await api({action:'list'});$('notice').style.display='none';}
-  catch(e){if(e?.error!=='auth'){$('notice').textContent='주문 내역을 불러오지 못했어요. 인터넷 연결을 확인하고 새로고침해 주세요.';$('notice').style.display='block';}}}
+  catch(e){if(e?.error!=='auth'&&e?.error!=='locked')showError(e);}}
 
 $('lockForm').addEventListener('submit',async ev=>{
   ev.preventDefault();KEY=$('lockKey').value.trim();if(!KEY)return;
@@ -578,7 +601,7 @@ $('lockForm').addEventListener('submit',async ev=>{
   catch(e){
     if(e?.error==='auth')lockOut('비밀번호가 맞지 않아요.');
     else if(e?.error==='locked')lockOut('비밀번호를 여러 번 틀려서 10분 동안 막혔어요. 잠시 뒤 다시 해 주세요.');
-    else{$('notice').textContent='주문 내역을 불러오지 못했어요. 인터넷 연결을 확인하고 새로고침해 주세요.';$('notice').style.display='block';}
+    else showError(e);
   }
 });
 $('logout').onclick=()=>lockOut('로그아웃했어요.');
