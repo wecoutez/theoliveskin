@@ -194,7 +194,7 @@ details summary{cursor:pointer;font-weight:600;font-size:18px;color:var(--ink)}
       <p class="lede" id="lede">주문 내역을 불러오고 있어요.</p>
       <dl class="facts">
         <div><dt>남은 병</dt><dd id="fLeft">–</dd></div>
-        <div><dt>본전까지</dt><dd id="fBE">–</dd></div>
+        <div><dt id="fBEl">본전까지</dt><dd id="fBE">–</dd></div>
         <div><dt>매출 (주문 금액 합계)</dt><dd id="fSales">–</dd></div>
         <div><dt>입금 받은 금액</dt><dd id="fPaid">–</dd></div>
         <div id="paceBox" hidden style="grid-column:1/-1"><dt>목표일까지 한 주에</dt><dd id="fPace">–</dd></div>
@@ -423,14 +423,15 @@ function drawLine(t,goal,be){
 function render(){
   const s=state.settings,t=totals();
   const goal=Math.max(1,+s.goal||DEFAULTS.goal),price=+s.price||DEFAULTS.price,upfront=+s.upfront||0;
-  const avg=t.bottles?t.sales/t.bottles:price;
-  const be=avg>0?Math.ceil(upfront/avg):0;
+  const beBase=+s.b2b3||5000; // 본전은 가장 낮은 거래가(B2B 3차) 기준
+  const be=beBase>0?Math.ceil(upfront/beBase):0;
+  $('fBEl').textContent=`본전까지 (거래가 ${num(beBase)}원 기준)`;
   countTo($('cBottles'),t.bottles);countTo($('cRev'),t.sales);$('cN').textContent=num(state.orders.length);$('cGoal').textContent=num(goal);
   $('fLeft').textContent=num(Math.max(0,goal-t.bottles))+'병';
   $('fSales').textContent=won(t.sales);$('fPaid').textContent=won(t.paid);
-  $('fBE').textContent=t.sales>=upfront?'넘었어요':num(Math.max(0,be-t.bottles))+'병 더';
+  $('fBE').textContent=t.bottles>=be?'넘었어요':num(Math.max(0,be-t.bottles))+'병 더';
   const pct=t.bottles/goal*100;
-  $('lede').textContent=state.loaded?`목표의 ${pct<10&&pct>0?pct.toFixed(1):Math.round(pct)}%를 채웠어요. 제작비 ${won(upfront)}을 돌려받으려면 모두 ${num(be)}병이 팔려야 해요.`:'주문 내역을 불러오고 있어요.';
+  $('lede').textContent=state.loaded?`목표의 ${pct<10&&pct>0?pct.toFixed(1):Math.round(pct)}%를 채웠어요. 제작비 ${won(upfront)}을 돌려받으려면 한 병 ${won(beBase)} 기준으로 모두 ${num(be)}병이 팔려야 해요.`:'주문 내역을 불러오고 있어요.';
   if(s.deadline){const days=(new Date(s.deadline)-new Date(today()))/864e5;$('paceBox').hidden=false;
     $('fPace').textContent=days>0?num(Math.ceil(Math.max(0,goal-t.bottles)/(days/7)))+'병씩':'목표일이 지났어요';}else $('paceBox').hidden=true;
 
