@@ -1,0 +1,123 @@
+/**
+ * Olive Skin 관리자 페이지(/admin)용 Apps Script
+ * ------------------------------------------------------------
+ * 1) 새 구글 시트를 만든다 → 확장 프로그램 → Apps Script
+ * 2) 이 파일 내용을 전부 붙여 넣고 저장
+ * 3) 프로젝트 설정(톱니바퀴) → 스크립트 속성 → 속성 추가
+ *      이름: ADMIN_KEY   값: 관리자 페이지 비밀번호
+ * 4) 위쪽 함수 목록에서 setup 을 골라 실행 (권한 허용) — 시트 두 개와 기존 45병이 들어감
+ * 5) 배포 → 새 배포 → 유형: 웹 앱
+ *      실행 사용자: 나 / 액세스 권한: 모든 사용자  → 배포
+ * 6) 나온 웹 앱 주소(…/exec)를 admin/index.html 의 API_URL 에 붙여 넣기
+ * 코드를 고친 뒤에는 배포 관리 → 기존 배포 수정 → 새 버전 으로 다시 배포
+ */
+const ORDER_SHEET = '주문';
+const SETTING_SHEET = '설정';
+const COLS = ['id', 'date', 'buyer', 'channel', 'qty', 'price', 'status', 'owner', 'memo', 'createdAt'];
+const HEAD = ['id', '주문일', '주문한 곳·사람', '판매 경로', '병 수', '한 병 가격', '진행 상태', '받아온 사람', '메모', '등록 시각'];
+const SETTING_KEYS = ['goal', 'price', 'upfront', 'deadline'];
+const TZ = 'Asia/Seoul';
+
+function book() { return SpreadsheetApp.getActiveSpreadsheet(); }
+function sheet(name, head) {
+  let sh = book().getSheetByName(name);
+  if (!sh) {
+    sh = book().insertSheet(name);
+    sh.getRange(1, 1, 1, head.length).setValues([head]).setFontWeight('bold');
+    sh.setFrozenRows(1);
+  }
+  return sh;
+}
+function orderSheet() {
+  const sh = sheet(ORDER_SHEET, HEAD);
+  sh.getRange('B:B').setNumberFormat('@'); // 날짜를 글자 그대로 저장
+  return sh;
+}
+function settingSheet() { return sheet(SETTING_SHEET, ['항목', '값']); }
+function out(o) { return ContentService.createTextOutput(JSON.stringify(o)).setMimeType(ContentService.MimeType.JSON); }
+function authed(key) {
+  const k = PropertiesService.getScriptProperties().getProperty('ADMIN_KEY');
+  return !!k && String(key || '') === k;
+}
+function safe(v) { // 시트 수식으로 읽히지 않게
+  v = String(v == null ? '' : v).trim().slice(0, 300);
+  return /^[=+\-@]/.test(v) ? "'" + v : v;
+}
+
+function readAll() {
+  const sh = orderSheet();
+  const rows = sh.getLastRow() > 1 ? sh.getRange(2, 1, sh.getLastRow() - 1, COLS.length).getValues() : [];
+  const orders = rows.filter(r => r[0]).map(r => {
+    const o = {};
+    COLS.forEach((c, i) => {
+      let v = r[i];
+      if (v instanceof Date) v = Utilities.formatDate(v, TZ, 'yyyy-MM-dd');
+      o[c] = v;
+    });
+    o.id = String(o.id); o.date = String(o.date);
+    o.qty = Number(o.qty) || 0; o.price = Number(o.price) || 0; o.createdAt = Number(o.createdAt) || 0;
+    return o;
+  });
+  const settings = {};
+  const st = settingSheet();
+  if (st.getLastRow() > 1) st.getRange(2, 1, st.getLastRow() - 1, 2).getValues().forEach(([k, v]) => {
+    if (!SETTING_KEYS.includes(k)) return;
+    if (v instanceof Date) v = Utilities.formatDate(v, TZ, 'yyyy-MM-dd');
+    settings[k] = k === 'deadline' ? String(v || '') : Number(v) || 0;
+  });
+  return { orders, settings };
+}
+
+function findRow(sh, id) {
+  if (sh.getLastRow() < 2) return 0;
+  const ids = sh.getRange(2, 1, sh.getLastRow() - 1, 1).getValues();
+  for (let i = 0; i < ids.length; i++) if (String(ids[i][0]) === String(id)) return i + 2;
+  return 0;
+}
+function saveOrder(o) {
+  const sh = orderSheet();
+  const id = o.id ? String(o.id) : Utilities.getUuid();
+  const row = [id, safe(o.date), safe(o.buyer), safe(o.channel), Number(o.qty) || 0, Number(o.price) || 0,
+    safe(o.status), safe(o.owner), safe(o.memo), Number(o.createdAt) || Date.now()];
+  const r = findRow(sh, id);
+  if (r) sh.getRange(r, 1, 1, row.length).setValues([row]); else sh.appendRow(row);
+}
+function deleteOrder(id) {
+  const sh = orderSheet(); const r = findRow(sh, id);
+  if (r) sh.deleteRow(r);
+}
+function saveSettings(s) {
+  const st = settingSheet();
+  if (st.getLastRow() > 1) st.getRange(2, 1, st.getLastRow() - 1, 2).clearContent();
+  const rows = SETTING_KEYS.map(k => [k, k === 'deadline' ? String(s[k] || '') : Number(s[k]) || 0]);
+  st.getRange(2, 2, rows.length, 1).setNumberFormat('@');
+  st.getRange(2, 1, rows.length, 2).setValues(rows);
+}
+
+function doGet() { return out({ ok: true, service: 'olive-skin-admin' }); }
+function doPost(e) {
+  let b;
+  try { b = JSON.parse(e.postData.contents); } catch (x) { return out({ ok: false, error: 'bad_request' }); }
+  if (!authed(b.key)) return out({ ok: false, error: 'auth' });
+  const lock = LockService.getScriptLock();
+  lock.waitLock(10000);
+  try {
+    if (b.action === 'save') saveOrder(b.order || {});
+    else if (b.action === 'delete') deleteOrder(b.id);
+    else if (b.action === 'settings') saveSettings(b.settings || {});
+    else if (b.action !== 'list') return out({ ok: false, error: 'bad_action' });
+    return out(Object.assign({ ok: true }, readAll()));
+  } finally { lock.releaseLock(); }
+}
+
+/** 처음 한 번만 실행 — 시트를 만들고 지금까지의 목표·비용과 기존 45병을 넣음 */
+function setup() {
+  orderSheet();
+  const st = settingSheet();
+  if (st.getLastRow() < 2) saveSettings({ goal: 3000, price: 6000, upfront: 5595000, deadline: '' });
+  const sh = orderSheet();
+  if (!findRow(sh, 'existing-45')) saveOrder({
+    id: 'existing-45', date: '2026-09-23', buyer: '기존 등록분', channel: '기타', qty: 45, price: 6000,
+    status: '주문받음', owner: '아란', memo: '지금까지 모은 45병 — 누가 몇 병인지 나눠서 고쳐 주세요', createdAt: 1790000000000
+  });
+}
