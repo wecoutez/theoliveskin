@@ -457,7 +457,7 @@ async function refresh(){try{await api({action:'list'});$('notice').style.displa
 $('lockForm').addEventListener('submit',async ev=>{
   ev.preventDefault();KEY=$('lockKey').value.trim();$('lockBtn').disabled=true;$('lockMsg').textContent='확인하는 중…';
   try{await api({action:'list'});try{localStorage.setItem('os-admin-key',KEY);}catch(e){}$('lockMsg').textContent='';showApp();}
-  catch(e){$('lockMsg').textContent=e?.error==='auth'?'비밀번호가 맞지 않아요.':'연결하지 못했어요. 잠시 뒤 다시 해 주세요.';}
+  catch(e){$('lockMsg').textContent=e?.error==='auth'?'비밀번호가 맞지 않아요.':e?.error==='locked'?'비밀번호를 여러 번 틀려서 10분 동안 막혔어요. 잠시 뒤 다시 해 주세요.':'연결하지 못했어요. 잠시 뒤 다시 해 주세요.';}
   finally{$('lockBtn').disabled=false;}
 });
 $('logout').onclick=()=>lockOut('로그아웃했어요.');
