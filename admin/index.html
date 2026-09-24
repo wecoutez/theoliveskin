@@ -363,7 +363,7 @@ const state={vendors:[],orders:[],settings:{...DEFAULTS},filter:'전체',editing
 /* ===== 설정 — Apps Script 웹 앱 주소(…/exec)를 여기에 붙여 넣기 ===== */
 const API_URL="https://script.google.com/macros/s/AKfycbzJEptWG0-nQ8rsBMArVh3I1vkcissvWY6NVUVmPNzAObLgkVMZJVkjVdF5U422U2SJRQ/exec";
 /* ================================================================ */
-let KEY='';try{KEY=localStorage.getItem('os-admin-key')||'';}catch(e){}
+let KEY='';try{localStorage.removeItem('os-admin-key');KEY=sessionStorage.getItem('os-admin-key')||'';}catch(e){}
 const $=id=>document.getElementById(id);
 const NS='http://www.w3.org/2000/svg';
 const svgEl=(tag,attrs,parent)=>{const e=document.createElementNS(NS,tag);for(const k in attrs)e.setAttribute(k,attrs[k]);parent&&parent.append(e);return e;};
@@ -701,32 +701,30 @@ function waitMsg(){$('lockMsg').textContent='확인하는 중…';
   const t1=setTimeout(()=>{$('lockMsg').textContent='구글 서버를 깨우는 중이에요. 한동안 안 쓰면 처음 한 번은 10초쯤 걸려요…';},2500);
   return ()=>clearTimeout(t1);}
 function showApp(){$('lock').hidden=true;$('app').hidden=false;endEdit();render();}
-function lockOut(msg){KEY='';try{localStorage.removeItem('os-admin-key');localStorage.removeItem(CACHE);}catch(e){}$('app').hidden=true;$('lock').hidden=false;$('lockMsg').textContent=msg||'';$('lockKey').value='';$('lockKey').focus();}
+function lockOut(msg){KEY='';try{sessionStorage.removeItem('os-admin-key');localStorage.removeItem(CACHE);}catch(e){}$('app').hidden=true;$('lock').hidden=false;$('lockMsg').textContent=msg||'';$('lockKey').value='';$('lockKey').focus();}
 async function refresh(){try{await api({action:'list'});$('notice').style.display='none';}
   catch(e){if(e?.error==='auth'||e?.error==='locked')lockOut('다시 비밀번호를 넣어 주세요.');else showError(e);}}
 
+/* 비밀번호는 코드에 없음. 아래는 비밀번호를 거꾸로 알아낼 수 없는 확인값만 있음 → 맞는지 즉시 판단 */
+const PW_SALT='0IR1ZeueXFTwXly7bDNW8Q==', PW_CHECK='+jMtXcV1aefwooReIFMRC5FAGpS1yqhB+zBfi0jPRG4=';
+async function pwOk(pw){try{const u=b=>Uint8Array.from(atob(b),c=>c.charCodeAt(0));
+  const base=await crypto.subtle.importKey('raw',new TextEncoder().encode(pw),'PBKDF2',false,['deriveBits']);
+  const v=new Uint8Array(await crypto.subtle.deriveBits({name:'PBKDF2',hash:'SHA-256',salt:u(PW_SALT),iterations:150000},base,256));
+  const w=u(PW_CHECK);if(v.length!==w.length)return false;let d=0;for(let i=0;i<v.length;i++)d|=v[i]^w[i];return d===0;}catch(e){return false;}}
+function enter(){$('lockMsg').textContent='';showApp();$('updated').textContent='불러오는 중…';loadCache();refresh();}
 $('lockForm').addEventListener('submit',async ev=>{
-  ev.preventDefault();KEY=$('lockKey').value.trim();if(!KEY)return;
-  // 서버가 비밀번호를 확인해 준 뒤에만 화면을 엶
-  const stopWait=waitMsg();
-  try{const j=await api({action:'list'},1);stopWait();if(!j||!j.ok||!Array.isArray(j.orders))throw {error:'server',detail:'서버에 옛날 코드가 돌고 있어요 (새 버전 배포 필요). 받은 답: '+JSON.stringify(j).slice(0,80)};
-    try{localStorage.setItem('os-admin-key',KEY);}catch(e){}
-    $('lockMsg').textContent='';$('notice').style.display='none';showApp();}
-  catch(e){stopWait();
-    if(e?.error==='locked')lockOut('비밀번호를 여러 번 틀려서 10분 동안 막혔어요. 잠시 뒤 다시 해 주세요.');
-    else if(e?.error==='auth')lockOut('비밀번호가 맞지 않아요.');
-    else lockOut('서버에 연결하지 못했어요. 잠시 뒤 다시 해 주세요. '+(e?.detail||''));
-  }
+  ev.preventDefault();const pw=$('lockKey').value.trim();if(!pw)return;
+  $('lockMsg').textContent='확인하는 중…';
+  if(!(await pwOk(pw))){$('lockMsg').textContent='비밀번호가 맞지 않아요.';$('lockKey').value='';$('lockKey').focus();return;}
+  KEY=pw;try{sessionStorage.setItem('os-admin-key',KEY);}catch(e){}
+  enter();  // 화면은 바로 열고, 판매 숫자는 구글 서버에서 받아 오는 대로 채움
 });
 $('logout').onclick=()=>lockOut('로그아웃했어요.');
 
 if(!API_URL){
   $('lockMsg').textContent='서버 주소가 설정되지 않았어요.';
 }else if(KEY){
-  // 저장된 비밀번호도 서버에서 다시 확인한 뒤에만 엶
-  const stopWait2=waitMsg();
-  api({action:'list'},1).finally(stopWait2).then(j=>{if(!j||!j.ok||!Array.isArray(j.orders))throw {};$('lockMsg').textContent='';showApp();})
-    .catch(e=>lockOut(e?.error==='locked'?'비밀번호를 여러 번 틀려서 10분 동안 막혔어요.':'다시 비밀번호를 넣어 주세요.'));
+  pwOk(KEY).then(ok=>ok?enter():lockOut(''));
 }else{ $('lockKey').focus(); fetch(API_URL,{mode:'no-cors'}).catch(()=>{}); /* 비밀번호 치는 동안 서버 깨우기 */ }
 setInterval(()=>{if(API_URL&&KEY&&!document.hidden&&!$('app').hidden&&!state.editing)refresh();},30000);
 document.addEventListener('visibilitychange',()=>{if(!document.hidden&&API_URL&&KEY)refresh();});
