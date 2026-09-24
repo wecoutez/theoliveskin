@@ -238,6 +238,12 @@ footer{background:var(--night);color:#D8D4C8}
 }
 @media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}*{transition:none!important}}
 </style>
+<script>
+/* 새로고침해도 항상 맨 위에서 시작 (주소에 #가 붙은 경우만 예외) */
+try{if('scrollRestoration' in history)history.scrollRestoration='manual';}catch(e){}
+if(!location.hash){window.scrollTo(0,0);addEventListener('load',()=>{window.scrollTo(0,0);});
+  addEventListener('pageshow',e=>{if(e.persisted)window.scrollTo(0,0);});}
+</script>
 </head>
 <body>
 

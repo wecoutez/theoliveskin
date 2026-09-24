@@ -671,7 +671,7 @@ function loadCache(){try{const c=JSON.parse(localStorage.getItem(CACHE)||'null')
 async function api(body,tries=2){
   let lastErr;
   for(let n=0;n<tries;n++){
-    const ctl=new AbortController(),tm=setTimeout(()=>ctl.abort(),20000);
+    const ctl=new AbortController(),tm=setTimeout(()=>ctl.abort(),8000);
     try{
       const r=await fetch(API_URL,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({...body,key:KEY}),signal:ctl.signal});
       const txt=await r.text(); clearTimeout(tm);
@@ -684,7 +684,7 @@ async function api(body,tries=2){
       apply(j);return j;
     }catch(e){
       clearTimeout(tm);
-      lastErr=e?.name==='AbortError'?{error:'timeout',detail:'서버가 20초 안에 답하지 않았어요.'}:(e?.error?e:{error:'network',detail:'서버에 연결하지 못했어요 (접근 권한 또는 인터넷 문제).'});
+      lastErr=e?.name==='AbortError'?{error:'timeout',detail:'서버가 8초 안에 답하지 않았어요.'}:(e?.error?e:{error:'network',detail:'서버에 연결하지 못했어요 (접근 권한 또는 인터넷 문제).'});
       if(lastErr.error==='auth'||lastErr.error==='locked')throw lastErr;
       if(n<tries-1)await new Promise(r=>setTimeout(r,1200));
     }
@@ -706,7 +706,7 @@ $('lockForm').addEventListener('submit',async ev=>{
   ev.preventDefault();KEY=$('lockKey').value.trim();if(!KEY)return;
   // 서버가 비밀번호를 확인해 준 뒤에만 화면을 엶
   $('lockMsg').textContent='확인하는 중…';
-  try{const j=await api({action:'list'});if(!j||!j.ok||!Array.isArray(j.orders))throw {error:'server',detail:'서버 응답이 올바르지 않아요.'};
+  try{const j=await api({action:'list'});if(!j||!j.ok||!Array.isArray(j.orders))throw {error:'server',detail:'서버에 옛날 코드가 돌고 있어요 (새 버전 배포 필요). 받은 답: '+JSON.stringify(j).slice(0,80)};
     try{localStorage.setItem('os-admin-key',KEY);}catch(e){}
     $('lockMsg').textContent='';$('notice').style.display='none';showApp();}
   catch(e){
