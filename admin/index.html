@@ -700,29 +700,30 @@ function showError(e){
 function showApp(){$('lock').hidden=true;$('app').hidden=false;endEdit();render();}
 function lockOut(msg){KEY='';try{localStorage.removeItem('os-admin-key');localStorage.removeItem(CACHE);}catch(e){}$('app').hidden=true;$('lock').hidden=false;$('lockMsg').textContent=msg||'';$('lockKey').value='';$('lockKey').focus();}
 async function refresh(){try{await api({action:'list'});$('notice').style.display='none';}
-  catch(e){if(e?.error!=='auth'&&e?.error!=='locked')showError(e);}}
+  catch(e){if(e?.error==='auth'||e?.error==='locked')lockOut('다시 비밀번호를 넣어 주세요.');else showError(e);}}
 
 $('lockForm').addEventListener('submit',async ev=>{
   ev.preventDefault();KEY=$('lockKey').value.trim();if(!KEY)return;
-  // 서버 확인을 기다리지 않고 바로 화면을 열고, 뒤에서 확인
-  try{localStorage.setItem('os-admin-key',KEY);}catch(e){}
-  $('lockMsg').textContent='';showApp();$('updated').textContent='불러오는 중…';
-  try{await api({action:'list'});$('notice').style.display='none';}
+  // 서버가 비밀번호를 확인해 준 뒤에만 화면을 엶
+  $('lockMsg').textContent='확인하는 중…';
+  try{const j=await api({action:'list'});if(!j||!j.ok||!Array.isArray(j.orders))throw {error:'server',detail:'서버 응답이 올바르지 않아요.'};
+    try{localStorage.setItem('os-admin-key',KEY);}catch(e){}
+    $('lockMsg').textContent='';$('notice').style.display='none';showApp();}
   catch(e){
-    if(e?.error==='auth')lockOut('비밀번호가 맞지 않아요.');
-    else if(e?.error==='locked')lockOut('비밀번호를 여러 번 틀려서 10분 동안 막혔어요. 잠시 뒤 다시 해 주세요.');
-    else showError(e);
+    if(e?.error==='locked')lockOut('비밀번호를 여러 번 틀려서 10분 동안 막혔어요. 잠시 뒤 다시 해 주세요.');
+    else if(e?.error==='auth')lockOut('비밀번호가 맞지 않아요.');
+    else lockOut('서버에 연결하지 못했어요. 잠시 뒤 다시 해 주세요. '+(e?.detail||''));
   }
 });
 $('logout').onclick=()=>lockOut('로그아웃했어요.');
 
 if(!API_URL){
-  // Apps Script 주소가 비어 있으면: 이 기기에만 저장되는 미리보기 모드
-  loadLocal();state.loaded=true;$('logout').hidden=true;
-  $('notice').textContent='아직 공유 저장소(Apps Script) 주소가 없어서, 지금은 이 기기에만 저장돼요.';$('notice').style.display='block';
-  stamp();showApp();
+  $('lockMsg').textContent='서버 주소가 설정되지 않았어요.';
 }else if(KEY){
-  showApp();loadCache();refresh();
+  // 저장된 비밀번호도 서버에서 다시 확인한 뒤에만 엶
+  $('lockMsg').textContent='확인하는 중…';
+  api({action:'list'}).then(j=>{if(!j||!j.ok||!Array.isArray(j.orders))throw {};$('lockMsg').textContent='';showApp();})
+    .catch(e=>lockOut(e?.error==='locked'?'비밀번호를 여러 번 틀려서 10분 동안 막혔어요.':'다시 비밀번호를 넣어 주세요.'));
 }else{ $('lockKey').focus(); fetch(API_URL,{mode:'no-cors'}).catch(()=>{}); /* 비밀번호 치는 동안 서버 깨우기 */ }
 setInterval(()=>{if(API_URL&&KEY&&!document.hidden&&!$('app').hidden&&!state.editing)refresh();},30000);
 document.addEventListener('visibilitychange',()=>{if(!document.hidden&&API_URL&&KEY)refresh();});
