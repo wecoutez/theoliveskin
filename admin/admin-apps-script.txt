@@ -94,6 +94,29 @@ function saveSettings(s) {
   st.getRange(2, 1, rows.length, 2).setValues(rows);
 }
 
+/* ===== 마케팅 탭 (연간 플랜 · 채널 셋업 · SNS · 시딩) =====
+ * 관리자 페이지 마케팅 탭 내용을 '마케팅' 시트에 통째로(JSON) 저장
+ * 이미 쓰고 있는 스크립트가 있다면: 이 블록(mktRead, mktWrite)과
+ * doPost 안의 'mkt' · 'mktSave' 두 줄만 추가하고 새 버전으로 다시 배포하면 됨 */
+const MKT_SHEET = '마케팅';
+const MKT_CHUNK = 40000; // 시트 한 칸 글자 수 제한(5만) 아래로 나눠 저장
+function mktRead() {
+  const sh = sheet(MKT_SHEET, ['part', 'json']);
+  if (sh.getLastRow() < 2) return null;
+  const txt = sh.getRange(2, 2, sh.getLastRow() - 1, 1).getValues().map(r => String(r[0]).replace(/^~/, '')).join('');
+  try { return JSON.parse(txt); } catch (e) { return null; }
+}
+function mktWrite(m) {
+  const txt = JSON.stringify(m || {});
+  if (txt.length > 2000000) throw new Error('too_big');
+  const sh = sheet(MKT_SHEET, ['part', 'json']);
+  if (sh.getLastRow() > 1) sh.getRange(2, 1, sh.getLastRow() - 1, 2).clearContent();
+  const rows = [];
+  for (let i = 0; i < txt.length; i += MKT_CHUNK) rows.push([rows.length + 1, '~' + txt.slice(i, i + MKT_CHUNK)]); // ~ : 수식으로 읽히지 않게
+  sh.getRange(2, 2, rows.length, 1).setNumberFormat('@');
+  sh.getRange(2, 1, rows.length, 2).setValues(rows);
+}
+
 function doGet() { return out({ ok: true, service: 'olive-skin-admin' }); }
 function doPost(e) {
   let b;
@@ -105,6 +128,8 @@ function doPost(e) {
     if (b.action === 'save') saveOrder(b.order || {});
     else if (b.action === 'delete') deleteOrder(b.id);
     else if (b.action === 'settings') saveSettings(b.settings || {});
+    else if (b.action === 'mkt') return out({ ok: true, mkt: mktRead() });
+    else if (b.action === 'mktSave') { mktWrite(b.mkt); return out({ ok: true, mkt: mktRead() }); }
     else if (b.action !== 'list') return out({ ok: false, error: 'bad_action' });
     return out(Object.assign({ ok: true }, readAll()));
   } finally { lock.releaseLock(); }
