@@ -1542,6 +1542,7 @@ async function refresh(){
     n.append('Apps Script 가 아직 새 버전이 아니에요. 관리자 주소: '+scriptName(pr.res[0].j)+' · 결제 주소: '+scriptName(pr.res[1].j)+'. apps-script.txt 로 통째로 바꾼 뒤 배포 관리 → 기존 배포 수정 → 새 버전 으로 배포해 주세요.');
     n.style.display='block';$('updated').textContent='불러오지 못함';loadVisitors();return;
   }
+  if(pr.good.j.sheet===''){const n=$('notice');n.replaceChildren('Apps Script 가 주문 시트를 찾지 못했어요. Apps Script 맨 위 설정의 SHEET_ID 에 구글 시트 주소를 붙여 넣고 새 버전으로 배포해 주세요.');n.style.display='block';$('updated').textContent='불러오지 못함';return;}
   if(!pr.good.j.adminKey){lockOut('Apps Script 스크립트 속성에 ADMIN_KEY 가 없어요. 프로젝트 설정 → 스크립트 속성 → ADMIN_KEY = 관리자 비밀번호 를 추가해 주세요.');return;}
   mktPull();loadVisitors();try{await api({action:'list'});$('notice').style.display='none';}
   catch(e){if(e?.error==='no_admin_key')return;if(e?.error==='auth'||e?.error==='locked')lockOut($('lockMsg').textContent||'다시 비밀번호를 넣어 주세요.');else showError(e);}}

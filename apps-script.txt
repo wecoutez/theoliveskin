@@ -22,7 +22,9 @@ const SETUP = {
   PAYPAL_CLIENT_ID: 'BAA1E9HIjTbEoenfNLX-VHnrhfM2BlheMWht6mJL-84-MjnHqUoTY8jGhGb6K5asYkDhvkPf-6dZeOkGPU',  // 이미 들어 있음 (사이트와 같은 값)
   PAYPAL_SECRET: '',      // PayPal 개발자 사이트 → Apps & Credentials → Live 앱 → Secret
   GA4_PROPERTY_ID: '',    // Google Analytics → 관리(톱니바퀴) → 속성 세부정보 → 속성 ID (숫자)
-  PAYAPP_LINKVAL: ''      // (선택) 페이앱 판매자 관리자 → 설정 → 연동정보 → 연동 VALUE
+  PAYAPP_LINKVAL: '',     // (선택) 페이앱 판매자 관리자 → 설정 → 연동정보 → 연동 VALUE
+  SHEET_ID: ''            // 주문이 쌓이는 구글 시트 주소(https://docs.google.com/spreadsheets/d/…) 통째로 붙여 넣어도 됨
+                          //  — 시트의 '확장 프로그램 → Apps Script' 에서 연 프로젝트면 비워 둬도 됨
 };
 /* ▲▲▲ 설정 끝 — 아래는 고칠 필요 없음 ▲▲▲ */
 
@@ -48,7 +50,19 @@ const SETTING_DEFAULTS = { goal: 3000, price: 7000, upfront: 6095000, deadline: 
 const MKT_SHEET = '마케팅';
 const MKT_CHUNK = 40000; // 시트 한 칸 글자 수 제한(5만) 아래로 나눠 저장
 
-function book() { return SpreadsheetApp.getActiveSpreadsheet(); }
+// 주문 시트: 시트에서 연 프로젝트면 그 시트, 아니면 SETUP 의 SHEET_ID
+let BOOK_ = null;
+function book() {
+  if (BOOK_) return BOOK_;
+  BOOK_ = SpreadsheetApp.getActiveSpreadsheet();
+  if (!BOOK_) {
+    const raw = String(prop('SHEET_ID') || '');
+    const id = (raw.match(/\/d\/([a-zA-Z0-9_-]{20,})/) || [])[1] || raw.trim();
+    if (!id) throw new Error('주문 시트를 찾지 못했어요 — Apps Script 맨 위 설정의 SHEET_ID 에 구글 시트 주소를 넣고 새 버전으로 배포해 주세요');
+    BOOK_ = SpreadsheetApp.openById(id);
+  }
+  return BOOK_;
+}
 function out(o) { return ContentService.createTextOutput(JSON.stringify(o)).setMimeType(ContentService.MimeType.JSON); }
 function authed(key) {
   const k = prop('ADMIN_KEY');
@@ -331,7 +345,7 @@ function orderQty(o) {
 
 /* ===== 시트 기록 ===== */
 function logOrder(o, qty, amount) {
-  const ss = SpreadsheetApp.getActiveSpreadsheet() || SpreadsheetApp.openById(prop('SHEET_ID'));
+  const ss = book();
   let sh = ss.getSheetByName(ORDER_SHEET);
   if (!sh) {
     sh = ss.insertSheet(ORDER_SHEET);
@@ -360,7 +374,7 @@ const B2B = { unit: 7000, bulkUnit: 6000, bulkFrom: 50, step: 10, max: 500 };
 const KR_HEAD = ['주문 시각', '주문번호', '상태', '수량', '결제 금액', '이름', '휴대폰', '이메일', '우편번호', '주소', '상세주소', '배송 메모', '페이앱 결제번호', '결제 시각', '실제 결제 금액', '구분', '상호명', '사업자번호'];
 
 function krSheet() {
-  const ss = SpreadsheetApp.getActiveSpreadsheet() || SpreadsheetApp.openById(prop('SHEET_ID'));
+  const ss = book();
   let sh = ss.getSheetByName(KR_SHEET);
   if (!sh) {
     sh = ss.insertSheet(KR_SHEET);
@@ -469,8 +483,9 @@ function visitors() {
 }
 
 /* ===== 웹 앱 ===== */
-const SCRIPT_VERSION = '2026-09-27c';
-function doGet() { return out({ ok: true, service: 'olive-skin', version: SCRIPT_VERSION, adminKey: !!prop('ADMIN_KEY') }); }
+const SCRIPT_VERSION = '2026-09-27d';
+function doGet() { let sheet = ''; try { sheet = book().getName(); } catch (e) { sheet = ''; }
+  return out({ ok: true, service: 'olive-skin', version: SCRIPT_VERSION, adminKey: !!prop('ADMIN_KEY'), sheet: sheet }); }
 const CHECKOUT_ACTIONS = ['create', 'patch', 'capture', 'krOrder'];
 function doPost(e) {
   // 페이앱 결제 알림은 JSON 이 아니라 폼 형식
@@ -525,6 +540,7 @@ function doPost(e) {
 /** 붙여 넣은 뒤 한 번 실행해 보기 — 결제 연결 · 배송비 · 방문자 설정 확인 (주문은 만들지 않음) */
 function test() {
   console.log('ADMIN_KEY 있음:', !!prop('ADMIN_KEY'));
+  try { console.log('주문 시트:', book().getName()); } catch (e) { console.log('주문 시트 못 찾음:', e.message); }
   try { console.log('PayPal 연결:', !!ppToken()); } catch (e) { console.log('PayPal 연결 안 됨:', e.message); }
   console.log('US 1병', JSON.stringify(amountFor('US', 1)));   // 배송비 $8 → 합계 $26
   console.log('US 2병', JSON.stringify(amountFor('US', 2)));   // 무료배송 → 합계 $36
