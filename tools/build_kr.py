@@ -51,9 +51,9 @@ rep('btnShop:"글로우 드롭 구매하기 — $18"', f'btnShop:"글로우 드�
 rep('announce:"전 세계 배송"', 'announce:"국내 배송 · 간편결제"')
 rep('<span class="total" id="total">$18.00</span>', f'<span class="total" id="total">{PRICE_KRW}원</span>')
 rep("tEl.textContent = '$' + (qty*PRICE).toFixed(2);", "tEl.textContent = (qty*PRICE_WON).toLocaleString('ko-KR') + '원';")
-rep('<div class="buy">', '<label class="phone-row" style="display:flex;align-items:center;gap:14px;font-size:13px;margin:14px 0">휴대폰 번호'
+rep('<div class="buy">', '<label class="phone-row" style="display:flex;align-items:center;gap:14px;font-size:15px;margin:14px 0">휴대폰 번호'
     ' <input id="buyer-phone" type="tel" inputmode="tel" autocomplete="tel" placeholder="010-0000-0000" required'
-    ' style="flex:1;max-width:220px;font:inherit;padding:8px 14px;border:1px solid var(--line);border-radius:999px;background:#fff"></label>\n        <div class="buy">')
+    ' style="flex:1;max-width:240px;font:inherit;padding:10px 16px;border:1px solid var(--line);border-radius:999px;background:#fff"></label>\n        <div class="buy">')
 rep('<button type="button" class="pill" id="add-bag" data-i18n="addBag">Add to bag</button>',
     '<button type="button" class="pill" id="add-bag" data-i18n="addBag" style="display:none">Add to bag</button>')
 rep("buy.href = 'checkout.html?qty=' + qty + '&lang=' + current;", "buy.href = '#shop';")
