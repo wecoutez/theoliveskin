@@ -416,32 +416,54 @@ function test() {
   console.log('US 2병', JSON.stringify(amountFor('US', 2)));   // 무료배송 → 합계 $36
 }
 
-/* ===== 방문자 · 나라별 (Google Analytics 4) ===== */
+/* ===== 방문자 · 나라별 (Google Analytics 4) — 최근 28일 + 지금 접속 중(최근 30분) ===== */
+function gaRows(rep, withSessions) {
+  return (rep.rows || []).map(r => ({
+    code: r.dimensionValues[0].value, country: r.dimensionValues[1].value,
+    users: Number(r.metricValues[0].value) || 0,
+    sessions: withSessions ? Number(r.metricValues[1].value) || 0 : undefined
+  }));
+}
 function visitors() {
   const id = prop('GA4_PROPERTY_ID');
   if (!id) return { ok: false, error: 'no_ga' };
   if (typeof AnalyticsData === 'undefined') return { ok: false, error: 'no_service' };
+  const property = 'properties/' + String(id).replace(/[^0-9]/g, '');
   const cache = CacheService.getScriptCache();
-  const hit = cache.get('visitors');
-  if (hit) return JSON.parse(hit);
-  const rep = AnalyticsData.Properties.runReport({
-    dateRanges: [{ startDate: '28daysAgo', endDate: 'today' }],
-    dimensions: [{ name: 'country' }, { name: 'countryId' }],
-    metrics: [{ name: 'activeUsers' }, { name: 'sessions' }],
-    orderBys: [{ metric: { metricName: 'activeUsers' }, desc: true }],
-    limit: 20
-  }, 'properties/' + String(id).replace(/[^0-9]/g, ''));
-  const rows = (rep.rows || []).map(r => ({
-    country: r.dimensionValues[0].value, code: r.dimensionValues[1].value,
-    users: Number(r.metricValues[0].value) || 0, sessions: Number(r.metricValues[1].value) || 0
-  }));
-  const res = { ok: true, days: 28, rows: rows, users: rows.reduce((a, r) => a + r.users, 0), at: Date.now() };
-  cache.put('visitors', JSON.stringify(res), 1800);   // 30분 보관
-  return res;
+
+  let month = cache.get('visitors28');
+  if (month) month = JSON.parse(month);
+  else {
+    const rows = gaRows(AnalyticsData.Properties.runReport({
+      dateRanges: [{ startDate: '28daysAgo', endDate: 'today' }],
+      dimensions: [{ name: 'countryId' }, { name: 'country' }],
+      metrics: [{ name: 'activeUsers' }, { name: 'sessions' }],
+      orderBys: [{ metric: { metricName: 'activeUsers' }, desc: true }],
+      limit: 250
+    }, property), true);
+    month = { rows: rows, users: rows.reduce((a, r) => a + r.users, 0) };
+    cache.put('visitors28', JSON.stringify(month), 1800);   // 30분 보관
+  }
+
+  let live = cache.get('visitorsLive');
+  if (live) live = JSON.parse(live);
+  else {
+    let rows = [];
+    try {
+      rows = gaRows(AnalyticsData.Properties.runRealtimeReport({
+        dimensions: [{ name: 'countryId' }, { name: 'country' }],
+        metrics: [{ name: 'activeUsers' }],
+        limit: 250
+      }, property), false);
+    } catch (e) { console.error('realtime', e); }
+    live = { rows: rows, users: rows.reduce((a, r) => a + r.users, 0) };
+    cache.put('visitorsLive', JSON.stringify(live), 60);   // 1분 보관
+  }
+  return { ok: true, days: 28, rows: month.rows, users: month.users, live: live, at: Date.now() };
 }
 
 /* ===== 웹 앱 ===== */
-const SCRIPT_VERSION = '2026-09-27';
+const SCRIPT_VERSION = '2026-09-27b';
 function doGet() { return out({ ok: true, service: 'olive-skin', version: SCRIPT_VERSION, adminKey: !!prop('ADMIN_KEY') }); }
 const CHECKOUT_ACTIONS = ['create', 'patch', 'capture', 'krOrder'];
 function doPost(e) {
