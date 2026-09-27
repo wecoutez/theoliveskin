@@ -12,15 +12,20 @@
  * 3) 배포 → 배포 관리 → (연필) 기존 배포 수정 → 버전: 새 버전 → 배포
  *    ※ "새 배포"가 아니라 "기존 배포 수정"이어야 주소(…/exec)가 그대로 유지됨
  *
- * [스크립트 속성] 프로젝트 설정(톱니바퀴) → 스크립트 속성
- *   ADMIN_KEY         : 관리자 페이지 비밀번호
- *   PAYPAL_CLIENT_ID  : PayPal Live 앱 Client ID (checkout.html 과 같은 값)
- *   PAYPAL_SECRET     : PayPal Live 앱 Secret
- *   PAYAPP_LINKVAL    : (권장) 페이앱 판매자 관리자 → 설정 → 연동정보의 '연동 VALUE'
- *   GA4_PROPERTY_ID   : (방문자 나라별 보기) Google Analytics 속성 ID — 숫자 9자리쯤
- *                       + 왼쪽 '서비스' ＋ → Google Analytics Data API 추가
- *   (샌드박스 테스트: PAYPAL_ENV = sandbox)
+ * [비밀번호 · 결제 키] 바로 아래 ▼ 설정 칸에 직접 넣으면 됨 (프로젝트 설정 화면을 찾을 필요 없음)
+ *   ※ 방문자 지도를 쓰려면 왼쪽 '서비스' ＋ → Google Analytics Data API → 추가 도 한 번 해 주세요
  */
+
+/* ▼▼▼ 설정 — 따옴표 안에 값을 넣고 저장 → 배포 관리 → 기존 배포 수정 → 새 버전 → 배포 ▼▼▼ */
+const SETUP = {
+  ADMIN_KEY: '',          // 관리자 페이지(/admin) 비밀번호 — 로그인할 때 넣는 것과 똑같이
+  PAYPAL_CLIENT_ID: 'BAA1E9HIjTbEoenfNLX-VHnrhfM2BlheMWht6mJL-84-MjnHqUoTY8jGhGb6K5asYkDhvkPf-6dZeOkGPU',  // 이미 들어 있음 (사이트와 같은 값)
+  PAYPAL_SECRET: '',      // PayPal 개발자 사이트 → Apps & Credentials → Live 앱 → Secret
+  GA4_PROPERTY_ID: '',    // Google Analytics → 관리(톱니바퀴) → 속성 세부정보 → 속성 ID (숫자)
+  PAYAPP_LINKVAL: ''      // (선택) 페이앱 판매자 관리자 → 설정 → 연동정보 → 연동 VALUE
+};
+/* ▲▲▲ 설정 끝 — 아래는 고칠 필요 없음 ▲▲▲ */
+
 const TZ = 'Asia/Seoul';
 
 // 시트 정의: [필드, 시트 1행 제목]. 기존 시트에서 찾을 이름을 앞에서부터 확인
@@ -46,7 +51,7 @@ const MKT_CHUNK = 40000; // 시트 한 칸 글자 수 제한(5만) 아래로 나
 function book() { return SpreadsheetApp.getActiveSpreadsheet(); }
 function out(o) { return ContentService.createTextOutput(JSON.stringify(o)).setMimeType(ContentService.MimeType.JSON); }
 function authed(key) {
-  const k = PropertiesService.getScriptProperties().getProperty('ADMIN_KEY');
+  const k = prop('ADMIN_KEY');
   return !!k && String(key || '') === k;
 }
 function safe(v) { // 시트 수식으로 읽히지 않게
@@ -224,7 +229,8 @@ function amountFor(cc, qty) {
 }
 
 /* ===== PayPal ===== */
-function prop(k) { return PropertiesService.getScriptProperties().getProperty(k); }
+// 위 ▼ 설정 칸 값을 먼저 쓰고, 비어 있으면 프로젝트 설정의 스크립트 속성을 씀 (예전 방식도 그대로 됨)
+function prop(k) { const v = String(SETUP[k] || '').trim(); return v || PropertiesService.getScriptProperties().getProperty(k); }
 function ppBase() { return prop('PAYPAL_ENV') === 'sandbox' ? 'https://api-m.sandbox.paypal.com' : 'https://api-m.paypal.com'; }
 function ppToken() {
   const cache = CacheService.getScriptCache();
@@ -463,7 +469,7 @@ function visitors() {
 }
 
 /* ===== 웹 앱 ===== */
-const SCRIPT_VERSION = '2026-09-27b';
+const SCRIPT_VERSION = '2026-09-27c';
 function doGet() { return out({ ok: true, service: 'olive-skin', version: SCRIPT_VERSION, adminKey: !!prop('ADMIN_KEY') }); }
 const CHECKOUT_ACTIONS = ['create', 'patch', 'capture', 'krOrder'];
 function doPost(e) {
