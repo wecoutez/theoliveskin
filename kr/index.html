@@ -366,15 +366,16 @@ if(!location.hash){window.scrollTo(0,0);addEventListener('load',()=>{window.scro
         <p class="sub" data-i18n="pdpSub">Nail &amp; body care oil · 15ml / 0.5 fl oz</p>
         <p class="price">16,000<small>원</small></p>
         <p class="lead" data-i18n="shopLead">Cold-pressed olive and avocado oils that sink in fast — never sit on top — softening dry nails, cuticles and elbows.</p>
-        <div class="qty-row" style="display:none">
+        <div class="qty-row">
           <span data-i18n="qty">Quantity</span>
           <div class="stepper">
             <button type="button" id="qty-minus" aria-label="Decrease quantity">−</button>
             <output id="qty" aria-live="polite">1</output>
             <button type="button" id="qty-plus" aria-label="Increase quantity">+</button>
           </div>
-          <span class="total" id="total">$18.00</span>
+          <span class="total" id="total">16,000원</span>
         </div>
+        <label class="phone-row" style="display:flex;align-items:center;gap:14px;font-size:13px;margin:14px 0">휴대폰 번호 <input id="buyer-phone" type="tel" inputmode="tel" autocomplete="tel" placeholder="010-0000-0000" required style="flex:1;max-width:220px;font:inherit;padding:8px 14px;border:1px solid var(--line);border-radius:999px;background:#fff"></label>
         <div class="buy">
           <a class="pill dark" id="buy-now" href="checkout.html?qty=1" data-i18n="buyNow">Buy now</a>
           <button type="button" class="pill" id="add-bag" data-i18n="addBag" style="display:none">Add to bag</button>
@@ -445,7 +446,7 @@ if(!location.hash){window.scrollTo(0,0);addEventListener('load',()=>{window.scro
         <ul>
           <li><a href="mailto:hello@theoliveskin.com">hello@theoliveskin.com</a></li>
           <li><a href="https://www.payapp.kr/L/z4lfT3" data-i18n="wholesale">Wholesale inquiries</a></li>
-          <li><a href="mailto:hello@theoliveskin.com?subject=%EA%B8%80%EB%A1%9C%EC%9A%B0%20%EB%93%9C%EB%A1%AD%20%EA%B5%AC%EB%A7%A4%20%EB%AC%B8%EC%9D%98" data-i18n="checkout">Checkout</a></li>
+          <li><a href="#shop" data-i18n="checkout">Checkout</a></li>
         </ul>
       </div>
     </div>
@@ -491,10 +492,10 @@ if(!location.hash){window.scrollTo(0,0);addEventListener('load',()=>{window.scro
       accHow:"사용 방법", accIngr:"성분", accDetails:"제품 정보",
       dSize:"용량", dFor:"사용 부위", dForV:"손톱, 큐티클, 손, 팔꿈치, 무릎, 뒤꿈치",
       dMaker:"제조", dMakerV:"믹스앤매치 (코스맥스 네일 전문 계열사)",
-      qty:"수량", buyNow:"구매 문의하기", addBag:"장바구니 담기",
+      qty:"수량", buyNow:"바로 구매하기", addBag:"장바구니 담기",
       m1:"코스맥스의 네일 케어 전문 계열사.", m2:"글로벌 뷰티 브랜드와 같은 기준으로 제조.",
       m3v:"식물성 오일", m3:"콜드프레스 올리브 · 아보카도 오일 베이스.",
-      m4v:"안전 결제", m4:"PayPal · 카드 결제",
+      m4v:"안전 결제", m4:"페이앱 · 카드 · 계좌이체 · 간편결제",
       footAbout:"나파 밸리에서 온 한 방울의 힐링.", wholesale:"도매 주문 (네일샵·살롱)", checkout:"결제하기",
       added:"장바구니에 담았어요", pause:"영상 일시정지", play:"영상 재생",
       altBottle:"글로우 드롭 병을 든 손", altLedge:"올리브 언덕이 내려다보이는 돌 위의 글로우 드롭",
@@ -560,7 +561,7 @@ if(!location.hash){window.scrollTo(0,0);addEventListener('load',()=>{window.scro
   en.altBottle = en.altBottle || 'A hand holding the Glow Drop bottle';
   en.added = 'Added to bag'; en.pause = 'Pause video'; en.play = 'Play video';
   I18N.en = en;
-  var current = 'en', BUY_URL = 'mailto:hello@theoliveskin.com?subject=%EA%B8%80%EB%A1%9C%EC%9A%B0%20%EB%93%9C%EB%A1%AD%20%EA%B5%AC%EB%A7%A4%20%EB%AC%B8%EC%9D%98';
+  var current = 'en', PAYAPP_USERID = 'krawn', PAYAPP_SHOP = 'Olive Skin 올리브스킨', PRICE_WON = 16000;
 
   var film = document.getElementById('film'), ft = document.getElementById('film-toggle'), icon = document.getElementById('ft-icon');
   function filmLabel(){
@@ -572,8 +573,8 @@ if(!location.hash){window.scrollTo(0,0);addEventListener('load',()=>{window.scro
   var qEl = document.getElementById('qty'), tEl = document.getElementById('total'), buy = document.getElementById('buy-now');
   function updateBuy(){
     qEl.textContent = qty;
-    tEl.textContent = '$' + (qty*PRICE).toFixed(2);
-    buy.href = BUY_URL;
+    tEl.textContent = (qty*PRICE_WON).toLocaleString('ko-KR') + '원';
+    buy.href = '#shop';
   }
 
   function setLang(l){
@@ -594,6 +595,23 @@ if(!location.hash){window.scrollTo(0,0);addEventListener('load',()=>{window.scro
 
   document.getElementById('qty-minus').addEventListener('click', function(){ if(qty>1){qty--;updateBuy();} });
   document.getElementById('qty-plus').addEventListener('click', function(){ if(qty<10){qty++;updateBuy();} });
+
+  buy.addEventListener('click', function(ev){
+    ev.preventDefault();
+    var ph = document.getElementById('buyer-phone'), num = ph.value.replace(/[^0-9]/g, '');
+    if(!/^01[0-9]{8,9}$/.test(num)){ ph.focus(); ph.setCustomValidity('휴대폰 번호를 정확히 입력해 주세요'); ph.reportValidity(); return; }
+    ph.setCustomValidity('');
+    if(!window.PayApp){ alert('결제창을 불러오지 못했어요. 새로고침 후 다시 시도해 주세요.'); return; }
+    PayApp.setDefault('userid', PAYAPP_USERID);
+    PayApp.setDefault('shopname', PAYAPP_SHOP);
+    PayApp.setParam('goodname', 'Glow Drop 글로우드롭 15ml x ' + qty)
+      .setParam('price', String(qty * PRICE_WON))
+      .setParam('recvphone', num)
+      .setParam('reqaddr', '1')
+      .setParam('smsuse', 'n')
+      .payrequest();
+  });
+  document.getElementById('buyer-phone').addEventListener('input', function(){ this.setCustomValidity(''); });
 
   var toast = document.getElementById('toast'), timer;
   document.getElementById('add-bag').addEventListener('click', function(){
@@ -634,5 +652,6 @@ if(!location.hash){window.scrollTo(0,0);addEventListener('load',()=>{window.scro
 })();
 </script>
 
+<script src="https://lite.payapp.kr/public/api/v2/payapp-lite.js"></script>
 </body>
 </html>
