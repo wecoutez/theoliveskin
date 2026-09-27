@@ -47,7 +47,6 @@ for attr, n in (("src", 14), ("data-src", 4), ("poster", 1)):
 
 # 가격 · 구매 — 원화, 페이앱
 rep('<p class="price">$18<small>USD</small></p>', f'<p class="price">{PRICE_KRW}<small>원</small></p>')
-rep('btnShop:"글로우 드롭 구매하기 — $18"', f'btnShop:"글로우 드롭 구매하기 — {PRICE_KRW}원"')
 rep('announce:"전 세계 배송"', 'announce:"국내 배송 · 간편결제"')
 rep('<span class="total" id="total">$18.00</span>', f'<span class="total" id="total">{PRICE_KRW}원</span>')
 rep("tEl.textContent = '$' + (qty*PRICE).toFixed(2);", "tEl.textContent = (qty*PRICE_WON).toLocaleString('ko-KR') + '원';")
