@@ -421,7 +421,9 @@ a.kpi:hover{transform:translateY(-2px)}
 .pb4{border:1.5px solid #CFCBBE;color:var(--ink)}
 .pbar .fill{position:relative;overflow:hidden}
 .bigs{display:flex;gap:28px}
-.bigs div{display:grid;grid-template-columns:auto auto;align-items:center;gap:2px 10px}
+.bigs a{display:grid;grid-template-columns:auto auto;align-items:center;gap:2px 10px;text-decoration:none;color:inherit;padding:6px 10px;margin:-6px -10px;border-radius:16px;transition:background .15s}
+.bigs a:hover{background:rgba(75,87,40,.08)}
+.bigs a:hover span{text-decoration:underline;text-underline-offset:3px}
 .bigs i{grid-row:span 2;width:40px;height:40px;border-radius:50%;background:#EFEEE5;display:grid;place-items:center;font-style:normal;font-size:17px}
 .bigs b{font-size:34px;font-weight:600;letter-spacing:-.03em;line-height:1}
 .bigs span{font-size:13px;opacity:.7}
@@ -500,6 +502,41 @@ a.kpi:hover{transform:translateY(-2px)}
 .b-geo li strong{text-align:right;font-weight:500;font-variant-numeric:tabular-nums}
 .b-geo li.none{display:block;opacity:.6}
 .b-geo .vmsg{position:static;transform:none;margin-top:10px;background:#F4F3EC;text-align:left;font-size:13px;max-width:none}
+
+.buyers-t{width:100%;border-collapse:collapse;font-size:14px}
+.buyers-t th{font-size:12px;font-weight:500;opacity:.65;text-align:left;padding:12px 16px;border-bottom:1px solid #EEECE4;white-space:nowrap}
+.buyers-t td{padding:12px 16px;border-bottom:1px solid #F2F1EB;font-variant-numeric:tabular-nums}
+.buyers-t tr:last-child td{border-bottom:0}
+.buyers-t td.n{text-align:right;white-space:nowrap}
+.buyers-t td b{font-weight:600}
+.buyers-t .ch{display:inline-flex;align-items:center;gap:6px;white-space:nowrap}.buyers-t .ch i{width:8px;height:8px;border-radius:50%}
+.buyers-t .empty{text-align:center;opacity:.6;padding:22px}
+@media (max-width:640px){.buyers-t th:nth-child(2),.buyers-t td:nth-child(2),.buyers-t th:nth-child(6),.buyers-t td:nth-child(6),.buyers-t th:nth-child(7),.buyers-t td:nth-child(7){display:none}}
+
+/* 마일스톤 */
+.ms-card{margin-bottom:22px}
+.ms-form{display:flex;flex-wrap:wrap;gap:8px;margin:4px 0 14px}
+.ms-form input,.ms-form select{font:inherit;font-size:14px;padding:9px 12px;border:1px solid #E1DBD0;border-radius:12px;background:#fff}
+.ms-form input[name=title]{flex:1;min-width:180px}
+.ms-track{position:relative;height:74px;margin:18px 8px 6px}
+.ms-track .line{position:absolute;left:0;right:0;top:34px;height:4px;border-radius:4px;background:#ECE9DF}
+.ms-track .prog{position:absolute;left:0;top:34px;height:4px;border-radius:4px;background:var(--olive)}
+.ms-track .ms-mo{position:absolute;top:48px;font-size:11px;opacity:.55;transform:translateX(-50%);white-space:nowrap}
+.ms-track .ms-dot{position:absolute;top:28px;width:16px;height:16px;border-radius:50%;background:#fff;border:3px solid #B7BC90;transform:translateX(-50%);cursor:pointer;padding:0}
+.ms-track .ms-dot.done{background:var(--olive);border-color:var(--olive)}
+.ms-track .ms-dot.next{border-color:#C08A2E;box-shadow:0 0 0 5px rgba(192,138,46,.18)}
+.ms-track .now{position:absolute;top:0;transform:translateX(-50%);font-size:11px;font-weight:600;color:#C08A2E;white-space:nowrap}
+.ms-track .now::after{content:"";display:block;width:2px;height:22px;background:#C08A2E;margin:2px auto 0}
+.ms-list{list-style:none;margin:10px 0 0;padding:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(min(340px,100%),1fr));gap:8px 18px}
+.ms-list li{display:grid;grid-template-columns:22px 58px 1fr auto;gap:10px;align-items:center;padding:9px 0;border-bottom:1px solid #F0EEE7;font-size:14px}
+.ms-list li button.ck{width:20px;height:20px;border-radius:50%;border:1.5px solid #B7BC90;background:#fff;cursor:pointer;padding:0;color:#fff;font-size:11px;line-height:1}
+.ms-list li.done button.ck{background:var(--olive);border-color:var(--olive)}
+.ms-list li.done .t{text-decoration:line-through;opacity:.55}
+.ms-list li.next .t{font-weight:600}
+.ms-list .d{font-size:12px;opacity:.65;font-variant-numeric:tabular-nums}
+.ms-list .tg{font-size:11px;padding:2px 8px;border-radius:999px;background:#F1F0E8;white-space:nowrap}
+.ms-list .x{border:0;background:none;cursor:pointer;opacity:.35;font-size:14px;padding:0 2px}.ms-list .x:hover{opacity:.8}
+.ms-list .dd{font-size:11px;color:#C08A2E;font-weight:600;margin-left:6px}
 </style>
 </head>
 <body>
@@ -600,6 +637,12 @@ a.kpi:hover{transform:translateY(-2px)}
   </div>
 
   <div class="view" data-view="orders" hidden>
+  <section id="buyersSec">
+    <div class="sec-head"><h2>거래처·고객별 주문</h2><p id="buyersSub">누가 얼마나 주문했는지</p></div>
+    <div class="card" style="padding:0;overflow:hidden"><div class="table-wrap"><table class="buyers-t">
+      <thead><tr><th>주문한 곳·사람</th><th>판매 경로</th><th style="text-align:right">주문</th><th style="text-align:right">병 수</th><th style="text-align:right">금액</th><th style="text-align:right">입금 받음</th><th>마지막 주문</th></tr></thead>
+      <tbody id="buyersRows"></tbody></table></div></div>
+  </section>
   <section id="add">
     <div class="sec-head"><h2 id="formTitle">주문 등록</h2><p>병 수와 가격만 넣어도 돼요</p></div>
     <div class="card">
@@ -673,6 +716,17 @@ a.kpi:hover{transform:translateY(-2px)}
   <!-- ===== 연간 마케팅 플랜 ===== -->
   <div class="view" data-view="plan" hidden>
     <div class="kpis" id="planKpis"></div>
+    <section class="card ms-card">
+      <div class="sec-head"><div><h2>마일스톤</h2><p id="msSub">큰 일정을 한눈에 · 누르면 완료로 표시돼요</p></div>
+        <button type="button" class="btn primary sm" id="msAddBtn">마일스톤 추가</button></div>
+      <form class="ms-form" id="msForm" hidden autocomplete="off">
+        <input name="date" type="date" required aria-label="날짜"><input name="title" required placeholder="예: 스마트스토어 오픈" aria-label="마일스톤">
+        <select name="tag" aria-label="분류"><option>판매</option><option>런칭</option><option>프로모션</option><option>SNS</option><option>콘텐츠</option><option>기타</option></select>
+        <button class="btn primary sm" type="submit">추가</button><button type="button" class="rowbtn" id="msCancel">취소</button>
+      </form>
+      <div class="ms-track" id="msTrack"></div>
+      <ol class="ms-list" id="msList"></ol>
+    </section>
     <section class="card">
       <div class="sec-head"><div><h2>월별 목표 매출과 실적</h2><p>실적은 주문 내역(주문일 기준)에서 자동으로 계산돼요</p></div>
         <label class="inline">시작 달<select id="planStart"></select></label></div>
@@ -1248,7 +1302,13 @@ function seedChannels(){
   ];
 }
 const seedAccounts=()=>PLATFORMS.map(([platform])=>({id:uid(),platform,handle:'',link:'',followers:0,target:0,hist:[]}));
-const mktSeed=()=>({v:1,planStart:'2026-10',plan:seedPlan(),channels:seedChannels(),accounts:seedAccounts(),posts:[],seeding:[]});
+const seedMilestones=()=>[
+  ['2026-10-10','제품 촬영 끝내기','콘텐츠'],['2026-10-15','인스타그램 오픈 · 첫 9개 피드','SNS'],['2026-10-31','B2B 선주문 3,000병 마감','판매'],
+  ['2026-11-01','공식 런칭 — 자사몰·스마트스토어 오픈','런칭'],['2026-11-11','빼빼로데이 프로모션','프로모션'],['2026-11-27','블랙프라이데이 프로모션','프로모션'],
+  ['2026-12-01','카카오톡 선물하기 입점','판매'],['2026-12-15','홀리데이 기프트 캠페인 시작','프로모션'],['2027-01-15','재구매 쿠폰(CRM) 발송','판매'],
+  ['2027-03-02','네일샵 B2B 2차 오더','판매'],['2027-05-01','가정의 달 선물 세트 출시','프로모션'],['2027-09-01','런칭 1주년 · 다음 해 플랜','런칭']
+].map(([date,title,tag])=>({id:uid(),date,title,tag,done:false}));
+const mktSeed=()=>({v:1,planStart:'2026-10',plan:seedPlan(),channels:seedChannels(),accounts:seedAccounts(),posts:[],seeding:[],milestones:seedMilestones()});
 function mktNorm(m){const d=mktSeed();m=m&&typeof m==='object'?m:{};
   for(const k of Object.keys(d))if(m[k]==null||typeof m[k]!==typeof d[k]||Array.isArray(m[k])!==Array.isArray(d[k]))m[k]=d[k];
   return m;}
@@ -1330,7 +1390,37 @@ const planMonths=()=>Array.from({length:12},(_,i)=>mAdd(mkt.planStart,i));
 function salesByMonth(){const r={};for(const o of state.orders){const k=(o.date||'').slice(0,7);if(k)r[k]=(r[k]||0)+(+o.qty||0)*(+o.price||0);}return r;}
 function focusMonth(){const cur=today().slice(0,7),ms=planMonths();return cur<ms[0]?ms[0]:cur;}
 let editingMonth=null;
+/* ===== 연간 플랜 · 마일스톤 ===== */
+function drawMilestones(){
+  const tr=$('msTrack'),ul=$('msList');if(!tr)return;
+  const ms=[...(mkt.milestones||[])].sort((a,b)=>(a.date||'').localeCompare(b.date||''));
+  const td=today(),next=ms.find(m=>!m.done&&m.date>=td)||ms.find(m=>!m.done);
+  const done=ms.filter(m=>m.done).length;
+  const dday=d=>{const n=Math.round((new Date(d+'T00:00:00')-new Date(td+'T00:00:00'))/864e5);return n===0?'D-DAY':n>0?'D-'+n:'D+'+(-n);};
+  $('msSub').textContent=ms.length?`완료 ${done}/${ms.length}`+(next?` · 다음: ${next.title} (${dday(next.date)})`:' · 모두 끝냈어요'):'큰 일정을 추가해 주세요';
+  // 타임라인: 플랜 시작 달부터 12개월
+  const start=new Date((mkt.planStart||td.slice(0,7))+'-01T00:00:00'),end=new Date(start);end.setMonth(end.getMonth()+12);
+  const span=end-start,pos=d=>Math.max(0,Math.min(100,(new Date(d+'T00:00:00')-start)/span*100));
+  const nowP=pos(td);
+  let html=`<div class="line"></div><div class="prog" style="width:${nowP}%"></div>`;
+  for(let i=0;i<12;i++){const m=new Date(start);m.setMonth(m.getMonth()+i);html+=`<span class="ms-mo" style="left:${(i+.5)/12*100}%">${m.getMonth()+1}월</span>`;}
+  if(nowP>0&&nowP<100)html+=`<span class="now" style="left:${nowP}%">오늘</span>`;
+  html+=ms.map(m=>`<button type="button" class="ms-dot${m.done?' done':''}${m===next?' next':''}" style="left:${pos(m.date)}%" data-ms="${esc(m.id)}" title="${esc((m.date||'').replace(/-/g,'.'))} · ${esc(m.title)}${m.done?' (완료)':''}"></button>`).join('');
+  tr.innerHTML=html;
+  ul.innerHTML=ms.map(m=>`<li class="${m.done?'done':''}${m===next?' next':''}"><button type="button" class="ck" data-ms="${esc(m.id)}" aria-label="${m.done?'완료 취소':'완료로 표시'}">${m.done?'✓':''}</button>
+    <span class="d">${esc((m.date||'').slice(5).replace('-','.'))}</span><span class="t">${esc(m.title)}${m===next?`<span class="dd">${dday(m.date)}</span>`:''}</span>
+    <span><span class="tg">${esc(m.tag||'기타')}</span><button type="button" class="x" data-del="${esc(m.id)}" aria-label="지우기">✕</button></span></li>`).join('');
+  const toggle=id=>{const m=mkt.milestones.find(x=>x.id===id);if(!m)return;m.done=!m.done;mktSave();drawMilestones();};
+  tr.querySelectorAll('[data-ms]').forEach(b=>b.onclick=()=>toggle(b.dataset.ms));
+  ul.querySelectorAll('.ck').forEach(b=>b.onclick=()=>toggle(b.dataset.ms));
+  ul.querySelectorAll('[data-del]').forEach(b=>b.onclick=()=>{const m=mkt.milestones.find(x=>x.id===b.dataset.del);if(!m||!confirm(`"${m.title}" 마일스톤을 지울까요?`))return;mkt.milestones=mkt.milestones.filter(x=>x!==m);mktSave();drawMilestones();});
+}
+$('msAddBtn').onclick=()=>{const f=$('msForm');f.hidden=!f.hidden;if(!f.hidden){f.elements.date.value=today();f.elements.title.focus();}};
+$('msCancel').onclick=()=>{$('msForm').hidden=true;};
+$('msForm').addEventListener('submit',ev=>{ev.preventDefault();const f=ev.target,t=f.elements.title.value.trim();if(!t||!f.elements.date.value)return;
+  (mkt.milestones=mkt.milestones||[]).push({id:uid(),date:f.elements.date.value,title:t,tag:f.elements.tag.value,done:false});f.reset();f.hidden=true;mktSave();drawMilestones();});
 function drawPlan(){
+  drawMilestones();
   const ms=planMonths(),sb=salesByMonth(),cur=today().slice(0,7);
   let bud=0,tar=0,act=0,media=0;for(const k of ms){const p=mkt.plan[k];bud+=budgetOf(p);tar+=targetOf(p);act+=sb[k]||0;media+=+p?.bMedia||0;}
   $('planKpis').replaceChildren(
@@ -1510,6 +1600,19 @@ $('seedForm').addEventListener('submit',ev=>{ev.preventDefault();const d=formGet
 /* ===== 카드형 대시보드 ===== */
 const esc=v=>String(v==null?'':v).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const pctTxt=x=>(x>0&&x<10?x.toFixed(1):Math.round(x))+'%';
+function drawBuyers(){
+  const tb=$('buyersRows');if(!tb)return;
+  const CH_COL={'--olive':'#4B5728','--oil':'#C9AE3E','--sage':'#8B917A','--brown':'#8A6A45'};
+  const m=new Map();
+  for(const o of state.orders){const k=(o.buyer||'').trim()||'(이름 없음)',q=+o.qty||0,amt=q*(+o.price||0);
+    const b=m.get(k)||{name:k,n:0,q:0,amt:0,paid:0,last:'',ch:{}};
+    b.n++;b.q+=q;b.amt+=amt;if(o.status!=='주문받음')b.paid+=amt;if((o.date||'')>b.last)b.last=o.date||'';b.ch[chOf(o)]=(b.ch[chOf(o)]||0)+q;m.set(k,b);}
+  const list=[...m.values()].sort((a,b)=>b.q-a.q||b.amt-a.amt);
+  $('buyersSub').textContent=list.length?`${num(list.length)}곳·명 · 병 수 많은 순`:'누가 얼마나 주문했는지';
+  tb.innerHTML=list.length?list.map(b=>{const ch=Object.entries(b.ch).sort((x,y)=>y[1]-x[1])[0][0];const col=CH_COL[(CHANNELS.find(c=>c[0]===ch)||[])[1]]||'#999';
+    return `<tr><td><b>${esc(b.name)}</b></td><td><span class="ch"><i style="background:${col}"></i>${esc(ch)}</span></td><td class="n">${num(b.n)}건</td><td class="n"><b>${num(b.q)}병</b></td><td class="n">${won(b.amt)}</td><td class="n">${won(b.paid)}</td><td>${esc((b.last||'').replace(/-/g,'.'))}</td></tr>`;}).join('')
+    :'<tr><td class="empty" colspan="7">아직 주문이 없어요. 아래에서 첫 주문을 등록해 주세요.</td></tr>';
+}
 function drawBento(){
   const B=$('bento');if(!B)return;
   const s=state.settings,t=totals(),goal=Math.max(1,+s.goal||DEFAULTS.goal),upfront=+s.upfront||0,retail=+s.retail||16000;
@@ -1551,9 +1654,9 @@ function drawBento(){
         <div class="pbar"><small>채널 셋업</small><b class="pb4">${pctTxt(setupP)}</b></div>
       </div></div>
     <div class="bigs">
-      <div><i>🫒</i><b>${num(t.bottles)}</b><span>판매한 병</span></div>
-      <div><i>🧾</i><b>${num(state.orders.length)}</b><span>주문</span></div>
-      <div><i>🏪</i><b>${num(buyers)}</b><span>거래처·고객</span></div>
+      <a href="#orders"><i>🫒</i><b>${num(t.bottles)}</b><span>판매한 병</span></a>
+      <a href="#orders"><i>🧾</i><b>${num(state.orders.length)}</b><span>주문</span></a>
+      <a href="#orders" data-buyers="1"><i>🏪</i><b>${num(buyers)}</b><span>거래처·고객</span></a>
     </div>
   </div>
   <a class="bx b-prod" href="#product" aria-label="가격·제작으로 이동">
@@ -1567,7 +1670,7 @@ function drawBento(){
     <div class="cols"><div class="ax"><span>${num(dmax)}</span><span>${num(dmax/2)}</span><span>0</span></div>
       ${days.map((d,i)=>`<div class="c${i===6?' today':''}" title="${d.k} · ${num(d.v)}병">${i===6&&d.v?`<em>${num(d.v)}병</em>`:''}<i style="height:${Math.max(6,d.v/dmax*100)}%"></i><span>${d.l}</span></div>`).join('')}
     </div></div>
-      <div class="mixpart"><div class="top"><span>판매 경로</span><b>${num(mixTot)}병</b></div>
+      <div class="mixpart"><div class="top"><span>판매 경로</span></div>
     <div class="mixbar">${mixTot?mix.filter(x=>x.q).map(x=>`<div style="flex:${x.q};background:${x.col}" title="${esc(x.n)} ${num(x.q)}병"><small>${Math.round(x.q/mixTot*100)}%</small></div>`).join(''):'<div style="flex:1;background:#EEECE4"><small>아직 판매 없음</small></div>'}</div>
     <div class="mixleg">${mix.map(x=>`<span><i style="background:${x.col}"></i>${esc(x.n)} ${num(x.q)}</span>`).join('')}</div></div></div></div>
   <div class="bx b-ring"><h3>목표 달성</h3><a class="go" href="#dash-more" aria-label="자세히">↗</a>
@@ -1600,6 +1703,8 @@ function drawBento(){
     <ul>${todo.length?todo.map((x,i)=>`<li><i>${icon(x.c.group)}</i><div><b>${esc(x.st.t)}</b><small>${esc(x.c.name)}</small></div><button type="button" data-todo="${i}" aria-label="완료로 표시">✓</button></li>`).join(''):'<li><i>🎉</i><div><b>모든 셋업을 끝냈어요</b></div><span></span></li>'}</ul>
     <a class="more" href="#channels">전체 보기 →</a></div>`;
   drawGeo();
+  B.querySelector('[data-buyers]').onclick=()=>setTimeout(()=>$('buyersSec')?.scrollIntoView({behavior:'smooth',block:'start'}),60);
+  drawBuyers();
   B.querySelectorAll('[data-todo]').forEach(b=>b.onclick=()=>{const x=todo[+b.dataset.todo];if(!x)return;x.st.done=true;mktSave();drawBento();});
   const more=B.querySelector('a[href="#dash-more"]');if(more)more.onclick=e=>{e.preventDefault();document.querySelector('.view[data-view="dash"] section')?.scrollIntoView({behavior:'smooth'});};
 }

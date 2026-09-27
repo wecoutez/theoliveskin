@@ -34,11 +34,11 @@ const TZ = 'Asia/Seoul';
 const ORDERS = {
   names: ['주문'],
   fields: [['id', 'id'], ['date', '주문일'], ['buyer', '주문한 곳·사람'], ['channel', '판매 경로'], ['qty', '병 수'],
-    ['price', '한 병 가격'], ['status', '진행 상태'], ['owner', '받아온 사람'], ['phone', '전화번호'], ['memo', '메모'], ['createdAt', '등록 시각']],
+    ['price', '한 병 가격'], ['status', '진행 상태'], ['owner', '받아온 사람'], ['phone', '연락처', '전화번호'], ['memo', '메모'], ['createdAt', '등록 시각']],
   nums: ['qty', 'price', 'createdAt']
 };
 const VENDORS = {
-  names: ['업체', '제작 정보', '제작정보', 'vendors'],
+  names: ['견적', '업체', '제작 정보', '제작정보', '거래처', 'vendors'],
   fields: [['id', 'id'], ['name', '회사'], ['role', '맡은 일'], ['contact', '담당자'], ['phone', '전화'], ['fax', '팩스'], ['email', '이메일'],
     ['status', '상태'], ['address', '주소'], ['item', '품목'], ['price', '단가'], ['includes', '포함 내용'], ['payment', '결제 조건'],
     ['quoteDate', '견적일'], ['memo', '메모'], ['createdAt', '등록 시각']],
@@ -76,14 +76,19 @@ function fmtDate(v) { return v instanceof Date ? Utilities.formatDate(v, TZ, 'yy
 
 /* ---------- 제목(1행)으로 열을 찾는 표 ---------- */
 function table(def) {
+  // 후보 탭 중 내용이 가장 많은 탭을 씀 (빈 탭이 먼저 있어도 실제 데이터가 있는 탭을 고름)
   let sh = null;
-  for (const n of def.names) { sh = book().getSheetByName(n); if (sh) break; }
+  for (const n of def.names) {
+    const c = book().getSheetByName(n);
+    if (c && (!sh || c.getLastRow() > sh.getLastRow())) sh = c;
+  }
   if (!sh) sh = book().insertSheet(def.names[0]);
   const head = sh.getLastRow() >= 1 && sh.getLastColumn() >= 1
     ? sh.getRange(1, 1, 1, sh.getLastColumn()).getValues()[0].map(h => String(h).trim()) : [];
   const col = {};
-  def.fields.forEach(([k, label]) => {
+  def.fields.forEach(([k, label, ...alts]) => {
     let i = head.findIndex(h => h === k || h === label);
+    if (i < 0 && alts.length) i = head.findIndex(h => alts.includes(h));   // 예전 제목으로 된 열도 찾음
     if (i < 0) {
       i = head.length; head.push(label);
       sh.getRange(1, i + 1).setValue(label).setFontWeight('bold');
@@ -488,7 +493,7 @@ function visitors() {
 }
 
 /* ===== 웹 앱 ===== */
-const SCRIPT_VERSION = '2026-09-27e';
+const SCRIPT_VERSION = '2026-09-27f';
 function doGet() { let sheet = ''; try { sheet = book().getName(); } catch (e) { sheet = ''; }
   return out({ ok: true, service: 'olive-skin', version: SCRIPT_VERSION, adminKey: !!prop('ADMIN_KEY'), sheet: sheet }); }
 const CHECKOUT_ACTIONS = ['create', 'patch', 'capture', 'krOrder'];
