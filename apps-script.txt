@@ -462,24 +462,29 @@ function visitors() {
   const cache = CacheService.getScriptCache();
 
   // 사이트 연 뒤로 지금까지 들어와 본 모든 나라 (실시간은 안 씀)
-  let all = cache.get('visitorsAll');
+  let all = cache.get('visitorsSite');
   if (all) all = JSON.parse(all);
   else {
     const rows = gaRows(AnalyticsData.Properties.runReport({
       dateRanges: [{ startDate: '2020-01-01', endDate: 'today' }],
       dimensions: [{ name: 'countryId' }, { name: 'country' }],
       metrics: [{ name: 'activeUsers' }, { name: 'sessions' }],
+      // 실제 사이트(theoliveskin.com, /kr 포함) 방문만 — admin·테스트 주소는 뺌
+      dimensionFilter: { andGroup: { expressions: [
+        { filter: { fieldName: 'hostName', inListFilter: { values: ['theoliveskin.com', 'www.theoliveskin.com'] } } },
+        { notExpression: { filter: { fieldName: 'pagePath', stringFilter: { matchType: 'BEGINS_WITH', value: '/admin' } } } }
+      ] } },
       orderBys: [{ metric: { metricName: 'activeUsers' }, desc: true }],
       limit: 250
     }, property), true);
     all = { rows: rows, users: rows.reduce((a, r) => a + r.users, 0) };
-    cache.put('visitorsAll', JSON.stringify(all), 3600);   // 1시간 보관
+    cache.put('visitorsSite', JSON.stringify(all), 3600);   // 1시간 보관
   }
   return { ok: true, days: 0, rows: all.rows, users: all.users, at: Date.now() };
 }
 
 /* ===== 웹 앱 ===== */
-const SCRIPT_VERSION = '2026-09-27g';
+const SCRIPT_VERSION = '2026-09-27h';
 function doGet() { let sheet = ''; try { sheet = book().getName(); } catch (e) { sheet = ''; }
   return out({ ok: true, service: 'olive-skin', version: SCRIPT_VERSION, adminKey: !!prop('ADMIN_KEY'), sheet: sheet }); }
 const CHECKOUT_ACTIONS = ['create', 'patch', 'capture', 'krOrder'];
