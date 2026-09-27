@@ -756,7 +756,7 @@ const API_URLS=["https://script.google.com/macros/s/AKfycbzJEptWG0-nQ8rsBMArVh3I
 let API_URL=API_URLS[0], apiProbe=null;
 function probeApi(){
   if(apiProbe)return apiProbe;
-  const look=u=>fetch(u).then(r=>r.json()).then(j=>({u,j}),()=>({u,j:null}));
+  const look=u=>fetch(u).then(r=>r.text()).then(t=>{try{return {u,j:JSON.parse(t)};}catch(e){return {u,j:null,auth:/Authorization is required|승인이 필요|권한이 필요|authorization/i.test(t)};}},()=>({u,j:null}));
   apiProbe=Promise.all(API_URLS.map(look)).then(res=>{
     const good=res.find(x=>x.j&&x.j.service==='olive-skin'&&x.j.adminKey)||res.find(x=>x.j&&x.j.service==='olive-skin');
     if(good){API_URL=good.u;return {ok:true,res,good};}
@@ -1461,6 +1461,7 @@ async function api(body,tries=2){
       let j; try{j=JSON.parse(txt);}catch(x){
         // 구글이 JSON 대신 오류 화면(HTML)을 보냄 = Apps Script 안에서 오류가 났거나 접근 권한 문제
         const m=txt.replace(/<[^>]+>/g,' ').replace(/\s+/g,' ').trim().slice(0,160);
+        if(/Authorization is required|승인이 필요|권한이 필요/i.test(txt))throw {error:'server',detail:'Apps Script 권한 허용이 필요해요. Apps Script 편집기 위쪽 함수 목록에서 test 를 고르고 ▶ 실행 → 권한 검토 → 계정 선택 → 고급 → (안전하지 않음)으로 이동 → 허용 을 눌러 주세요. 그다음 이 페이지를 새로고침하면 돼요.'};
         throw {error:'server',detail:'서버 응답이 올바르지 않아요 ('+r.status+'): '+(m||'빈 응답')};
       }
       if(!j.ok){if(j.error==='auth')lockOut('비밀번호가 Apps Script 의 ADMIN_KEY 와 달라요. 스크립트 속성의 ADMIN_KEY 를 확인해 주세요.');else if(j.error==='no_admin_key')lockOut('Apps Script 스크립트 속성에 ADMIN_KEY 가 없어요. 프로젝트 설정 → 스크립트 속성 → ADMIN_KEY = 관리자 비밀번호 를 추가하고 새 버전으로 배포해 주세요.');throw j;}
@@ -1537,6 +1538,7 @@ async function loadVisitors(){
 setInterval(()=>{if(!document.hidden&&KEY&&!$('app').hidden&&location.hash.replace('#','')in{'':1,dash:1})loadVisitors();},60000);
 async function refresh(){
   const pr=await probeApi();
+  if(!pr.ok&&pr.res.some(x=>x.auth)){const n=$('notice');n.replaceChildren('Apps Script 권한 허용이 필요해요. Apps Script 편집기 위쪽 함수 목록에서 test 를 고르고 ▶ 실행 → 권한 검토 → 계정 선택 → 고급 → (안전하지 않음)으로 이동 → 허용 을 눌러 주세요. 그다음 이 페이지를 새로고침하면 돼요.');n.style.display='block';$('updated').textContent='불러오지 못함';return;}
   if(!pr.ok){
     const n=$('notice');n.replaceChildren();
     n.append('Apps Script 가 아직 새 버전이 아니에요. 관리자 주소: '+scriptName(pr.res[0].j)+' · 결제 주소: '+scriptName(pr.res[1].j)+'. apps-script.txt 로 통째로 바꾼 뒤 배포 관리 → 기존 배포 수정 → 새 버전 으로 배포해 주세요.');
