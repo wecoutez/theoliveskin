@@ -1680,8 +1680,8 @@ function drawBento(){
   <div class="bx b-hi">
     <h2>안녕하세요, <em>올리브 스킨</em></h2>
     <div class="hirow">
-      ${[['목표 달성',goalP],['제작비 회수',beP]].map(([l,v])=>`<div class="hc"><small>${l}</small><b>${pctTxt(v)}</b><i><u style="width:${Math.min(100,Math.max(0,+v||0))}%"></u></i></div>`).join('')}
       <a class="hc lk" href="#orders" data-go="orderListSec"><small>판매한 병</small><b>${num(t.bottles)}<span>병</span></b><em>주문 보기 →</em></a>
+      ${[['목표 달성',goalP],['제작비 회수',beP]].map(([l,v])=>`<div class="hc"><small>${l}</small><b>${pctTxt(v)}</b><i><u style="width:${Math.min(100,Math.max(0,+v||0))}%"></u></i></div>`).join('')}
       <a class="hc lk" href="#orders" data-go="orderListSec"><small>주문 · 매출</small><b>${num(state.orders.length)}<span>건</span></b><em>${won(t.sales)} →</em></a>
       <a class="hc lk" href="#orders" data-go="buyersSec"><small>거래처 · 고객</small><b>${num(buyers)}<span>곳</span></b><em>구매자 보기 →</em></a>
     </div>
