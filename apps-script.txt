@@ -436,6 +436,11 @@ function test() {
   console.log('US 2병', JSON.stringify(amountFor('US', 2)));   // 무료배송 → 합계 $36
 }
 
+/* ===== 관리자: 주문 · 업체 · 설정 한꺼번에 읽기 ===== */
+function readAll() {
+  return { orders: readRows(ORDERS), vendors: readRows(VENDORS), settings: readSettings() };
+}
+
 /* ===== 방문자 · 나라별 (Google Analytics 4) — 최근 28일 + 지금 접속 중(최근 30분) ===== */
 function gaRows(rep, withSessions) {
   return (rep.rows || []).map(r => ({
@@ -483,7 +488,7 @@ function visitors() {
 }
 
 /* ===== 웹 앱 ===== */
-const SCRIPT_VERSION = '2026-09-27d';
+const SCRIPT_VERSION = '2026-09-27e';
 function doGet() { let sheet = ''; try { sheet = book().getName(); } catch (e) { sheet = ''; }
   return out({ ok: true, service: 'olive-skin', version: SCRIPT_VERSION, adminKey: !!prop('ADMIN_KEY'), sheet: sheet }); }
 const CHECKOUT_ACTIONS = ['create', 'patch', 'capture', 'krOrder'];
