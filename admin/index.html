@@ -421,7 +421,9 @@ a.kpi:hover{transform:translateY(-2px)}
 .pb4{border:1.5px solid #CFCBBE;color:var(--ink)}
 .pbar .fill{position:relative;overflow:hidden}
 .bigs{display:flex;gap:28px}
-.bigs div{display:grid;grid-template-columns:auto auto;align-items:center;gap:2px 10px}
+.bigs a{display:grid;grid-template-columns:auto auto;align-items:center;gap:2px 10px;text-decoration:none;color:inherit;padding:6px 10px;margin:-6px -10px;border-radius:16px;transition:background .15s}
+.bigs a:hover{background:rgba(75,87,40,.08)}
+.bigs a:hover span{text-decoration:underline;text-underline-offset:3px}
 .bigs i{grid-row:span 2;width:40px;height:40px;border-radius:50%;background:#EFEEE5;display:grid;place-items:center;font-style:normal;font-size:17px}
 .bigs b{font-size:34px;font-weight:600;letter-spacing:-.03em;line-height:1}
 .bigs span{font-size:13px;opacity:.7}
@@ -500,6 +502,16 @@ a.kpi:hover{transform:translateY(-2px)}
 .b-geo li strong{text-align:right;font-weight:500;font-variant-numeric:tabular-nums}
 .b-geo li.none{display:block;opacity:.6}
 .b-geo .vmsg{position:static;transform:none;margin-top:10px;background:#F4F3EC;text-align:left;font-size:13px;max-width:none}
+
+.buyers-t{width:100%;border-collapse:collapse;font-size:14px}
+.buyers-t th{font-size:12px;font-weight:500;opacity:.65;text-align:left;padding:12px 16px;border-bottom:1px solid #EEECE4;white-space:nowrap}
+.buyers-t td{padding:12px 16px;border-bottom:1px solid #F2F1EB;font-variant-numeric:tabular-nums}
+.buyers-t tr:last-child td{border-bottom:0}
+.buyers-t td.n{text-align:right;white-space:nowrap}
+.buyers-t td b{font-weight:600}
+.buyers-t .ch{display:inline-flex;align-items:center;gap:6px;white-space:nowrap}.buyers-t .ch i{width:8px;height:8px;border-radius:50%}
+.buyers-t .empty{text-align:center;opacity:.6;padding:22px}
+@media (max-width:640px){.buyers-t th:nth-child(2),.buyers-t td:nth-child(2),.buyers-t th:nth-child(6),.buyers-t td:nth-child(6),.buyers-t th:nth-child(7),.buyers-t td:nth-child(7){display:none}}
 </style>
 </head>
 <body>
@@ -600,6 +612,12 @@ a.kpi:hover{transform:translateY(-2px)}
   </div>
 
   <div class="view" data-view="orders" hidden>
+  <section id="buyersSec">
+    <div class="sec-head"><h2>거래처·고객별 주문</h2><p id="buyersSub">누가 얼마나 주문했는지</p></div>
+    <div class="card" style="padding:0;overflow:hidden"><div class="table-wrap"><table class="buyers-t">
+      <thead><tr><th>주문한 곳·사람</th><th>판매 경로</th><th style="text-align:right">주문</th><th style="text-align:right">병 수</th><th style="text-align:right">금액</th><th style="text-align:right">입금 받음</th><th>마지막 주문</th></tr></thead>
+      <tbody id="buyersRows"></tbody></table></div></div>
+  </section>
   <section id="add">
     <div class="sec-head"><h2 id="formTitle">주문 등록</h2><p>병 수와 가격만 넣어도 돼요</p></div>
     <div class="card">
@@ -1510,6 +1528,19 @@ $('seedForm').addEventListener('submit',ev=>{ev.preventDefault();const d=formGet
 /* ===== 카드형 대시보드 ===== */
 const esc=v=>String(v==null?'':v).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const pctTxt=x=>(x>0&&x<10?x.toFixed(1):Math.round(x))+'%';
+function drawBuyers(){
+  const tb=$('buyersRows');if(!tb)return;
+  const CH_COL={'--olive':'#4B5728','--oil':'#C9AE3E','--sage':'#8B917A','--brown':'#8A6A45'};
+  const m=new Map();
+  for(const o of state.orders){const k=(o.buyer||'').trim()||'(이름 없음)',q=+o.qty||0,amt=q*(+o.price||0);
+    const b=m.get(k)||{name:k,n:0,q:0,amt:0,paid:0,last:'',ch:{}};
+    b.n++;b.q+=q;b.amt+=amt;if(o.status!=='주문받음')b.paid+=amt;if((o.date||'')>b.last)b.last=o.date||'';b.ch[chOf(o)]=(b.ch[chOf(o)]||0)+q;m.set(k,b);}
+  const list=[...m.values()].sort((a,b)=>b.q-a.q||b.amt-a.amt);
+  $('buyersSub').textContent=list.length?`${num(list.length)}곳·명 · 병 수 많은 순`:'누가 얼마나 주문했는지';
+  tb.innerHTML=list.length?list.map(b=>{const ch=Object.entries(b.ch).sort((x,y)=>y[1]-x[1])[0][0];const col=CH_COL[(CHANNELS.find(c=>c[0]===ch)||[])[1]]||'#999';
+    return `<tr><td><b>${esc(b.name)}</b></td><td><span class="ch"><i style="background:${col}"></i>${esc(ch)}</span></td><td class="n">${num(b.n)}건</td><td class="n"><b>${num(b.q)}병</b></td><td class="n">${won(b.amt)}</td><td class="n">${won(b.paid)}</td><td>${esc((b.last||'').replace(/-/g,'.'))}</td></tr>`;}).join('')
+    :'<tr><td class="empty" colspan="7">아직 주문이 없어요. 아래에서 첫 주문을 등록해 주세요.</td></tr>';
+}
 function drawBento(){
   const B=$('bento');if(!B)return;
   const s=state.settings,t=totals(),goal=Math.max(1,+s.goal||DEFAULTS.goal),upfront=+s.upfront||0,retail=+s.retail||16000;
@@ -1551,9 +1582,9 @@ function drawBento(){
         <div class="pbar"><small>채널 셋업</small><b class="pb4">${pctTxt(setupP)}</b></div>
       </div></div>
     <div class="bigs">
-      <div><i>🫒</i><b>${num(t.bottles)}</b><span>판매한 병</span></div>
-      <div><i>🧾</i><b>${num(state.orders.length)}</b><span>주문</span></div>
-      <div><i>🏪</i><b>${num(buyers)}</b><span>거래처·고객</span></div>
+      <a href="#orders"><i>🫒</i><b>${num(t.bottles)}</b><span>판매한 병</span></a>
+      <a href="#orders"><i>🧾</i><b>${num(state.orders.length)}</b><span>주문</span></a>
+      <a href="#orders" data-buyers="1"><i>🏪</i><b>${num(buyers)}</b><span>거래처·고객</span></a>
     </div>
   </div>
   <a class="bx b-prod" href="#product" aria-label="가격·제작으로 이동">
@@ -1600,6 +1631,8 @@ function drawBento(){
     <ul>${todo.length?todo.map((x,i)=>`<li><i>${icon(x.c.group)}</i><div><b>${esc(x.st.t)}</b><small>${esc(x.c.name)}</small></div><button type="button" data-todo="${i}" aria-label="완료로 표시">✓</button></li>`).join(''):'<li><i>🎉</i><div><b>모든 셋업을 끝냈어요</b></div><span></span></li>'}</ul>
     <a class="more" href="#channels">전체 보기 →</a></div>`;
   drawGeo();
+  B.querySelector('[data-buyers]').onclick=()=>setTimeout(()=>$('buyersSec')?.scrollIntoView({behavior:'smooth',block:'start'}),60);
+  drawBuyers();
   B.querySelectorAll('[data-todo]').forEach(b=>b.onclick=()=>{const x=todo[+b.dataset.todo];if(!x)return;x.st.done=true;mktSave();drawBento();});
   const more=B.querySelector('a[href="#dash-more"]');if(more)more.onclick=e=>{e.preventDefault();document.querySelector('.view[data-view="dash"] section')?.scrollIntoView({behavior:'smooth'});};
 }
