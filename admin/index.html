@@ -402,6 +402,86 @@ a.kpi:hover{transform:translateY(-2px)}
 @keyframes vpulse{0%{box-shadow:0 0 0 0 rgba(192,138,46,.55)}70%{box-shadow:0 0 0 8px rgba(192,138,46,0)}100%{box-shadow:0 0 0 0 rgba(192,138,46,0)}}
 @keyframes vring{0%{transform:scale(1);opacity:.9}100%{transform:scale(3.2);opacity:0}}
 @media (prefers-reduced-motion:reduce){.vmap .ring,.vlive i{animation:none}}
+
+/* ===== 대시보드 (카드형) ===== */
+.view[data-view="dash"] .hero-card,.view[data-view="dash"] #dashMkt{display:none}
+.bento{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));grid-template-areas:"hi hi hi hi" "prod bars ring mix" "acc cal cal task";gap:16px;margin-bottom:28px}
+.bx{background:#fff;border-radius:24px;padding:20px 22px;box-shadow:0 1px 0 rgba(47,53,34,.04),0 12px 30px -22px rgba(47,53,34,.35);min-width:0;position:relative}
+.bx h3{margin:0;font-size:16px;font-weight:600;letter-spacing:-.01em}
+.bx .go{position:absolute;right:16px;top:16px;width:32px;height:32px;border-radius:50%;display:grid;place-items:center;text-decoration:none;color:var(--ink);background:#F2F1EA;font-size:15px}
+.bx .go:hover{background:var(--olive);color:#fff}
+.b-hi{grid-area:hi;background:none;box-shadow:none;padding:4px 2px 0;display:grid;grid-template-columns:1fr auto;gap:18px 32px;align-items:end}
+.b-hi h2{margin:0 0 14px;font-size:clamp(28px,3.2vw,40px);font-weight:600;letter-spacing:-.035em;line-height:1.1}
+.b-hi h2 em{font-style:normal;color:var(--olive)}
+.pbars{display:grid;grid-template-columns:1.1fr 1fr 1.5fr .8fr;gap:10px;max-width:820px}
+.pbar small{display:block;font-size:12px;opacity:.7;margin-bottom:6px}
+.pbar b{display:flex;align-items:center;height:36px;padding:0 14px;border-radius:999px;font-size:14px;font-weight:600;white-space:nowrap}
+.pb1{background:var(--ink);color:#fff}.pb2{background:var(--olive);color:#fff}
+.pb3{background:repeating-linear-gradient(-45deg,#E4E2D8 0 6px,#F1F0EA 6px 12px);color:var(--ink)}
+.pb4{border:1.5px solid #CFCBBE;color:var(--ink)}
+.pbar .fill{position:relative;overflow:hidden}
+.bigs{display:flex;gap:28px}
+.bigs div{display:grid;grid-template-columns:auto auto;align-items:center;gap:2px 10px}
+.bigs i{grid-row:span 2;width:40px;height:40px;border-radius:50%;background:#EFEEE5;display:grid;place-items:center;font-style:normal;font-size:17px}
+.bigs b{font-size:34px;font-weight:600;letter-spacing:-.03em;line-height:1}
+.bigs span{font-size:13px;opacity:.7}
+.b-prod{grid-area:prod;text-decoration:none;color:inherit;padding:0;overflow:hidden;background:linear-gradient(160deg,#E9EBD7 0%,#C9CFA6 55%,#8E9860 100%);min-height:300px;display:flex;flex-direction:column;justify-content:flex-end}
+.b-prod img{position:absolute;left:50%;top:14px;height:74%;transform:translateX(-50%) rotate(-6deg);filter:drop-shadow(0 18px 22px rgba(40,46,20,.35))}
+.b-prod .pinfo{position:relative;padding:16px 18px;display:flex;justify-content:space-between;align-items:flex-end;gap:10px;background:linear-gradient(180deg,rgba(47,53,34,0),rgba(47,53,34,.55));color:#fff}
+.b-prod .pinfo b{display:block;font-size:20px;font-weight:600;letter-spacing:-.02em}
+.b-prod .pinfo span{font-size:13px;opacity:.9}
+.b-prod .chip{border:1px solid rgba(255,255,255,.7);border-radius:14px;padding:6px 10px;text-align:center;backdrop-filter:blur(6px);background:rgba(255,255,255,.14);white-space:nowrap}
+.b-prod .chip b{font-size:15px}.b-prod .chip span{font-size:11px;display:block}
+.b-bars{grid-area:bars}.b-ring{grid-area:ring}.b-mix{grid-area:mix}
+.b-bars .head{display:flex;align-items:baseline;gap:8px;margin:14px 0 2px}.b-bars .head b{font-size:30px;font-weight:600;letter-spacing:-.03em}
+.b-bars .delta{font-size:12px;opacity:.7}
+.cols{display:grid;grid-template-columns:24px repeat(7,1fr);align-items:end;height:130px;gap:6px;margin-top:10px}
+.cols .ax{display:flex;flex-direction:column;justify-content:space-between;height:100%;font-size:10px;opacity:.5}
+.cols .c{display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%;gap:6px;position:relative}
+.cols .c i{width:9px;border-radius:999px;background:var(--olive);min-height:6px}
+.cols .c.today i{background:var(--ink)}
+.cols .c span{font-size:11px;opacity:.6}
+.cols .c em{position:absolute;top:-4px;font-style:normal;font-size:11px;background:var(--ink);color:#fff;padding:3px 7px;border-radius:8px;white-space:nowrap;transform:translateY(-100%)}
+.ringw{display:grid;place-items:center;margin-top:10px;position:relative}
+.ringw svg{width:min(190px,100%);height:auto;transform:rotate(-90deg)}
+.ringw .ctr{position:absolute;text-align:center}
+.ringw .ctr b{display:block;font-size:34px;font-weight:600;letter-spacing:-.03em;line-height:1}
+.ringw .ctr span{font-size:12px;opacity:.65}
+.b-ring .foot{display:flex;justify-content:space-between;font-size:13px;margin-top:10px;opacity:.8}
+.b-mix .top{display:flex;justify-content:space-between;align-items:baseline}.b-mix .top b{font-size:30px;font-weight:600;letter-spacing:-.03em}
+.mixbar{display:flex;gap:6px;margin-top:40px;height:40px}
+.mixbar div{border-radius:12px;min-width:10px;position:relative}
+.mixbar div small{position:absolute;top:-22px;left:0;font-size:12px;opacity:.75;white-space:nowrap}
+.mixleg{display:grid;grid-template-columns:1fr 1fr;gap:6px 12px;margin-top:16px;font-size:13px}
+.mixleg span{display:flex;align-items:center;gap:6px}.mixleg i{width:9px;height:9px;border-radius:3px}
+.b-acc{grid-area:acc;padding:8px 20px}
+.b-acc details{border-bottom:1px solid #EEECE4;padding:12px 0}.b-acc details:last-child{border-bottom:0}
+.b-acc summary{list-style:none;cursor:pointer;display:flex;justify-content:space-between;align-items:center;font-size:15px;font-weight:500}
+.b-acc summary::-webkit-details-marker{display:none}
+.b-acc summary::after{content:"⌄";opacity:.6;transition:transform .2s}.b-acc details[open] summary::after{transform:rotate(180deg)}
+.b-acc .in{padding-top:10px;font-size:13px;display:grid;gap:6px}
+.b-acc .in div{display:flex;justify-content:space-between;gap:10px}.b-acc .in span{opacity:.65}
+.b-cal{grid-area:cal}
+.b-cal .wk{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;margin-top:14px;text-align:center}
+.b-cal .d{font-size:12px;opacity:.6}.b-cal .d b{display:grid;place-items:center;margin:4px auto 0;width:32px;height:32px;border-radius:50%;font-size:14px;opacity:1;color:var(--ink)}
+.b-cal .d.now b{background:var(--olive);color:#fff}.b-cal .d.now{opacity:1}
+.b-cal .evs{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;margin-top:12px;min-height:120px;border-top:1px dashed #E4E2D8;padding-top:12px}
+.b-cal .ev{border-radius:12px;padding:8px 9px;font-size:12px;line-height:1.35;text-align:left;margin-bottom:6px;background:#EEF0E2;border-left:3px solid var(--olive);overflow:hidden}
+.b-cal .ev.done{background:#F4EEDC;border-color:var(--oil)}
+.b-cal .ev small{display:block;opacity:.65;font-size:11px}
+.b-cal .evd{display:none}
+.b-cal .empty{grid-column:1/-1;font-size:13px;opacity:.6;text-align:center;align-self:center}
+.b-task{grid-area:task;background:var(--ink);color:#F4F3EC}
+.b-task .top{display:flex;justify-content:space-between;align-items:baseline}.b-task .top b{font-size:28px;font-weight:600}
+.b-task ul{list-style:none;margin:14px 0 0;padding:0;display:grid;gap:12px}
+.b-task li{display:grid;grid-template-columns:34px 1fr 22px;gap:10px;align-items:center}
+.b-task li i{width:34px;height:34px;border-radius:50%;background:rgba(255,255,255,.1);display:grid;place-items:center;font-style:normal;font-size:14px}
+.b-task li b{display:block;font-size:14px;font-weight:500;line-height:1.3}.b-task li small{font-size:12px;opacity:.6}
+.b-task li button{width:22px;height:22px;border-radius:50%;border:1.5px solid rgba(255,255,255,.55);background:none;cursor:pointer;padding:0;color:#fff;font-size:12px}
+.b-task li button:hover{background:rgba(255,255,255,.2)}
+.b-task .more{display:block;margin-top:14px;font-size:13px;color:#fff;opacity:.75}
+@media (max-width:1180px){.bento{grid-template-columns:repeat(2,minmax(0,1fr));grid-template-areas:"hi hi" "prod bars" "ring mix" "acc task" "cal cal"}.b-hi{grid-template-columns:1fr}}
+@media (max-width:640px){.bento{grid-template-columns:1fr;grid-template-areas:"hi" "prod" "ring" "bars" "mix" "task" "cal" "acc"}.pbars{grid-template-columns:1fr 1fr}.b-cal .evs{display:block}.b-cal .ev{font-size:13px}.b-cal .evd{display:inline;font-weight:600}.bigs{gap:16px;flex-wrap:wrap}.bigs b{font-size:28px}.b-cal .evs,.b-cal .wk{grid-template-columns:repeat(7,minmax(0,1fr))}}
 </style>
 </head>
 <body>
@@ -442,6 +522,7 @@ a.kpi:hover{transform:translateY(-2px)}
   <p id="mktNote" class="note-soft" hidden></p>
 
   <div class="view" data-view="dash">
+  <div class="bento" id="bento" aria-live="polite"></div>
   <div class="card hero-card">
   <div class="hero">
     <div class="stage" id="stage">
@@ -1407,6 +1488,97 @@ $('seedForm').addEventListener('submit',ev=>{ev.preventDefault();const d=formGet
   $('seedEdit').hidden=true;mktSave();});
 
 /* --- 대시보드 요약 · 사이드 카드 --- */
+
+/* ===== 카드형 대시보드 ===== */
+const esc=v=>String(v==null?'':v).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const pctTxt=x=>(x>0&&x<10?x.toFixed(1):Math.round(x))+'%';
+function drawBento(){
+  const B=$('bento');if(!B)return;
+  const s=state.settings,t=totals(),goal=Math.max(1,+s.goal||DEFAULTS.goal),upfront=+s.upfront||0,retail=+s.retail||16000;
+  const clamp=x=>Math.max(0,Math.min(100,x||0));
+  const goalP=clamp(t.bottles/goal*100),paidP=clamp(t.sales?t.paid/t.sales*100:0),beP=clamp(upfront?t.sales/upfront*100:0);
+  const steps=mkt.channels.flatMap(c=>c.steps.map(st=>({c,st}))),done=steps.filter(x=>x.st.done).length,setupP=clamp(steps.length?done/steps.length*100:0);
+  const buyers=new Set(state.orders.map(o=>(o.buyer||'').trim()).filter(Boolean)).size;
+  // 최근 7일 병 수
+  const td=today(),day=(off)=>{const d=new Date(td+'T00:00:00');d.setDate(d.getDate()+off);return d;};
+  const iso=d=>{const x=new Date(d);x.setMinutes(x.getMinutes()-x.getTimezoneOffset());return x.toISOString().slice(0,10);};
+  const wd=['일','월','화','수','목','금','토'];
+  const days=[...Array(7)].map((_,i)=>{const d=day(i-6),k=iso(d);return {k,l:wd[d.getDay()],v:state.orders.filter(o=>o.date===k).reduce((a,o)=>a+(+o.qty||0),0)};});
+  const dmax=Math.max(1,...days.map(d=>d.v));
+  const mNow=td.slice(0,7),mPrevD=new Date(td.slice(0,7)+'-01T00:00:00');mPrevD.setMonth(mPrevD.getMonth()-1);const mPrev=iso(mPrevD).slice(0,7);
+  const inM=m=>state.orders.filter(o=>(o.date||'').startsWith(m)).reduce((a,o)=>a+(+o.qty||0),0);
+  const thisM=inM(mNow),lastM=inM(mPrev);
+  const delta=lastM?Math.round((thisM-lastM)/lastM*100):null;
+  // 판매 경로
+  const CH_COL={'--olive':'#4B5728','--oil':'#C9AE3E','--sage':'#8B917A','--brown':'#8A6A45'};
+  const mix=CHANNELS.map(([n,v])=>({n,col:CH_COL[v]||'#999',q:t.byCh[n]||0}));const mixTot=mix.reduce((a,x)=>a+x.q,0);
+  // 링
+  const R=80,C=2*Math.PI*R;
+  // 이번 주 콘텐츠 (월요일 시작)
+  const dow=(day(0).getDay()+6)%7,week=[...Array(7)].map((_,i)=>{const d=day(i-dow);return {k:iso(d),n:d.getDate(),l:['월','화','수','목','금','토','일'][i]};});
+  const wPosts=week.map(w=>mkt.posts.filter(p=>p.date===w.k));
+  const wAny=wPosts.some(a=>a.length);
+  // 할 일 (채널 셋업 중 안 끝난 것)
+  const todo=steps.filter(x=>!x.st.done).slice(0,5);
+  const icon=g=>({'판매':'🛍','SNS':'📷','광고':'📣','브랜드 기반':'🌿'}[g]||'✓');
+  const recent=byDate().reverse().slice(0,3);
+  const vendors=state.vendors||[];
+  B.innerHTML=`
+  <div class="bx b-hi">
+    <div><h2>안녕하세요, <em>올리브 스킨</em></h2>
+      <div class="pbars">
+        <div class="pbar"><small>목표 달성</small><b class="pb1">${pctTxt(goalP)}</b></div>
+        <div class="pbar"><small>입금 완료</small><b class="pb2">${pctTxt(paidP)}</b></div>
+        <div class="pbar"><small>제작비 회수</small><b class="pb3">${pctTxt(beP)}</b></div>
+        <div class="pbar"><small>채널 셋업</small><b class="pb4">${pctTxt(setupP)}</b></div>
+      </div></div>
+    <div class="bigs">
+      <div><i>🫒</i><b>${num(t.bottles)}</b><span>판매한 병</span></div>
+      <div><i>🧾</i><b>${num(state.orders.length)}</b><span>주문</span></div>
+      <div><i>🏪</i><b>${num(buyers)}</b><span>거래처·고객</span></div>
+    </div>
+  </div>
+  <a class="bx b-prod" href="#product" aria-label="가격·제작으로 이동">
+    <img src="../images/cutout.webp" alt="Glow Drop 15ml">
+    <div class="pinfo"><div><b>Glow Drop</b><span>네일 & 바디 오일 · 15ml</span></div>
+      <div class="chip"><b>${won(retail)}</b><span>소비자가</span></div></div>
+  </a>
+  <div class="bx b-bars"><h3>판매 추이</h3><a class="go" href="#orders" aria-label="주문으로">↗</a>
+    <div class="head"><b>${num(thisM)}</b><span>병 · 이번 달</span></div>
+    <div class="delta">${delta===null?'지난달 판매 없음':(delta>=0?'↑ ':'↓ ')+Math.abs(delta)+'% 지난달 대비'}</div>
+    <div class="cols"><div class="ax"><span>${num(dmax)}</span><span>${num(dmax/2)}</span><span>0</span></div>
+      ${days.map((d,i)=>`<div class="c${i===6?' today':''}" title="${d.k} · ${num(d.v)}병">${i===6&&d.v?`<em>${num(d.v)}병</em>`:''}<i style="height:${Math.max(6,d.v/dmax*100)}%"></i><span>${d.l}</span></div>`).join('')}
+    </div></div>
+  <div class="bx b-ring"><h3>목표 달성</h3><a class="go" href="#dash-more" aria-label="자세히">↗</a>
+    <div class="ringw"><svg viewBox="0 0 200 200"><circle cx="100" cy="100" r="${R}" fill="none" stroke="#EEECE4" stroke-width="16" stroke-dasharray="4 7"/>
+      <circle cx="100" cy="100" r="${R}" fill="none" stroke="var(--olive)" stroke-width="16" stroke-linecap="round" stroke-dasharray="${C*goalP/100} ${C}"/></svg>
+      <div class="ctr"><b>${num(t.bottles)}</b><span>/ ${num(goal)}병</span></div></div>
+    <div class="foot"><span>남은 병 ${num(Math.max(0,goal-t.bottles))}</span><span>${pctTxt(goalP)}</span></div></div>
+  <div class="bx b-mix"><div class="top"><h3>판매 경로</h3><b>${num(mixTot)}병</b></div>
+    <div class="mixbar">${mixTot?mix.filter(x=>x.q).map(x=>`<div style="flex:${x.q};background:${x.col}" title="${esc(x.n)} ${num(x.q)}병"><small>${Math.round(x.q/mixTot*100)}%</small></div>`).join(''):'<div style="flex:1;background:#EEECE4"><small>아직 판매 없음</small></div>'}</div>
+    <div class="mixleg">${mix.map(x=>`<span><i style="background:${x.col}"></i>${esc(x.n)} ${num(x.q)}</span>`).join('')}</div></div>
+  <div class="bx b-acc">
+    <details open><summary>가격표</summary><div class="in">
+      <div><span>소비자가</span><b>${won(retail)}</b></div>
+      <div><span>B2B 1차</span><b>${won(+s.b2b1||0)}</b></div><div><span>B2B 2차</span><b>${won(+s.b2b2||0)}</b></div><div><span>B2B 3차</span><b>${won(+s.b2b3||0)}</b></div>
+      <div><span>한 병 원가</span><b>${won(+s.unitCost||0)}</b></div></div></details>
+    <details><summary>제작 업체 <small style="opacity:.6;font-weight:400">${vendors.length}곳</small></summary><div class="in">
+      ${vendors.length?vendors.slice(0,6).map(v=>`<div><b>${esc(v.name||'(이름 없음)')}</b><span>${esc(v.role||v.status||'')}</span></div>`).join(''):'<div><span>등록된 업체가 없어요</span></div>'}</div></details>
+    <details><summary>입금 현황</summary><div class="in">
+      <div><span>주문 금액</span><b>${won(t.sales)}</b></div><div><span>입금 받음</span><b>${won(t.paid)}</b></div><div><span>받을 돈</span><b>${won(Math.max(0,t.sales-t.paid))}</b></div>
+      <div><span>제작비</span><b>${won(upfront)}</b></div></div></details>
+    <details><summary>최근 주문</summary><div class="in">
+      ${recent.length?recent.map(o=>`<div><b>${esc(o.buyer||'(이름 없음)')}</b><span>${esc((o.date||'').slice(5).replace('-','.'))} · ${num(+o.qty||0)}병</span></div>`).join(''):'<div><span>아직 주문이 없어요</span></div>'}</div></details>
+  </div>
+  <div class="bx b-cal"><h3>이번 주 콘텐츠</h3><a class="go" href="#sns" aria-label="SNS·콘텐츠로">↗</a>
+    <div class="wk">${week.map(w=>`<div class="d${w.k===td?' now':''}">${w.l}<b>${w.n}</b></div>`).join('')}</div>
+    <div class="evs">${wAny?wPosts.map((ps,wi)=>`<div>${ps.map(p=>`<div class="ev${p.status==='게시 완료'?' done':''}"><span class="evd">${week[wi].l} ${week[wi].n}일 · </span>${esc(p.topic||p.type||'콘텐츠')}<small>${esc(p.platform||'')} · ${esc(p.status||'')}</small></div>`).join('')}</div>`).join(''):'<p class="empty">이번 주에 잡힌 콘텐츠가 없어요 · SNS·콘텐츠에서 추가해 주세요</p>'}</div></div>
+  <div class="bx b-task"><div class="top"><h3>채널 셋업 할 일</h3><b>${num(done)}/${num(steps.length)}</b></div>
+    <ul>${todo.length?todo.map((x,i)=>`<li><i>${icon(x.c.group)}</i><div><b>${esc(x.st.t)}</b><small>${esc(x.c.name)}</small></div><button type="button" data-todo="${i}" aria-label="완료로 표시">✓</button></li>`).join(''):'<li><i>🎉</i><div><b>모든 셋업을 끝냈어요</b></div><span></span></li>'}</ul>
+    <a class="more" href="#channels">전체 보기 →</a></div>`;
+  B.querySelectorAll('[data-todo]').forEach(b=>b.onclick=()=>{const x=todo[+b.dataset.todo];if(!x)return;x.st.done=true;mktSave();drawBento();});
+  const more=B.querySelector('a[href="#dash-more"]');if(more)more.onclick=e=>{e.preventDefault();document.querySelector('.view[data-view="dash"] section')?.scrollIntoView({behavior:'smooth'});};
+}
 function drawDashMkt(){
   const k=focusMonth(),p=mkt.plan[k]||{},act=salesByMonth()[k]||0,tg=targetOf(p),bg=budgetOf(p);
   const st=mkt.channels.flatMap(c=>c.steps),dn=st.filter(s=>s.done).length;
@@ -1422,6 +1594,7 @@ function drawDashMkt(){
   const nowM=k===today().slice(0,7);
   $('sideCard').replaceChildren(h('span',{class:'sc-k',text:`${k.replace('-','.')} ${nowM?'이번 달':'다음 플랜'}${p.goal?' · '+p.goal:''}`}),
     h('h3',{text:p.main||'이 달 플랜을 채워 주세요'}),p.creative&&h('p',{text:p.creative}),h('a',{class:'sc-btn',href:'#plan',text:'연간 플랜 보기'}));
+  drawBento();
 }
 function renderMkt(){drawDashMkt();
   if(view==='plan')drawPlan();else if(view==='channels')drawChannels();else if(view==='sns')drawSns();else if(view==='seeding')drawSeeding();}
