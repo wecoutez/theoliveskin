@@ -490,7 +490,7 @@ a.kpi:hover{transform:translateY(-2px)}
 .b-sale .mixpart{border-left:1px solid #EEECE4;padding-left:24px}
 .b-sale .mixpart .top{display:flex;justify-content:space-between;align-items:baseline;margin-top:14px}
 .b-sale .mixpart .top span{font-size:14px;opacity:.7}.b-sale .mixpart .top b{font-size:22px;font-weight:600}
-.b-geo .two{display:grid;grid-template-columns:1.9fr 1fr;gap:18px;align-items:center;margin-top:10px}
+.b-geo .two{display:grid;grid-template-columns:minmax(0,1.9fr) minmax(0,1fr);gap:18px;align-items:center;margin-top:10px}
 .b-geo .livebadge{position:absolute;right:16px;top:14px;display:inline-flex;align-items:center;gap:8px;font-size:14px;padding:6px 12px;border-radius:999px;background:rgba(192,138,46,.12)}
 .b-geo .livebadge i{width:8px;height:8px;border-radius:50%;background:#C08A2E;animation:vpulse 1.8s infinite}
 .b-geo .livebadge b{font-weight:600}
@@ -501,7 +501,11 @@ a.kpi:hover{transform:translateY(-2px)}
 .b-geo li i{height:7px;border-radius:999px;background:#EEECE4;overflow:hidden}.b-geo li i b{display:block;height:100%;background:var(--olive);border-radius:999px}
 .b-geo li strong{text-align:right;font-weight:500;font-variant-numeric:tabular-nums}
 .b-geo li.none{display:block;opacity:.6}
-.b-geo .vmsg{position:static;transform:none;margin-top:10px;background:#F4F3EC;text-align:left;font-size:13px;max-width:none}
+.b-geo .vmap{aspect-ratio:960/500;width:100%;background:#FAF9F5;border-radius:14px;overflow:hidden}
+.b-geo .vmap svg{width:100%;height:100%}
+.b-geo #bgeoList{height:206px;align-content:start;overflow:hidden}
+.b-geo .vmsg{font-size:13px;max-width:80%;box-shadow:0 6px 18px -12px rgba(47,53,34,.5)}
+@media (max-width:640px){.b-geo .two{grid-template-columns:1fr}.b-geo #bgeoList{height:196px}}
 
 .buyers-t{width:100%;border-collapse:collapse;font-size:14px}
 .buyers-t th{font-size:12px;font-weight:500;opacity:.65;text-align:left;padding:12px 16px;border-bottom:1px solid #EEECE4;white-space:nowrap}
@@ -538,16 +542,19 @@ a.kpi:hover{transform:translateY(-2px)}
 .ms-list .x{border:0;background:none;cursor:pointer;opacity:.35;font-size:14px;padding:0 2px}.ms-list .x:hover{opacity:.8}
 .ms-list .dd{font-size:11px;color:#C08A2E;font-weight:600;margin-left:6px}
 
-.hirow{display:grid;grid-template-columns:1.1fr 1fr 1.4fr 1fr .8fr 1.25fr .9fr;gap:12px;align-items:end}
-.hirow .pbar small,.hirow .stat small{display:block;font-size:12px;opacity:.7;margin-bottom:6px;white-space:nowrap}
-.hirow .pbar b{height:40px}
-.hirow .stat{display:block;text-decoration:none;color:inherit}
-.hirow .stat b{display:flex;align-items:center;gap:5px;height:40px;padding:0 14px;border-radius:999px;background:#fff;box-shadow:0 1px 0 rgba(47,53,34,.05),0 6px 16px -12px rgba(47,53,34,.45);font-size:18px;font-weight:600;letter-spacing:-.02em;white-space:nowrap;overflow:hidden;transition:transform .15s,box-shadow .15s,background .15s}
-.hirow .stat b span{font-size:12px;font-weight:400;opacity:.65;letter-spacing:0;overflow:hidden;text-overflow:ellipsis}
-.hirow .stat:hover b{transform:translateY(-2px);box-shadow:0 1px 0 rgba(47,53,34,.05),0 12px 22px -12px rgba(47,53,34,.55)}
-.hirow .stat:hover small{color:var(--olive);opacity:1}
-@media (max-width:1180px){.hirow{grid-template-columns:repeat(4,minmax(0,1fr))}}
-@media (max-width:640px){.hirow{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.hirow{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));background:#fff;border-radius:18px;box-shadow:0 1px 0 rgba(47,53,34,.05),0 8px 22px -16px rgba(47,53,34,.4);overflow:hidden}
+.hirow .hc{display:flex;flex-direction:column;gap:6px;min-width:0;padding:16px 18px;border-left:1px solid #EEECE4;text-decoration:none;color:inherit}
+.hirow .hc:first-child{border-left:0}
+.hirow .hc small{font-size:12px;opacity:.6;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.hirow .hc b{font-size:22px;font-weight:600;letter-spacing:-.02em;line-height:1.1;white-space:nowrap;font-variant-numeric:tabular-nums}
+.hirow .hc b span{font-size:13px;font-weight:400;opacity:.6;margin-left:3px;letter-spacing:0}
+.hirow .hc i{display:block;height:4px;border-radius:999px;background:#EEECE4;overflow:hidden;margin-top:4px}
+.hirow .hc i u{display:block;height:100%;background:var(--olive);border-radius:999px}
+.hirow .hc em{font-style:normal;font-size:12px;opacity:.6;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:1px}
+.hirow .lk{transition:background .15s}
+.hirow .lk:hover{background:#F7F6F0}.hirow .lk:hover em{color:var(--olive);opacity:1}
+@media (max-width:1180px){.hirow{grid-template-columns:repeat(4,minmax(0,1fr))}.hirow .hc{border-top:1px solid #EEECE4}.hirow .hc:nth-child(-n+4){border-top:0}.hirow .hc:nth-child(4n+1){border-left:0}}
+@media (max-width:640px){.hirow{grid-template-columns:repeat(2,minmax(0,1fr))}.hirow .hc{padding:14px}.hirow .hc:nth-child(n){border-left:1px solid #EEECE4;border-top:1px solid #EEECE4}.hirow .hc:nth-child(-n+2){border-top:0}.hirow .hc:nth-child(odd){border-left:0}.hirow .hc:last-child{grid-column:1/-1}}
 /* 목표 + 판매 경로 한 카드 */
 .b-goal .two{display:grid;grid-template-columns:.9fr 1.1fr;gap:24px;align-items:center;margin-top:8px}
 .b-goal .mixpart{border-left:1px solid #EEECE4;padding-left:22px}
@@ -1674,13 +1681,10 @@ function drawBento(){
   <div class="bx b-hi">
     <h2>안녕하세요, <em>올리브 스킨</em></h2>
     <div class="hirow">
-      <div class="pbar"><small>목표 달성</small><b class="pb1">${pctTxt(goalP)}</b></div>
-      <div class="pbar"><small>입금 완료</small><b class="pb2">${pctTxt(paidP)}</b></div>
-      <div class="pbar"><small>제작비 회수</small><b class="pb3">${pctTxt(beP)}</b></div>
-      <div class="pbar"><small>채널 셋업</small><b class="pb4">${pctTxt(setupP)}</b></div>
-      <a class="stat" href="#orders" data-go="orderListSec"><small>판매한 병 →</small><b>${num(t.bottles)}<span>병</span></b></a>
-      <a class="stat" href="#orders" data-go="orderListSec"><small>주문 · 매출 →</small><b>${num(state.orders.length)}<span>건 · ${won(t.sales)}</span></b></a>
-      <a class="stat" href="#orders" data-go="buyersSec"><small>거래처·고객 →</small><b>${num(buyers)}<span>곳·명</span></b></a>
+      ${[['목표 달성',goalP],['입금 완료',paidP],['제작비 회수',beP],['채널 셋업',setupP]].map(([l,v])=>`<div class="hc"><small>${l}</small><b>${pctTxt(v)}</b><i><u style="width:${Math.min(100,Math.max(0,+v||0))}%"></u></i></div>`).join('')}
+      <a class="hc lk" href="#orders" data-go="orderListSec"><small>판매한 병</small><b>${num(t.bottles)}<span>병</span></b><em>주문 보기 →</em></a>
+      <a class="hc lk" href="#orders" data-go="orderListSec"><small>주문 · 매출</small><b>${num(state.orders.length)}<span>건</span></b><em>${won(t.sales)} →</em></a>
+      <a class="hc lk" href="#orders" data-go="buyersSec"><small>거래처 · 고객</small><b>${num(buyers)}<span>곳</span></b><em>구매자 보기 →</em></a>
     </div>
   </div>
   <a class="bx b-prod" href="#product" aria-label="가격·제작으로 이동">
@@ -1706,9 +1710,8 @@ function drawBento(){
     <div class="mixleg">${mix.map(x=>`<span><i style="background:${x.col}"></i>${esc(x.n)} ${num(x.q)}</span>`).join('')}</div></div></div></div>
   <div class="bx b-geo"><h3>나라별 접속자</h3><p class="sub" id="bgeoSub">Google Analytics</p>
     <span class="livebadge"><i></i>지금 접속 <b id="bgeoLive">–</b>명</span>
-    <div class="two"><div class="vmap"><svg id="bgeoMap" role="img" aria-label="나라별 방문자 지도"></svg><div class="vtip" id="bgeoTip" hidden></div></div>
-      <ul id="bgeoList"></ul></div>
-    <p class="vmsg" id="bgeoMsg" hidden></p></div>
+    <div class="two"><div class="vmap"><svg id="bgeoMap" role="img" aria-label="나라별 방문자 지도"></svg><div class="vtip" id="bgeoTip" hidden></div><p class="vmsg" id="bgeoMsg" hidden></p></div>
+      <ul id="bgeoList"><li class="none">불러오는 중…</li></ul></div></div>
   <div class="bx b-acc">
     <details open><summary>제작 업체 <small style="opacity:.6;font-weight:400">${vendors.length}곳</small></summary><div class="in">
       ${vendors.length?vendors.slice(0,6).map(v=>`<div><b>${esc(v.name||'(이름 없음)')}</b><span>${esc(v.role||v.status||'')}</span></div>`).join(''):'<div><span>등록된 업체가 없어요</span></div>'}</div></details>
