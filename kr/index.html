@@ -435,6 +435,8 @@ if(!location.hash){window.scrollTo(0,0);addEventListener('load',()=>{window.scro
         <div class="buy">
           <a class="pill dark" id="buy-now" href="checkout.html?qty=1" data-i18n="buyNow">Buy now</a>
           <button type="button" class="pill" id="add-bag" data-i18n="addBag" style="display:none">Add to bag</button>
+          <a class="b2b-link" href="checkout.html?type=b2b">네일샵·살롱 도매 구매 <span aria-hidden="true">→</span></a>
+          <style>.b2b-link{flex-basis:100%;text-align:center;font-size:15px;color:var(--ink-soft);text-underline-offset:4px;padding:6px 0}.b2b-link:hover{color:var(--ink)}</style>
         </div>
         <div class="acc">
           <details id="how">
@@ -501,7 +503,7 @@ if(!location.hash){window.scrollTo(0,0);addEventListener('load',()=>{window.scro
         <h4>Contact</h4>
         <ul>
           <li><a href="mailto:hello@theoliveskin.com">hello@theoliveskin.com</a></li>
-          <li><a href="https://www.payapp.kr/L/z4lfT3" data-i18n="wholesale">Wholesale inquiries</a></li>
+          <li><a href="checkout.html?type=b2b" data-i18n="wholesale">Wholesale inquiries</a></li>
           <li><a href="checkout.html" data-i18n="checkout">Checkout</a></li>
         </ul>
       </div>

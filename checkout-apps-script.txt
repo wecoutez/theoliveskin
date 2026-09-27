@@ -185,33 +185,41 @@ function logOrder(o, qty, amount) {
 const KR_SHEET = '국내 주문';
 const KR_PRICE = 16000;     // 한 병 가격 (원) — kr/checkout.html 과 같게
 const KR_MAX = 10;
-const KR_HEAD = ['주문 시각', '주문번호', '상태', '수량', '결제 금액', '이름', '휴대폰', '이메일', '우편번호', '주소', '상세주소', '배송 메모', '페이앱 결제번호', '결제 시각', '실제 결제 금액'];
+// 도매 (네일샵·살롱) — kr/checkout.html 과 같게
+const B2B = { unit: 7000, bulkUnit: 6000, bulkFrom: 50, step: 10, max: 500 };
+const KR_HEAD = ['주문 시각', '주문번호', '상태', '수량', '결제 금액', '이름', '휴대폰', '이메일', '우편번호', '주소', '상세주소', '배송 메모', '페이앱 결제번호', '결제 시각', '실제 결제 금액', '구분', '상호명', '사업자번호'];
 
 function krSheet() {
   const ss = SpreadsheetApp.getActiveSpreadsheet() || SpreadsheetApp.openById(prop('SHEET_ID'));
   let sh = ss.getSheetByName(KR_SHEET);
   if (!sh) {
     sh = ss.insertSheet(KR_SHEET);
-    sh.getRange(1, 1, 1, KR_HEAD.length).setValues([KR_HEAD]).setFontWeight('bold');
     sh.setFrozenRows(1);
     sh.getRange('G:I').setNumberFormat('@');   // 전화번호·우편번호 앞자리 0 유지
   }
+  sh.getRange(1, 1, 1, KR_HEAD.length).setValues([KR_HEAD]).setFontWeight('bold');   // 새 열(구분·상호명·사업자번호)도 제목 채움
   return sh;
 }
 const cell = v => { v = String(v == null ? '' : v).trim().slice(0, 200); return /^[=+\-@]/.test(v) ? "'" + v : v; };
 
 // 주문서 저장 — 금액은 여기서 계산 (브라우저가 보낸 금액은 쓰지 않음)
 function krOrder(b) {
-  const qty = Math.max(1, Math.min(KR_MAX, parseInt(b.qty, 10) || 1));
+  const b2b = b.type === 'b2b';
+  let qty = parseInt(b.qty, 10) || 0;
+  if (b2b) { if (qty < B2B.step || qty > B2B.max || qty % B2B.step) return { ok: false, error: 'qty' }; }
+  else qty = Math.max(1, Math.min(KR_MAX, qty || 1));
   const phone = String(b.phone || '').replace(/[^0-9]/g, '');
-  if (!b.name || !/^01[0-9]{8,9}$/.test(phone) || !b.zip || !b.addr1 || !b.agree) return { ok: false, error: 'invalid' };
-  const orderNo = 'OS' + Utilities.formatDate(new Date(), TZ, 'yyMMdd') + '-' + Math.random().toString(36).slice(2, 7).toUpperCase();
-  const price = qty * KR_PRICE;
+  if (!b.name || !/^01[0-9]{8,9}$/.test(phone) || !b.zip || !b.addr1 || !b.agree || (b2b && !b.shop)) return { ok: false, error: 'invalid' };
+  const orderNo = (b2b ? 'OSB' : 'OS') + Utilities.formatDate(new Date(), TZ, 'yyMMdd') + '-' + Math.random().toString(36).slice(2, 7).toUpperCase();
+  const unit = b2b ? (qty >= B2B.bulkFrom ? B2B.bulkUnit : B2B.unit) : KR_PRICE;
+  const price = qty * unit;
   krSheet().appendRow([
     Utilities.formatDate(new Date(), TZ, 'yyyy-MM-dd HH:mm'), orderNo, '결제 대기', qty, price,
-    cell(b.name), phone, cell(b.email), cell(b.zip), cell(b.addr1), cell(b.addr2), cell(b.memo), '', '', ''
+    cell(b.name), phone, cell(b.email), cell(b.zip), cell(b.addr1), cell(b.addr2), cell(b.memo), '', '', '',
+    b2b ? '도매' : '개인', cell(b2b ? b.shop : ''), cell(b2b ? b.biz : '')
   ]);
-  return { ok: true, orderNo: orderNo, price: price, goodname: 'Glow Drop 글로우드롭 15ml x ' + qty };
+  return { ok: true, type: b2b ? 'b2b' : 'retail', orderNo: orderNo, price: price,
+           goodname: (b2b ? '[도매] ' : '') + 'Glow Drop 글로우드롭 15ml x ' + qty };
 }
 
 // 페이앱 결제 알림 (feedbackurl) — 폼 형식으로 들어옴. 'SUCCESS' 를 돌려줘야 페이앱이 재전송하지 않음

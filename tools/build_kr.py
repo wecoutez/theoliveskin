@@ -9,7 +9,6 @@ from pathlib import Path
 
 
 PRICE_WON = 16000
-WHOLESALE_URL = "https://www.payapp.kr/L/z4lfT3"  # 국내 도매용(네일샵) 페이앱 결제 링크
 PRICE_KRW = f"{PRICE_WON:,}"
 SITE = "https://www.theoliveskin.com"
 
@@ -49,13 +48,15 @@ rep('announce:"전 세계 배송"', 'announce:"국내 배송 · 간편결제"')
 rep('<span class="total" id="total">$18.00</span>', f'<span class="total" id="total">{PRICE_KRW}원</span>')
 rep("tEl.textContent = '$' + (qty*PRICE).toFixed(2);", "tEl.textContent = (qty*PRICE_WON).toLocaleString('ko-KR') + '원';")
 rep('<button type="button" class="pill" id="add-bag" data-i18n="addBag">Add to bag</button>',
-    '<button type="button" class="pill" id="add-bag" data-i18n="addBag" style="display:none">Add to bag</button>')
+    '<button type="button" class="pill" id="add-bag" data-i18n="addBag" style="display:none">Add to bag</button>'
+    '\n          <a class="b2b-link" href="checkout.html?type=b2b">네일샵·살롱 도매 구매 <span aria-hidden="true">→</span></a>'
+    '\n          <style>.b2b-link{flex-basis:100%;text-align:center;font-size:15px;color:var(--ink-soft);text-underline-offset:4px;padding:6px 0}.b2b-link:hover{color:var(--ink)}</style>')
 rep("buy.href = 'checkout.html?qty=' + qty + '&lang=' + current;", "buy.href = 'checkout.html?qty=' + qty;")
 # 구매 버튼 → 한국어 주문서(kr/checkout.html) → 페이앱 결제
 rep('m4:"PayPal · 카드 결제"', 'm4:"페이앱 · 카드 · 계좌이체 · 간편결제"')
 # 푸터 '도매 문의' → 도매 결제 링크
 rep('<a href="mailto:hello@theoliveskin.com?subject=Wholesale" data-i18n="wholesale">Wholesale inquiries</a>',
-    f'<a href="{WHOLESALE_URL}" data-i18n="wholesale">Wholesale inquiries</a>')
+    '<a href="checkout.html?type=b2b" data-i18n="wholesale">Wholesale inquiries</a>')
 rep('wholesale:"도매 문의"', 'wholesale:"도매 주문 (네일샵·살롱)"')
 rep('<a href="checkout.html" data-i18n="checkout">Checkout</a>', '<a href="checkout.html" data-i18n="checkout">Checkout</a>')  # kr/checkout.html (한국어 주문서)
 rep("var current = 'en';", f"var current = 'en', PRICE_WON = {PRICE_WON};")
