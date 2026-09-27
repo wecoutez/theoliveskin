@@ -667,7 +667,7 @@ a.kpi:hover{transform:translateY(-2px)}
 @media (max-width:900px){.qs{grid-template-columns:1fr}}
 @media (max-width:640px){.q-h{flex-direction:column;align-items:flex-start}.q-m{grid-template-columns:58px minmax(0,1fr);gap:10px}}
 /* 제목 밑 회색 설명 줄은 모두 숨김 */
-.sec-head p,.today{display:none}
+.sec-head p,.today,.kpi .sub{display:none}
 </style>
 </head>
 <body>
@@ -1962,7 +1962,11 @@ const stamp=()=>{$('updated').textContent='최근 반영 '+new Date().toLocaleTi
 const CACHE='os-admin-cache';
 function apply(j,fromCache){state.orders=j.orders||[];state.vendors=j.vendors||[];state.settings={...DEFAULTS,...(j.settings||{})};state.loaded=true;
   if(!fromCache){stamp();try{localStorage.setItem(CACHE,JSON.stringify({vendors:state.vendors,orders:state.orders,settings:j.settings||{},at:Date.now()}));}catch(e){}}
-  render();}
+  render();
+  // 알리바바 병 견적 업체가 없으면 한 번 추가 (가격 등은 다음 주 업데이트)
+  if(!fromCache&&API_URL&&KEY&&!addedAlibaba&&!state.vendors.some(v=>/알리바바|alibaba/i.test(v.name||''))){addedAlibaba=true;
+    api({action:'saveVendor',vendor:{id:'',name:'알리바바 (병 공급처)',role:'용기(병)',status:'견적 요청 중',item:'15ml 드로퍼 유리병',price:'다음 주 업데이트 예정',includes:'',payment:'',quoteDate:'',memo:'MOQ 3,000개 · 가격·조건 다음 주 업데이트 예정'}}).catch(()=>{addedAlibaba=false;});}}
+var addedAlibaba=false;
 function loadCache(){try{const c=JSON.parse(localStorage.getItem(CACHE)||'null');if(c&&Array.isArray(c.orders)){apply(c,true);
   $('updated').textContent='새 내용 확인 중…';return true;}}catch(e){}return false;}
 async function api(body,tries=2){
