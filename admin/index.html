@@ -379,6 +379,29 @@ a.kpi:hover{transform:translateY(-2px)}
   table.stack-t td.t-act{margin-left:auto}
   table.stack-t td.empty{flex:1 0 100%}
 }
+
+/* 방문자 지도 */
+.vcard{padding:22px 24px}
+.vtop{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;margin-bottom:12px}
+.vlive{display:inline-flex;align-items:center;gap:8px;font-size:15px;padding:7px 14px;border-radius:999px;background:rgba(192,138,46,.12)}
+.vlive i,.vdot{width:9px;height:9px;border-radius:50%;background:#C08A2E;display:inline-block;box-shadow:0 0 0 0 rgba(192,138,46,.6);animation:vpulse 1.8s infinite}
+.vlive b{font-weight:600;font-variant-numeric:tabular-nums}
+.vleg{display:flex;align-items:center;gap:4px;font-size:12px;opacity:.8}
+.vleg i{width:18px;height:10px;border-radius:3px;display:inline-block}
+.vleg .vdot{margin-left:12px;animation:none}
+.vmap{position:relative}
+.vmap svg{display:block;width:100%;height:auto}
+.vmap .land{fill:#ECE9DF;stroke:#fff;stroke-width:.5;transition:opacity .15s}
+.vmap .land:hover{opacity:.75;cursor:default}
+.vmap .ring{fill:none;stroke:#C08A2E;stroke-width:1.5;transform-box:fill-box;transform-origin:center;animation:vring 1.8s ease-out infinite}
+.vmap .spot{fill:#C08A2E;fill-opacity:.85;stroke:#fff;stroke-width:1}
+.vmap g{cursor:default}
+.vtip{position:absolute;pointer-events:none;background:#2F3522;color:#fff;font-size:13px;padding:7px 11px;border-radius:10px;white-space:nowrap;transform:translate(-50%,calc(-100% - 12px))}
+.vmsg{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);margin:0;background:rgba(255,255,255,.92);padding:14px 18px;border-radius:14px;font-size:14px;text-align:center;max-width:90%;line-height:1.6}
+.vlist{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));column-gap:28px;margin-top:14px}
+@keyframes vpulse{0%{box-shadow:0 0 0 0 rgba(192,138,46,.55)}70%{box-shadow:0 0 0 8px rgba(192,138,46,0)}100%{box-shadow:0 0 0 0 rgba(192,138,46,0)}}
+@keyframes vring{0%{transform:scale(1);opacity:.9}100%{transform:scale(3.2);opacity:0}}
+@media (prefers-reduced-motion:reduce){.vmap .ring,.vlive i{animation:none}}
 </style>
 </head>
 <body>
@@ -465,8 +488,15 @@ a.kpi:hover{transform:translateY(-2px)}
     <div class="card chart"><svg id="line" viewBox="0 0 640 260" role="img" aria-label="날짜별 누적 판매 병 수 그래프"></svg></div>
   </section>
   <section>
-    <div class="sec-head"><h2>방문자 · 나라별</h2><p id="visitSub">최근 28일 · Google Analytics</p></div>
-    <div class="card" id="visits" style="padding:22px 24px"><p style="margin:0;opacity:.7">불러오는 중…</p></div>
+    <div class="sec-head"><h2>방문자 지도</h2><p id="visitSub">최근 28일 · Google Analytics</p></div>
+    <div class="card vcard">
+      <div class="vtop">
+        <span class="vlive" id="vlive"><i></i>지금 접속 <b id="liveN">–</b>명</span>
+        <span class="vleg"><span>적음</span><i style="background:#DCD9C3"></i><i style="background:#B7BC90"></i><i style="background:#8E9860"></i><i style="background:#67743A"></i><i style="background:#4B5728"></i><span>많음</span><span class="vdot"></span><span>지금 접속</span></span>
+      </div>
+      <div class="vmap"><svg id="vmap" role="img" aria-label="나라별 방문자 지도"></svg><div class="vtip" id="vtip" hidden></div><p class="vmsg" id="vmsg" hidden></p></div>
+      <div class="vlist" id="visits"></div>
+    </div>
   </section>
   </div>
 
@@ -1455,29 +1485,56 @@ function waitMsg(){$('lockMsg').textContent='확인하는 중…';
   return ()=>clearTimeout(t1);}
 function showApp(){$('lock').hidden=true;$('app').hidden=false;endEdit();go(location.hash.slice(1)||'dash');}
 function lockOut(msg){KEY='';try{sessionStorage.removeItem('os-admin-key');localStorage.removeItem(CACHE);}catch(e){}$('app').hidden=true;$('lock').hidden=false;$('lockMsg').textContent=msg||'';$('lockKey').value='';$('lockKey').focus();}
-/* 방문자 · 나라별 — Apps Script 가 Google Analytics 에서 가져옴 */
+/* 방문자 지도 — Apps Script 가 Google Analytics 에서 가져옴 (최근 28일 + 지금 접속 중) */
+let worldP=null;const world=()=>worldP||(worldP=fetch('world.json').then(r=>r.json()));
+let knames=null;try{knames=new Intl.DisplayNames(['ko'],{type:'region'});}catch(e){}
+const kname=(code,fallback)=>{if(code==='(not set)'||fallback==='(not set)')return '알 수 없음';try{return (knames&&/^[A-Z]{2}$/.test(code||'')&&knames.of(code))||fallback||code;}catch(e){return fallback||code;}};
+const flag=c=>/^[A-Z]{2}$/.test(c||'')?String.fromCodePoint(...[...c].map(x=>127397+x.charCodeAt(0))):'🌐';
+const SCALE=['#DCD9C3','#B7BC90','#8E9860','#67743A','#4B5728'];
+const SVGNS='http://www.w3.org/2000/svg';
+const sv=(tag,attrs)=>{const e=document.createElementNS(SVGNS,tag);for(const k in attrs)e.setAttribute(k,attrs[k]);return e;};
+function drawMap(w,j){
+  const svg=$('vmap');svg.setAttribute('viewBox',`0 0 ${w.w} ${w.h}`);svg.replaceChildren();
+  svg.append(sv('path',{d:w.sphere,fill:'#F7F5EF'}));
+  const by={},live={};(j?.rows||[]).forEach(r=>by[r.code]=r);(j?.live?.rows||[]).forEach(r=>live[r.code]=r);
+  const max=Math.max(1,...Object.values(by).map(r=>r.users));
+  const tip=$('vtip'),box=svg.parentNode;
+  const show=(ev,code)=>{const r=by[code],l=live[code];const b=box.getBoundingClientRect();
+    tip.textContent=`${flag(code)} ${kname(code,r?.country||l?.country)} · 28일 ${r?r.users.toLocaleString('ko-KR'):0}명${l?' · 지금 '+l.users+'명':''}`;
+    tip.style.left=(ev.clientX-b.left)+'px';tip.style.top=(ev.clientY-b.top)+'px';tip.hidden=false;};
+  for(const code in w.c){const c=w.c[code];if(!c.d)continue;
+    const r=by[code];const p=sv('path',{d:c.d,class:'land'});
+    if(r&&r.users)p.style.fill=SCALE[Math.min(4,Math.floor(Math.log(r.users)/Math.log(max+1)*5))];
+    p.addEventListener('mousemove',ev=>show(ev,code));p.addEventListener('mouseleave',()=>tip.hidden=true);
+    svg.append(p);}
+  for(const code in live){const c=w.c[code];if(!c)continue;const rad=Math.min(10,3.5+Math.sqrt(live[code].users)*2);
+    const g=sv('g',{});g.append(sv('circle',{cx:c.x,cy:c.y,r:rad,class:'ring'}),sv('circle',{cx:c.x,cy:c.y,r:rad,class:'spot'}));
+    g.addEventListener('mousemove',ev=>show(ev,code));g.addEventListener('mouseleave',()=>tip.hidden=true);svg.append(g);}
+}
 async function loadVisitors(){
-  const box=$('visits');
-  const msg=(t,sub)=>{box.replaceChildren(h('p',{style:'margin:0;font-size:15px',text:t}));if(sub)box.append(h('p',{style:'margin:8px 0 0;font-size:13px;opacity:.7',text:sub}));};
+  const list=$('visits'),msg=$('vmsg');
+  const note=(t)=>{msg.textContent=t;msg.hidden=!t;};
+  let w=null;try{w=await world();}catch(e){}
   try{
     const j=await mktCall({action:'visitors'});
-    let names=null;try{names=new Intl.DisplayNames(['ko'],{type:'region'});}catch(e){}
-    const cname=r=>{if(r.country==='(not set)')return '알 수 없음';try{return (names&&/^[A-Z]{2}$/.test(r.code||'')&&names.of(r.code))||r.country;}catch(e){return r.country;}};
-    const flag=c=>/^[A-Z]{2}$/.test(c||'')?String.fromCodePoint(...[...c].map(x=>127397+x.charCodeAt(0))):'🌐';
-    $('visitSub').textContent=`최근 ${j.days}일 · 방문자 ${j.users.toLocaleString('ko-KR')}명 · ${j.rows.length}개국`;
-    if(!j.rows.length){msg('아직 방문 기록이 없어요.','사이트에 방문자가 생기면 하루 안에 여기에 나라별로 보여요.');return;}
+    if(w)drawMap(w,j);note('');
+    $('liveN').textContent=(j.live?.users||0).toLocaleString('ko-KR');
+    $('visitSub').textContent=`최근 ${j.days}일 · 방문자 ${j.users.toLocaleString('ko-KR')}명 · ${j.rows.length}개국 · 1분마다 새로고침`;
+    if(!j.rows.length){list.replaceChildren();note('아직 방문 기록이 없어요. 방문자가 생기면 하루 안에 지도에 색이 칠해져요.');return;}
     const max=j.rows[0].users||1;
-    box.replaceChildren(...j.rows.map(r=>h('div',{style:'display:grid;grid-template-columns:minmax(120px,190px) 1fr 64px;gap:12px;align-items:center;padding:7px 0;font-size:15px'},
-      h('span',{text:`${flag(r.code)} ${cname(r)}`}),
-      h('span',{style:'height:10px;border-radius:999px;background:rgba(75,87,40,.12);overflow:hidden'},h('i',{style:`display:block;height:100%;width:${Math.max(2,r.users/max*100)}%;background:var(--olive);border-radius:999px`})),
+    list.replaceChildren(...j.rows.slice(0,12).map(r=>h('div',{style:'display:grid;grid-template-columns:minmax(110px,170px) 1fr 56px;gap:10px;align-items:center;padding:6px 0;font-size:14px'},
+      h('span',{text:`${flag(r.code)} ${kname(r.code,r.country)}`}),
+      h('span',{style:'height:8px;border-radius:999px;background:rgba(75,87,40,.12);overflow:hidden'},h('i',{style:`display:block;height:100%;width:${Math.max(3,r.users/max*100)}%;background:var(--olive);border-radius:999px`})),
       h('b',{style:'text-align:right;font-weight:500;font-variant-numeric:tabular-nums',text:r.users.toLocaleString('ko-KR')+'명'}))));
   }catch(e){
-    if(e?.error==='no_ga')msg('Google Analytics 연결이 아직 안 됐어요.','Apps Script 스크립트 속성에 GA4_PROPERTY_ID 를 넣고, 서비스에서 Google Analytics Data API 를 추가해 주세요.');
-    else if(e?.error==='no_service')msg('Apps Script 에 Google Analytics Data API 서비스가 없어요.','Apps Script 왼쪽 서비스 ＋ → Google Analytics Data API → 추가 후 다시 배포해 주세요.');
-    else if(e?.error==='bad_action'||e?.error==='auth')msg('Apps Script 를 새 버전(apps-script.txt)으로 바꿔야 보여요.');
-    else msg('방문자 정보를 불러오지 못했어요.',e?.detail||'');
+    if(w)drawMap(w,null);list.replaceChildren();$('liveN').textContent='–';
+    if(e?.error==='no_ga')note('Google Analytics 연결이 아직 안 됐어요. Apps Script 스크립트 속성에 GA4_PROPERTY_ID 를 넣고, 서비스에서 Google Analytics Data API 를 추가해 주세요.');
+    else if(e?.error==='no_service')note('Apps Script 에 Google Analytics Data API 서비스가 없어요. 왼쪽 서비스 ＋ → Google Analytics Data API → 추가 후 다시 배포해 주세요.');
+    else if(e?.error==='bad_action'||e?.error==='auth')note('Apps Script 를 새 버전(apps-script.txt)으로 바꿔야 보여요.');
+    else note('방문자 정보를 불러오지 못했어요. '+(e?.detail||''));
   }
 }
+setInterval(()=>{if(!document.hidden&&KEY&&!$('app').hidden&&location.hash.replace('#','')in{'':1,dash:1})loadVisitors();},60000);
 async function refresh(){
   const pr=await probeApi();
   if(!pr.ok){
