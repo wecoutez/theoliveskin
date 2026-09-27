@@ -51,19 +51,69 @@ rep('btnShop:"글로우 드롭 구매하기 — $18"', f'btnShop:"글로우 드�
 rep('announce:"전 세계 배송"', 'announce:"국내 배송 · 간편결제"')
 rep('<span class="total" id="total">$18.00</span>', f'<span class="total" id="total">{PRICE_KRW}원</span>')
 rep("tEl.textContent = '$' + (qty*PRICE).toFixed(2);", "tEl.textContent = (qty*PRICE_WON).toLocaleString('ko-KR') + '원';")
-rep('<div class="buy">', '<label class="phone-row" style="display:flex;align-items:center;gap:14px;font-size:15px;margin:14px 0">휴대폰 번호'
-    ' <input id="buyer-phone" type="tel" inputmode="tel" autocomplete="tel" placeholder="010-0000-0000" required'
-    ' style="flex:1;max-width:240px;font:inherit;padding:10px 16px;border:1px solid var(--line);border-radius:999px;background:#fff"></label>\n        <div class="buy">')
 rep('<button type="button" class="pill" id="add-bag" data-i18n="addBag">Add to bag</button>',
     '<button type="button" class="pill" id="add-bag" data-i18n="addBag" style="display:none">Add to bag</button>')
 rep("buy.href = 'checkout.html?qty=' + qty + '&lang=' + current;", "buy.href = '#shop';")
-# 구매 버튼 → 페이앱 결제창 (수량만큼 금액, 배송지 요청)
-rep("  var toast = document.getElementById('toast'), timer;", '''  buy.addEventListener('click', function(ev){
+# 구매 버튼 → 주문 확인 창(수량·금액·휴대폰 번호) → 페이앱 결제창 (배송지 요청)
+ORDER_DIALOG = """
+<dialog id="order" class="order-sheet" aria-labelledby="order-h">
+  <form method="dialog" id="order-form" novalidate>
+    <p class="tag">Olive Skin · 주문 확인</p>
+    <h3 id="order-h">Glow Drop 15ml</h3>
+    <dl class="order-sum">
+      <div><dt>수량</dt><dd id="o-qty">1개</dd></div>
+      <div><dt>결제 금액</dt><dd id="o-total">PRICE_KRW원</dd></div>
+    </dl>
+    <label class="o-field">휴대폰 번호
+      <input id="buyer-phone" type="tel" inputmode="tel" autocomplete="tel" placeholder="010-0000-0000" required>
+      <small>결제 안내와 배송 연락에만 사용합니다.</small>
+    </label>
+    <p class="o-err" id="o-err" role="alert" hidden>휴대폰 번호를 정확히 입력해 주세요.</p>
+    <div class="o-actions">
+      <button type="button" class="pill ghost" id="o-cancel">닫기</button>
+      <button type="submit" class="pill primary" id="o-pay">결제하기</button>
+    </div>
+    <p class="o-note">다음 화면(페이앱)에서 배송지와 결제 수단을 입력합니다.</p>
+  </form>
+</dialog>
+<style>
+.order-sheet{border:0;padding:0;border-radius:20px;width:min(420px,calc(100vw - 32px));background:var(--bg);color:var(--ink);box-shadow:0 30px 80px -20px rgba(20,20,14,.45)}
+.order-sheet::backdrop{background:rgba(20,20,14,.45);backdrop-filter:blur(2px)}
+.order-sheet form{padding:28px 28px 22px;display:grid;gap:16px}
+.order-sheet .tag{font-size:12px;font-weight:500;letter-spacing:.12em;color:var(--ink-soft)}
+.order-sheet h3{font-family:var(--display);font-weight:400;font-size:34px;line-height:1;margin:-6px 0 0}
+.order-sum{margin:0;border-block:1px solid var(--line);padding:12px 0;display:grid;gap:6px;font-size:15px}
+.order-sum div{display:flex;justify-content:space-between}
+.order-sum dt{color:var(--ink-soft)}
+.order-sum dd{margin:0;font-variant-numeric:tabular-nums}
+#o-total{font-weight:500;color:var(--olive)}
+.o-field{display:grid;gap:8px;font-size:15px;font-weight:500}
+.o-field input{font:inherit;font-weight:400;padding:13px 18px;border:1px solid var(--line);border-radius:999px;background:#fff}
+.o-field input:focus{outline:2px solid var(--olive);outline-offset:1px}
+.o-field small{font-size:13px;font-weight:400;color:var(--ink-soft)}
+.o-err{font-size:14px;color:#9B3B2E;margin:-6px 0 0}
+.o-actions{display:grid;grid-template-columns:1fr 2fr;gap:10px}
+.o-actions .pill{min-height:52px;width:100%}
+.o-note{font-size:13px;color:var(--ink-soft);text-align:center}
+</style>
+"""
+rep("  var toast = document.getElementById('toast'), timer;", """  var dlg = document.getElementById('order'), ph = document.getElementById('buyer-phone'), oErr = document.getElementById('o-err');
+  buy.addEventListener('click', function(ev){
     ev.preventDefault();
-    var ph = document.getElementById('buyer-phone'), num = ph.value.replace(/[^0-9]/g, '');
-    if(!/^01[0-9]{8,9}$/.test(num)){ ph.focus(); ph.setCustomValidity('휴대폰 번호를 정확히 입력해 주세요'); ph.reportValidity(); return; }
-    ph.setCustomValidity('');
-    if(!window.PayApp){ alert('결제창을 불러오지 못했어요. 새로고침 후 다시 시도해 주세요.'); return; }
+    document.getElementById('o-qty').textContent = qty + '개';
+    document.getElementById('o-total').textContent = (qty*PRICE_WON).toLocaleString('ko-KR') + '원';
+    oErr.hidden = true;
+    if(dlg.showModal) dlg.showModal(); else dlg.setAttribute('open','');
+    setTimeout(function(){ ph.focus(); }, 50);
+  });
+  document.getElementById('o-cancel').addEventListener('click', function(){ dlg.close(); });
+  ph.addEventListener('input', function(){ oErr.hidden = true; });
+  document.getElementById('order-form').addEventListener('submit', function(ev){
+    ev.preventDefault();
+    var num = ph.value.replace(/[^0-9]/g, '');
+    if(!/^01[0-9]{8,9}$/.test(num)){ oErr.hidden = false; ph.focus(); return; }
+    if(!window.PayApp){ oErr.textContent = '결제창을 불러오지 못했어요. 새로고침 후 다시 시도해 주세요.'; oErr.hidden = false; return; }
+    dlg.close();
     PayApp.setDefault('userid', PAYAPP_USERID);
     PayApp.setDefault('shopname', PAYAPP_SHOP);
     PayApp.setParam('goodname', 'Glow Drop 글로우드롭 15ml x ' + qty)
@@ -73,9 +123,9 @@ rep("  var toast = document.getElementById('toast'), timer;", '''  buy.addEventL
       .setParam('smsuse', 'n')
       .payrequest();
   });
-  document.getElementById('buyer-phone').addEventListener('input', function(){ this.setCustomValidity(''); });
 
-  var toast = document.getElementById('toast'), timer;''')
+  var toast = document.getElementById('toast'), timer;""")
+rep('<footer', ORDER_DIALOG.replace('PRICE_KRW', PRICE_KRW) + '<footer')
 rep('</body>', '<script src="https://lite.payapp.kr/public/api/v2/payapp-lite.js"></script>\n</body>')
 rep('m4:"PayPal · 카드 결제"', 'm4:"페이앱 · 카드 · 계좌이체 · 간편결제"')
 # 푸터 '도매 문의' → 도매 결제 링크
