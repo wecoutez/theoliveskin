@@ -441,7 +441,8 @@ function visitors() {
 }
 
 /* ===== 웹 앱 ===== */
-function doGet() { return out({ ok: true, service: 'olive-skin' }); }
+const SCRIPT_VERSION = '2026-09-27';
+function doGet() { return out({ ok: true, service: 'olive-skin', version: SCRIPT_VERSION, adminKey: !!prop('ADMIN_KEY') }); }
 const CHECKOUT_ACTIONS = ['create', 'patch', 'capture', 'krOrder'];
 function doPost(e) {
   // 페이앱 결제 알림은 JSON 이 아니라 폼 형식

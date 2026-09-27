@@ -720,7 +720,21 @@ const STATUSES=['주문받음','입금 완료','전달 완료'];
 const DEFAULTS={goal:3000,price:7000,upfront:6095000,deadline:'',unitCost:2032,retail:16000,b2b1:7000,b2b2:6000,b2b3:5000};
 const state={vendors:[],orders:[],settings:{...DEFAULTS},filter:'전체',editing:null,loaded:false};
 /* ===== 설정 — Apps Script 웹 앱 주소(…/exec)를 여기에 붙여 넣기 ===== */
-const API_URL="https://script.google.com/macros/s/AKfycbzJEptWG0-nQ8rsBMArVh3I1vkcissvWY6NVUVmPNzAObLgkVMZJVkjVdF5U422U2SJRQ/exec";
+// Apps Script 주소 — 관리자용 · 결제용 두 주소 중 새 통합 스크립트(apps-script.txt)가 올라간 쪽을 자동으로 씀
+const API_URLS=["https://script.google.com/macros/s/AKfycbzJEptWG0-nQ8rsBMArVh3I1vkcissvWY6NVUVmPNzAObLgkVMZJVkjVdF5U422U2SJRQ/exec",
+  "https://script.google.com/macros/s/AKfycbxmSmlmpWncaSchQgttNbCoqv7g3kaGwrdwCcmeqUxUf2DQaEoI_VnuC5QMCdn7ee9Wsw/exec"];
+let API_URL=API_URLS[0], apiProbe=null;
+function probeApi(){
+  if(apiProbe)return apiProbe;
+  const look=u=>fetch(u).then(r=>r.json()).then(j=>({u,j}),()=>({u,j:null}));
+  apiProbe=Promise.all(API_URLS.map(look)).then(res=>{
+    const good=res.find(x=>x.j&&x.j.service==='olive-skin'&&x.j.adminKey)||res.find(x=>x.j&&x.j.service==='olive-skin');
+    if(good){API_URL=good.u;return {ok:true,res,good};}
+    return {ok:false,res};
+  });
+  return apiProbe;
+}
+const scriptName=j=>!j?'연결 안 됨':j.service==='olive-skin'?'새 통합 스크립트':j.service==='olive-skin-admin'?'옛 관리자 스크립트':j.service==='olive-skin-checkout'?'옛 결제 스크립트':'알 수 없는 스크립트';
 /* ================================================================ */
 let KEY='';try{localStorage.removeItem('os-admin-key');KEY=sessionStorage.getItem('os-admin-key')||'';}catch(e){}
 const $=id=>document.getElementById(id);
@@ -1113,6 +1127,7 @@ function mktLocal(){try{return JSON.parse(localStorage.getItem('olv-mkt')||'null
 let mkt=mktNorm(mktLocal()),mktMode=API_URL?'server':'local',mktDirty=false,mktTimer=0;
 function mktNote(msg){const n=$('mktNote');n.textContent=msg;n.hidden=!msg;}
 async function mktCall(body){
+  await probeApi();
   const ctl=new AbortController(),tm=setTimeout(()=>ctl.abort(),30000);
   try{const r=await fetch(API_URL,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({...body,key:KEY}),signal:ctl.signal});
     let j;try{j=JSON.parse(await r.text());}catch(x){throw {error:'server'};}
@@ -1406,6 +1421,7 @@ function apply(j,fromCache){state.orders=j.orders||[];state.vendors=j.vendors||[
 function loadCache(){try{const c=JSON.parse(localStorage.getItem(CACHE)||'null');if(c&&Array.isArray(c.orders)){apply(c,true);
   $('updated').textContent='새 내용 확인 중…';return true;}}catch(e){}return false;}
 async function api(body,tries=2){
+  await probeApi();
   let lastErr;
   for(let n=0;n<tries;n++){
     const ctl=new AbortController(),tm=setTimeout(()=>ctl.abort(),30000);
@@ -1430,7 +1446,7 @@ async function api(body,tries=2){
 }
 function showError(e){
   const n=$('notice'); n.replaceChildren();
-  n.append('주문 내역을 불러오지 못했어요. '+(e?.detail||''));
+  n.append('주문 내역을 불러오지 못했어요. '+(e?.detail||(e?.error?'(오류: '+e.error+')':'')));
   const b=document.createElement('button');b.type='button';b.className='rowbtn';b.textContent='다시 시도';b.onclick=()=>{n.style.display='none';$('updated').textContent='불러오는 중…';refresh();};
   n.append(' ',b); n.style.display='block'; $('updated').textContent='불러오지 못함';
 }
@@ -1462,7 +1478,15 @@ async function loadVisitors(){
     else msg('방문자 정보를 불러오지 못했어요.',e?.detail||'');
   }
 }
-async function refresh(){mktPull();loadVisitors();try{await api({action:'list'});$('notice').style.display='none';}
+async function refresh(){
+  const pr=await probeApi();
+  if(!pr.ok){
+    const n=$('notice');n.replaceChildren();
+    n.append('Apps Script 가 아직 새 버전이 아니에요. 관리자 주소: '+scriptName(pr.res[0].j)+' · 결제 주소: '+scriptName(pr.res[1].j)+'. apps-script.txt 로 통째로 바꾼 뒤 배포 관리 → 기존 배포 수정 → 새 버전 으로 배포해 주세요.');
+    n.style.display='block';$('updated').textContent='불러오지 못함';loadVisitors();return;
+  }
+  if(!pr.good.j.adminKey){lockOut('Apps Script 스크립트 속성에 ADMIN_KEY 가 없어요. 프로젝트 설정 → 스크립트 속성 → ADMIN_KEY = 관리자 비밀번호 를 추가해 주세요.');return;}
+  mktPull();loadVisitors();try{await api({action:'list'});$('notice').style.display='none';}
   catch(e){if(e?.error==='no_admin_key')return;if(e?.error==='auth'||e?.error==='locked')lockOut($('lockMsg').textContent||'다시 비밀번호를 넣어 주세요.');else showError(e);}}
 
 /* 비밀번호는 코드에 없음. 아래는 비밀번호를 거꾸로 알아낼 수 없는 확인값만 있음 → 맞는지 즉시 판단 */
