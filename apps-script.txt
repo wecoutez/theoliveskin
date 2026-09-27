@@ -1,29 +1,193 @@
 /**
- * Olive Skin 결제(checkout.html)용 Apps Script — 전체 파일
+ * Olive Skin Apps Script — 전체 파일 (관리자 + 결제 하나로)
  * ------------------------------------------------------------
- * PayPal 주문 만들기(create) · 결제 확정(capture) · 배송 국가 변경(patch)
- * + 결제 완료 주문을 '온라인 주문' 시트에 기록
- * + 국내(한국어 사이트) 주문: 주문서 저장(krOrder) → 페이앱 결제 알림(feedbackurl)으로 '결제 완료' 표시 — '국내 주문' 시트
+ * 이 파일 하나가 전부 처리함:
+ *   · 관리자 페이지(/admin): 주문 · 설정 · 제작 업체 · 마케팅 탭 · 방문자(나라별)
+ *   · 영어 결제(checkout.html): PayPal 주문 만들기 · 확정 · 배송 국가 변경 → '온라인 주문' 시트
+ *   · 한국어 주문서(kr/checkout.html): 주문서 저장 → 페이앱 결제 알림 → '국내 주문' 시트
  *
- * [업데이트 방법]
- * 1) 결제용 Apps Script 프로젝트 열기 (checkout.html 의 ORDER_API 주소가 가리키는 프로젝트)
+ * [업데이트 방법] — 관리자용·결제용 프로젝트가 따로 있으면 두 곳 모두 이 파일로 바꿔도 됨
+ * 1) 구글 시트 → 확장 프로그램 → Apps Script
  * 2) 기존 코드를 전부 지우고 이 파일 내용을 붙여 넣고 저장
- * 3) 프로젝트 설정(톱니바퀴) → 스크립트 속성에 아래 두 개가 있는지 확인 (이름이 다르면 맞게 고치기)
- *      PAYPAL_CLIENT_ID  : PayPal Live 앱 Client ID (checkout.html 과 같은 값)
- *      PAYPAL_SECRET     : PayPal Live 앱 Secret
- *    (테스트용 샌드박스라면 PAYPAL_ENV = sandbox 추가)
- *      PAYAPP_LINKVAL    : (권장) 페이앱 판매자 관리자 → 설정 → 연동정보의 '연동 VALUE' — 결제 알림이 진짜 페이앱에서 왔는지 확인
- * 4) 배포 → 배포 관리 → (연필) 기존 배포 수정 → 버전: 새 버전 → 배포
+ * 3) 배포 → 배포 관리 → (연필) 기존 배포 수정 → 버전: 새 버전 → 배포
  *    ※ "새 배포"가 아니라 "기존 배포 수정"이어야 주소(…/exec)가 그대로 유지됨
  *
- * 가격·배송비는 여기서 계산함 (브라우저가 보낸 금액은 믿지 않음). checkout.html 과 값을 같게 유지.
+ * [스크립트 속성] 프로젝트 설정(톱니바퀴) → 스크립트 속성
+ *   ADMIN_KEY         : 관리자 페이지 비밀번호
+ *   PAYPAL_CLIENT_ID  : PayPal Live 앱 Client ID (checkout.html 과 같은 값)
+ *   PAYPAL_SECRET     : PayPal Live 앱 Secret
+ *   PAYAPP_LINKVAL    : (권장) 페이앱 판매자 관리자 → 설정 → 연동정보의 '연동 VALUE'
+ *   GA4_PROPERTY_ID   : (방문자 나라별 보기) Google Analytics 속성 ID — 숫자 9자리쯤
+ *                       + 왼쪽 '서비스' ＋ → Google Analytics Data API 추가
+ *   (샌드박스 테스트: PAYPAL_ENV = sandbox)
  */
+const TZ = 'Asia/Seoul';
+
+// 시트 정의: [필드, 시트 1행 제목]. 기존 시트에서 찾을 이름을 앞에서부터 확인
+const ORDERS = {
+  names: ['주문'],
+  fields: [['id', 'id'], ['date', '주문일'], ['buyer', '주문한 곳·사람'], ['channel', '판매 경로'], ['qty', '병 수'],
+    ['price', '한 병 가격'], ['status', '진행 상태'], ['owner', '받아온 사람'], ['phone', '전화번호'], ['memo', '메모'], ['createdAt', '등록 시각']],
+  nums: ['qty', 'price', 'createdAt']
+};
+const VENDORS = {
+  names: ['업체', '제작 정보', '제작정보', 'vendors'],
+  fields: [['id', 'id'], ['name', '회사'], ['role', '맡은 일'], ['contact', '담당자'], ['phone', '전화'], ['fax', '팩스'], ['email', '이메일'],
+    ['status', '상태'], ['address', '주소'], ['item', '품목'], ['price', '단가'], ['includes', '포함 내용'], ['payment', '결제 조건'],
+    ['quoteDate', '견적일'], ['memo', '메모'], ['createdAt', '등록 시각']],
+  nums: ['createdAt']
+};
+const SETTING_SHEET = '설정';
+const SETTING_KEYS = ['goal', 'price', 'upfront', 'deadline', 'unitCost', 'retail', 'b2b1', 'b2b2', 'b2b3'];
+const SETTING_DEFAULTS = { goal: 3000, price: 7000, upfront: 6095000, deadline: '', unitCost: 2032, retail: 16000, b2b1: 7000, b2b2: 6000, b2b3: 5000 };
+const MKT_SHEET = '마케팅';
+const MKT_CHUNK = 40000; // 시트 한 칸 글자 수 제한(5만) 아래로 나눠 저장
+
+function book() { return SpreadsheetApp.getActiveSpreadsheet(); }
+function out(o) { return ContentService.createTextOutput(JSON.stringify(o)).setMimeType(ContentService.MimeType.JSON); }
+function authed(key) {
+  const k = PropertiesService.getScriptProperties().getProperty('ADMIN_KEY');
+  return !!k && String(key || '') === k;
+}
+function safe(v) { // 시트 수식으로 읽히지 않게
+  v = String(v == null ? '' : v).trim().slice(0, 500);
+  return /^[=+\-@]/.test(v) ? "'" + v : v;
+}
+function fmtDate(v) { return v instanceof Date ? Utilities.formatDate(v, TZ, 'yyyy-MM-dd') : v; }
+
+/* ---------- 제목(1행)으로 열을 찾는 표 ---------- */
+function table(def) {
+  let sh = null;
+  for (const n of def.names) { sh = book().getSheetByName(n); if (sh) break; }
+  if (!sh) sh = book().insertSheet(def.names[0]);
+  const head = sh.getLastRow() >= 1 && sh.getLastColumn() >= 1
+    ? sh.getRange(1, 1, 1, sh.getLastColumn()).getValues()[0].map(h => String(h).trim()) : [];
+  const col = {};
+  def.fields.forEach(([k, label]) => {
+    let i = head.findIndex(h => h === k || h === label);
+    if (i < 0) {
+      i = head.length; head.push(label);
+      sh.getRange(1, i + 1).setValue(label).setFontWeight('bold');
+    }
+    col[k] = i;
+    if (!def.nums.includes(k)) sh.getRange(1, i + 1, sh.getMaxRows(), 1).setNumberFormat('@'); // 날짜·전화번호를 글자 그대로
+  });
+  if (sh.getFrozenRows() < 1) sh.setFrozenRows(1);
+  return { sh, col, width: head.length };
+}
+function readRows(def) {
+  const t = table(def);
+  if (t.sh.getLastRow() < 2) return [];
+  const vals = t.sh.getRange(2, 1, t.sh.getLastRow() - 1, Math.max(t.width, t.sh.getLastColumn())).getValues();
+  return vals.filter(r => String(r[t.col.id]).trim()).map(r => {
+    const o = {};
+    def.fields.forEach(([k]) => {
+      const v = fmtDate(r[t.col[k]]);
+      o[k] = def.nums.includes(k) ? (Number(v) || 0) : String(v == null ? '' : v);
+    });
+    return o;
+  });
+}
+function findRow(t, id) {
+  if (t.sh.getLastRow() < 2) return 0;
+  const ids = t.sh.getRange(2, t.col.id + 1, t.sh.getLastRow() - 1, 1).getValues();
+  for (let i = 0; i < ids.length; i++) if (String(ids[i][0]) === String(id)) return i + 2;
+  return 0;
+}
+function saveRow(def, o) {
+  const t = table(def);
+  const id = o.id ? String(o.id) : Utilities.getUuid();
+  const r = findRow(t, id);
+  const width = Math.max(t.width, t.sh.getLastColumn());
+  const row = r ? t.sh.getRange(r, 1, 1, width).getValues()[0] : new Array(width).fill(''); // 표에 없는 열은 건드리지 않음
+  def.fields.forEach(([k]) => {
+    if (k === 'id') row[t.col.id] = id;
+    else if (k === 'createdAt') row[t.col.createdAt] = Number(o.createdAt) || (r ? row[t.col.createdAt] : 0) || Date.now();
+    else if (def.nums.includes(k)) row[t.col[k]] = Number(o[k]) || 0;
+    else if (k in o) row[t.col[k]] = safe(o[k]);
+  });
+  if (r) t.sh.getRange(r, 1, 1, width).setValues([row]); else t.sh.appendRow(row);
+}
+function deleteRow(def, id) {
+  const t = table(def); const r = findRow(t, id);
+  if (r) t.sh.deleteRow(r);
+}
+
+/* ---------- 설정 (항목 · 값) ---------- */
+function settingSheet() {
+  let sh = book().getSheetByName(SETTING_SHEET);
+  if (!sh) {
+    sh = book().insertSheet(SETTING_SHEET);
+    sh.getRange(1, 1, 1, 2).setValues([['항목', '값']]).setFontWeight('bold');
+    sh.setFrozenRows(1);
+  }
+  return sh;
+}
+function readSettings() {
+  const st = settingSheet(), s = {};
+  if (st.getLastRow() > 1) st.getRange(2, 1, st.getLastRow() - 1, 2).getValues().forEach(([k, v]) => {
+    k = String(k).trim();
+    if (!SETTING_KEYS.includes(k)) return;
+    v = fmtDate(v);
+    s[k] = k === 'deadline' ? String(v || '') : Number(v) || 0;
+  });
+  return s;
+}
+function saveSettings(s) {
+  const st = settingSheet();
+  const keys = st.getLastRow() > 1 ? st.getRange(2, 1, st.getLastRow() - 1, 1).getValues().map(r => String(r[0]).trim()) : [];
+  SETTING_KEYS.forEach(k => {
+    if (!(k in s)) return;
+    const v = k === 'deadline' ? String(s[k] || '') : Number(s[k]) || 0;
+    let i = keys.indexOf(k);
+    if (i < 0) { keys.push(k); i = keys.length - 1; }
+    st.getRange(i + 2, 2).setNumberFormat('@');
+    st.getRange(i + 2, 1, 1, 2).setValues([[k, v]]);
+  });
+}
+
+/* ---------- 마케팅 탭 (통째로 JSON 저장) ---------- */
+function mktSheet() {
+  let sh = book().getSheetByName(MKT_SHEET);
+  if (!sh) {
+    sh = book().insertSheet(MKT_SHEET);
+    sh.getRange(1, 1, 1, 2).setValues([['part', 'json']]).setFontWeight('bold');
+    sh.setFrozenRows(1);
+  }
+  return sh;
+}
+function mktRead() {
+  const sh = mktSheet();
+  if (sh.getLastRow() < 2) return null;
+  const txt = sh.getRange(2, 2, sh.getLastRow() - 1, 1).getValues().map(r => String(r[0]).replace(/^~/, '')).join('');
+  if (!txt) return null;
+  try { return JSON.parse(txt); } catch (e) { return null; }
+}
+function mktWrite(m) {
+  const txt = JSON.stringify(m || {});
+  if (txt.length > 2000000) throw new Error('too_big');
+  const sh = mktSheet();
+  if (sh.getLastRow() > 1) sh.getRange(2, 1, sh.getLastRow() - 1, 2).clearContent();
+  const rows = [];
+  for (let i = 0; i < txt.length; i += MKT_CHUNK) rows.push([rows.length + 1, '~' + txt.slice(i, i + MKT_CHUNK)]); // ~ : 수식으로 읽히지 않게
+  sh.getRange(2, 2, rows.length, 1).setNumberFormat('@');
+  sh.getRange(2, 1, rows.length, 2).setValues(rows);
+}
+
+/** 처음 한 번만 실행 — 시트를 만들고 기본 설정을 넣음 (이미 있는 내용은 건드리지 않음) */
+function setup() {
+  table(ORDERS); table(VENDORS); mktSheet();
+  const cur = readSettings(), missing = {};
+  SETTING_KEYS.forEach(k => { if (!(k in cur)) missing[k] = SETTING_DEFAULTS[k]; });
+  saveSettings(missing);
+}
+
+/* ================= 결제 ================= */
 const PRICE = 18;            // 한 병 가격 (USD)
 const MAX_QTY = 10;
 const FREE_SHIP_MIN = 30;    // 상품 금액이 $30 이상이면 배송비 무료
 const SKU = 'OS-GLOWDROP-15';
 const ORDER_SHEET = '온라인 주문';
-const TZ = 'Asia/Seoul';
 
 /* ===== 배송비 표 (우체국 요금 기준) — checkout.html 의 SHIP 과 같음 ===== */
 const SHIP = {"base":60,"per":80,"fx":1400,"margin":1.15,"reg":4270,"kp":{"AU":[4670,6080,7500,8920,10360,11460,12560,13660,14770,15890],"BR":[5410,7030,8660,10280,11900,13380,14870,16350,17840,19340],"CA":[5540,7240,8920,10610,12310,13620,14930,16240,17560,18890],"CN":[4680,5920,7140,8370,9620,10600,11580,12570,13540,14530],"FR":[5510,7180,8850,10530,12220,13520,14820,16120,17420,18750],"DE":[5450,7100,8770,10420,12090,13390,14670,15950,17250,18550],"HK":[4160,5250,6340,7420,8540,9410,10280,11140,12010,12890],"ID":[4680,5800,6910,8030,9150,10210,11270,12330,13390,14450],"JP":[4550,5730,6930,8120,9340,10290,11240,12190,13130,14090],"MY":[4880,6040,7210,8380,9540,10650,11750,12860,13960,15070],"NZ":[4560,5950,7330,8720,10120,11200,12270,13350,14430,15520],"PH":[4480,5550,6620,7690,8760,9770,10790,11800,12820,13830],"RU":[5510,7180,8850,10530,12230,13530,14830,16130,17430,18760],"SG":[4710,5830,6960,8090,9210,10280,11340,12410,13480,14540],"ES":[5430,7080,8730,10380,12060,13340,14620,15900,17180,18490],"TW":[4330,5460,6590,7720,8880,9790,10690,11590,12500,13410],"TH":[4620,5720,6830,7930,9040,10090,11130,12180,13220,14270],"GB":[5170,6740,8300,9870,11470,12690,13910,15120,16340,17590],"US":[8090,8980,11060,13170,15280,16910,18530,20160,21780,23430],"VN":[5090,5860,6620,7380,8140,8910,9670,10430,11190,11950]},"sp":{"1":[4460,4990,5520,6050,7130,7840,8550,9260,9970,10680],"2":[5020,5740,6460,7180,8630,9220,9810,10400,10990,11540],"3":[5120,6130,7140,8150,10200,11150,12100,13050,14000,14940],"4":[5450,6580,7710,8840,11140,12550,13960,15370,16780,18230]},"kr":[3110,3350,3590,3830,4070,4310,4550,4790,5030,5270],"z":{"MO":1,"BD":2,"BN":2,"MM":2,"KH":2,"TL":2,"LA":2,"MN":2,"AL":3,"AD":3,"AT":3,"BE":3,"BA":3,"BG":3,"HR":3,"CY":3,"CZ":3,"DK":3,"EE":3,"FI":3,"GR":3,"HU":3,"IS":3,"IE":3,"IT":3,"LV":3,"LI":3,"LT":3,"LU":3,"MT":3,"MD":3,"MC":3,"ME":3,"NL":3,"MK":3,"NO":3,"PL":3,"PT":3,"RO":3,"SM":3,"RS":3,"SK":3,"SI":3,"SE":3,"CH":3,"UA":3,"AE":3,"BH":3,"IL":3,"JO":3,"KW":3,"LB":3,"OM":3,"QA":3,"SA":3,"TR":3,"IQ":3,"IN":3,"NP":3,"PK":3,"LK":3,"MV":3,"BT":3,"KZ":3,"UZ":3,"KG":3,"AZ":3,"AM":3,"GE":3,"PG":3,"GU":3,"MP":3,"MX":4,"AR":4,"CL":4,"CO":4,"PE":4,"UY":4,"EC":4,"BO":4,"PY":4,"CR":4,"PA":4,"GT":4,"HN":4,"SV":4,"NI":4,"DO":4,"JM":4,"TT":4,"BS":4,"BB":4,"PR":4,"ZA":4,"EG":4,"KE":4,"MA":4,"NG":4,"GH":4,"TZ":4,"UG":4,"TN":4,"ET":4,"MU":4,"SN":4,"CI":4,"DZ":4,"RW":4,"BW":4,"NA":4,"ZM":4,"FJ":4,"WS":4,"TO":4,"VU":4,"PF":4,"NC":4}};
@@ -245,9 +409,40 @@ function payappFeedback(p) {
   return 'SUCCESS';
 }
 
+/** 붙여 넣은 뒤 한 번 실행해 보기 — PayPal 연결과 배송비 계산 확인 (주문은 만들지 않음) */
+function test() {
+  console.log('token ok:', !!ppToken());
+  console.log('US 1병', JSON.stringify(amountFor('US', 1)));   // 배송비 $8 → 합계 $26
+  console.log('US 2병', JSON.stringify(amountFor('US', 2)));   // 무료배송 → 합계 $36
+}
+
+/* ===== 방문자 · 나라별 (Google Analytics 4) ===== */
+function visitors() {
+  const id = prop('GA4_PROPERTY_ID');
+  if (!id) return { ok: false, error: 'no_ga' };
+  if (typeof AnalyticsData === 'undefined') return { ok: false, error: 'no_service' };
+  const cache = CacheService.getScriptCache();
+  const hit = cache.get('visitors');
+  if (hit) return JSON.parse(hit);
+  const rep = AnalyticsData.Properties.runReport({
+    dateRanges: [{ startDate: '28daysAgo', endDate: 'today' }],
+    dimensions: [{ name: 'country' }, { name: 'countryId' }],
+    metrics: [{ name: 'activeUsers' }, { name: 'sessions' }],
+    orderBys: [{ metric: { metricName: 'activeUsers' }, desc: true }],
+    limit: 20
+  }, 'properties/' + String(id).replace(/[^0-9]/g, ''));
+  const rows = (rep.rows || []).map(r => ({
+    country: r.dimensionValues[0].value, code: r.dimensionValues[1].value,
+    users: Number(r.metricValues[0].value) || 0, sessions: Number(r.metricValues[1].value) || 0
+  }));
+  const res = { ok: true, days: 28, rows: rows, users: rows.reduce((a, r) => a + r.users, 0), at: Date.now() };
+  cache.put('visitors', JSON.stringify(res), 1800);   // 30분 보관
+  return res;
+}
+
 /* ===== 웹 앱 ===== */
-function out(o) { return ContentService.createTextOutput(JSON.stringify(o)).setMimeType(ContentService.MimeType.JSON); }
-function doGet() { return out({ ok: true, service: 'olive-skin-checkout' }); }
+function doGet() { return out({ ok: true, service: 'olive-skin' }); }
+const CHECKOUT_ACTIONS = ['create', 'patch', 'capture', 'krOrder'];
 function doPost(e) {
   // 페이앱 결제 알림은 JSON 이 아니라 폼 형식
   if (e.parameter && e.parameter.mul_no) {
@@ -259,27 +454,48 @@ function doPost(e) {
   }
   let b;
   try { b = JSON.parse(e.postData.contents); } catch (x) { return out({ ok: false, error: 'bad_request' }); }
+
+  // 결제 (비밀번호 없이 — 금액은 여기서 계산)
+  if (CHECKOUT_ACTIONS.indexOf(b.action) >= 0) {
+    try {
+      if (b.action === 'create') return out(createOrder(b));
+      if (b.action === 'patch') return out(patchOrder(b));
+      const lock = LockService.getScriptLock();
+      lock.waitLock(20000);
+      try { return out(b.action === 'capture' ? captureOrder(b) : krOrder(b)); } finally { lock.releaseLock(); }
+    } catch (x) { console.error(x); return out({ ok: false, error: 'server' }); }
+  }
+
+  // 관리자 (비밀번호 필요)
+  if (!authed(b.key)) return out({ ok: false, error: 'auth' });
+  if (b.action === 'visitors') {
+    try { return out(visitors()); } catch (x) { return out({ ok: false, error: 'ga', detail: String(x && x.message || x) }); }
+  }
+  const lock = LockService.getScriptLock();
+  try { lock.waitLock(10000); } catch (x) { return out({ ok: false, error: 'busy' }); }
   try {
     switch (b.action) {
-      case 'create': return out(createOrder(b));
-      case 'patch': return out(patchOrder(b));
-      case 'krOrder': return out(krOrder(b));
-      case 'capture': {
-        const lock = LockService.getScriptLock();
-        lock.waitLock(20000);
-        try { return out(captureOrder(b)); } finally { lock.releaseLock(); }
-      }
+      case 'list': break;
+      case 'save': saveRow(ORDERS, b.order || {}); break;
+      case 'delete': deleteRow(ORDERS, b.id); break;
+      case 'settings': saveSettings(b.settings || {}); break;
+      case 'saveVendor': saveRow(VENDORS, b.vendor || {}); break;
+      case 'deleteVendor': deleteRow(VENDORS, b.id); break;
+      case 'mkt': return out({ ok: true, mkt: mktRead() });
+      case 'mktSave': mktWrite(b.mkt); return out({ ok: true, mkt: mktRead() });
       default: return out({ ok: false, error: 'bad_action' });
     }
+    return out(Object.assign({ ok: true }, readAll()));
   } catch (x) {
-    console.error(x);
-    return out({ ok: false, error: 'server' });
-  }
+    return out({ ok: false, error: 'server', detail: String(x && x.message || x) });
+  } finally { lock.releaseLock(); }
 }
 
-/** 붙여 넣은 뒤 한 번 실행해 보기 — PayPal 연결과 배송비 계산 확인 (주문은 만들지 않음) */
+/** 붙여 넣은 뒤 한 번 실행해 보기 — 결제 연결 · 배송비 · 방문자 설정 확인 (주문은 만들지 않음) */
 function test() {
-  console.log('token ok:', !!ppToken());
+  console.log('ADMIN_KEY 있음:', !!prop('ADMIN_KEY'));
+  try { console.log('PayPal 연결:', !!ppToken()); } catch (e) { console.log('PayPal 연결 안 됨:', e.message); }
   console.log('US 1병', JSON.stringify(amountFor('US', 1)));   // 배송비 $8 → 합계 $26
   console.log('US 2병', JSON.stringify(amountFor('US', 2)));   // 무료배송 → 합계 $36
+  const v = visitors(); console.log('방문자:', v.ok ? v.users + '명 · ' + v.rows.length + '개국' : v.error);
 }
