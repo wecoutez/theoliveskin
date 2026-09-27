@@ -1,115 +1,170 @@
 /**
- * Olive Skin 관리자 페이지(/admin)용 Apps Script
+ * Olive Skin 관리자 페이지(/admin)용 Apps Script — 전체 파일
  * ------------------------------------------------------------
- * 1) 새 구글 시트를 만든다 → 확장 프로그램 → Apps Script
- * 2) 이 파일 내용을 전부 붙여 넣고 저장
- * 3) 프로젝트 설정(톱니바퀴) → 스크립트 속성 → 속성 추가
+ * 주문 · 설정 · 제작 업체 · 마케팅(연간 플랜 · 채널 셋업 · SNS · 시딩) 저장
+ *
+ * [이미 쓰고 있다면 — 업데이트]
+ * 1) 구글 시트 → 확장 프로그램 → Apps Script
+ * 2) 기존 코드를 전부 지우고 이 파일 내용을 붙여 넣고 저장
+ * 3) 배포 → 배포 관리 → (연필) 기존 배포 수정 → 버전: 새 버전 → 배포
+ *    ※ "새 배포"가 아니라 "기존 배포 수정"이어야 주소(…/exec)가 그대로 유지됨
+ *    ※ 기존 시트는 그대로 씀. 열 순서가 달라도 1행 제목을 보고 맞춰 읽고 쓰며,
+ *      없는 열(예: 전화번호)은 오른쪽 끝에 새로 만듦
+ *
+ * [처음 설치]
+ * 1) 새 구글 시트 → 확장 프로그램 → Apps Script → 이 파일 붙여 넣고 저장
+ * 2) 프로젝트 설정(톱니바퀴) → 스크립트 속성 → 속성 추가
  *      이름: ADMIN_KEY   값: 관리자 페이지 비밀번호
- * 4) 위쪽 함수 목록에서 setup 을 골라 실행 (권한 허용) — 시트 두 개와 기존 45병이 들어감
- * 5) 배포 → 새 배포 → 유형: 웹 앱
- *      실행 사용자: 나 / 액세스 권한: 모든 사용자  → 배포
- * 6) 나온 웹 앱 주소(…/exec)를 admin/index.html 의 API_URL 에 붙여 넣기
- * 코드를 고친 뒤에는 배포 관리 → 기존 배포 수정 → 새 버전 으로 다시 배포
+ * 3) 함수 목록에서 setup 을 골라 실행 (권한 허용)
+ * 4) 배포 → 새 배포 → 유형: 웹 앱 / 실행 사용자: 나 / 액세스 권한: 모든 사용자 → 배포
+ * 5) 나온 웹 앱 주소(…/exec)를 admin/index.html 의 API_URL 에 붙여 넣기
  */
-const ORDER_SHEET = '주문';
-const SETTING_SHEET = '설정';
-const COLS = ['id', 'date', 'buyer', 'channel', 'qty', 'price', 'status', 'owner', 'memo', 'createdAt'];
-const HEAD = ['id', '주문일', '주문한 곳·사람', '판매 경로', '병 수', '한 병 가격', '진행 상태', '받아온 사람', '메모', '등록 시각'];
-const SETTING_KEYS = ['goal', 'price', 'upfront', 'deadline'];
 const TZ = 'Asia/Seoul';
 
+// 시트 정의: [필드, 시트 1행 제목]. 기존 시트에서 찾을 이름을 앞에서부터 확인
+const ORDERS = {
+  names: ['주문'],
+  fields: [['id', 'id'], ['date', '주문일'], ['buyer', '주문한 곳·사람'], ['channel', '판매 경로'], ['qty', '병 수'],
+    ['price', '한 병 가격'], ['status', '진행 상태'], ['owner', '받아온 사람'], ['phone', '전화번호'], ['memo', '메모'], ['createdAt', '등록 시각']],
+  nums: ['qty', 'price', 'createdAt']
+};
+const VENDORS = {
+  names: ['업체', '제작 정보', '제작정보', 'vendors'],
+  fields: [['id', 'id'], ['name', '회사'], ['role', '맡은 일'], ['contact', '담당자'], ['phone', '전화'], ['fax', '팩스'], ['email', '이메일'],
+    ['status', '상태'], ['address', '주소'], ['item', '품목'], ['price', '단가'], ['includes', '포함 내용'], ['payment', '결제 조건'],
+    ['quoteDate', '견적일'], ['memo', '메모'], ['createdAt', '등록 시각']],
+  nums: ['createdAt']
+};
+const SETTING_SHEET = '설정';
+const SETTING_KEYS = ['goal', 'price', 'upfront', 'deadline', 'unitCost', 'retail', 'b2b1', 'b2b2', 'b2b3'];
+const SETTING_DEFAULTS = { goal: 3000, price: 7000, upfront: 6095000, deadline: '', unitCost: 2032, retail: 16000, b2b1: 7000, b2b2: 6000, b2b3: 5000 };
+const MKT_SHEET = '마케팅';
+const MKT_CHUNK = 40000; // 시트 한 칸 글자 수 제한(5만) 아래로 나눠 저장
+
 function book() { return SpreadsheetApp.getActiveSpreadsheet(); }
-function sheet(name, head) {
-  let sh = book().getSheetByName(name);
-  if (!sh) {
-    sh = book().insertSheet(name);
-    sh.getRange(1, 1, 1, head.length).setValues([head]).setFontWeight('bold');
-    sh.setFrozenRows(1);
-  }
-  return sh;
-}
-function orderSheet() {
-  const sh = sheet(ORDER_SHEET, HEAD);
-  sh.getRange('B:B').setNumberFormat('@'); // 날짜를 글자 그대로 저장
-  return sh;
-}
-function settingSheet() { return sheet(SETTING_SHEET, ['항목', '값']); }
 function out(o) { return ContentService.createTextOutput(JSON.stringify(o)).setMimeType(ContentService.MimeType.JSON); }
 function authed(key) {
   const k = PropertiesService.getScriptProperties().getProperty('ADMIN_KEY');
   return !!k && String(key || '') === k;
 }
 function safe(v) { // 시트 수식으로 읽히지 않게
-  v = String(v == null ? '' : v).trim().slice(0, 300);
+  v = String(v == null ? '' : v).trim().slice(0, 500);
   return /^[=+\-@]/.test(v) ? "'" + v : v;
 }
+function fmtDate(v) { return v instanceof Date ? Utilities.formatDate(v, TZ, 'yyyy-MM-dd') : v; }
 
-function readAll() {
-  const sh = orderSheet();
-  const rows = sh.getLastRow() > 1 ? sh.getRange(2, 1, sh.getLastRow() - 1, COLS.length).getValues() : [];
-  const orders = rows.filter(r => r[0]).map(r => {
+/* ---------- 제목(1행)으로 열을 찾는 표 ---------- */
+function table(def) {
+  let sh = null;
+  for (const n of def.names) { sh = book().getSheetByName(n); if (sh) break; }
+  if (!sh) sh = book().insertSheet(def.names[0]);
+  const head = sh.getLastRow() >= 1 && sh.getLastColumn() >= 1
+    ? sh.getRange(1, 1, 1, sh.getLastColumn()).getValues()[0].map(h => String(h).trim()) : [];
+  const col = {};
+  def.fields.forEach(([k, label]) => {
+    let i = head.findIndex(h => h === k || h === label);
+    if (i < 0) {
+      i = head.length; head.push(label);
+      sh.getRange(1, i + 1).setValue(label).setFontWeight('bold');
+    }
+    col[k] = i;
+    if (!def.nums.includes(k)) sh.getRange(1, i + 1, sh.getMaxRows(), 1).setNumberFormat('@'); // 날짜·전화번호를 글자 그대로
+  });
+  if (sh.getFrozenRows() < 1) sh.setFrozenRows(1);
+  return { sh, col, width: head.length };
+}
+function readRows(def) {
+  const t = table(def);
+  if (t.sh.getLastRow() < 2) return [];
+  const vals = t.sh.getRange(2, 1, t.sh.getLastRow() - 1, Math.max(t.width, t.sh.getLastColumn())).getValues();
+  return vals.filter(r => String(r[t.col.id]).trim()).map(r => {
     const o = {};
-    COLS.forEach((c, i) => {
-      let v = r[i];
-      if (v instanceof Date) v = Utilities.formatDate(v, TZ, 'yyyy-MM-dd');
-      o[c] = v;
+    def.fields.forEach(([k]) => {
+      const v = fmtDate(r[t.col[k]]);
+      o[k] = def.nums.includes(k) ? (Number(v) || 0) : String(v == null ? '' : v);
     });
-    o.id = String(o.id); o.date = String(o.date);
-    o.qty = Number(o.qty) || 0; o.price = Number(o.price) || 0; o.createdAt = Number(o.createdAt) || 0;
     return o;
   });
-  const settings = {};
-  const st = settingSheet();
-  if (st.getLastRow() > 1) st.getRange(2, 1, st.getLastRow() - 1, 2).getValues().forEach(([k, v]) => {
-    if (!SETTING_KEYS.includes(k)) return;
-    if (v instanceof Date) v = Utilities.formatDate(v, TZ, 'yyyy-MM-dd');
-    settings[k] = k === 'deadline' ? String(v || '') : Number(v) || 0;
-  });
-  return { orders, settings };
 }
-
-function findRow(sh, id) {
-  if (sh.getLastRow() < 2) return 0;
-  const ids = sh.getRange(2, 1, sh.getLastRow() - 1, 1).getValues();
+function findRow(t, id) {
+  if (t.sh.getLastRow() < 2) return 0;
+  const ids = t.sh.getRange(2, t.col.id + 1, t.sh.getLastRow() - 1, 1).getValues();
   for (let i = 0; i < ids.length; i++) if (String(ids[i][0]) === String(id)) return i + 2;
   return 0;
 }
-function saveOrder(o) {
-  const sh = orderSheet();
+function saveRow(def, o) {
+  const t = table(def);
   const id = o.id ? String(o.id) : Utilities.getUuid();
-  const row = [id, safe(o.date), safe(o.buyer), safe(o.channel), Number(o.qty) || 0, Number(o.price) || 0,
-    safe(o.status), safe(o.owner), safe(o.memo), Number(o.createdAt) || Date.now()];
-  const r = findRow(sh, id);
-  if (r) sh.getRange(r, 1, 1, row.length).setValues([row]); else sh.appendRow(row);
+  const r = findRow(t, id);
+  const width = Math.max(t.width, t.sh.getLastColumn());
+  const row = r ? t.sh.getRange(r, 1, 1, width).getValues()[0] : new Array(width).fill(''); // 표에 없는 열은 건드리지 않음
+  def.fields.forEach(([k]) => {
+    if (k === 'id') row[t.col.id] = id;
+    else if (k === 'createdAt') row[t.col.createdAt] = Number(o.createdAt) || (r ? row[t.col.createdAt] : 0) || Date.now();
+    else if (def.nums.includes(k)) row[t.col[k]] = Number(o[k]) || 0;
+    else if (k in o) row[t.col[k]] = safe(o[k]);
+  });
+  if (r) t.sh.getRange(r, 1, 1, width).setValues([row]); else t.sh.appendRow(row);
 }
-function deleteOrder(id) {
-  const sh = orderSheet(); const r = findRow(sh, id);
-  if (r) sh.deleteRow(r);
+function deleteRow(def, id) {
+  const t = table(def); const r = findRow(t, id);
+  if (r) t.sh.deleteRow(r);
+}
+
+/* ---------- 설정 (항목 · 값) ---------- */
+function settingSheet() {
+  let sh = book().getSheetByName(SETTING_SHEET);
+  if (!sh) {
+    sh = book().insertSheet(SETTING_SHEET);
+    sh.getRange(1, 1, 1, 2).setValues([['항목', '값']]).setFontWeight('bold');
+    sh.setFrozenRows(1);
+  }
+  return sh;
+}
+function readSettings() {
+  const st = settingSheet(), s = {};
+  if (st.getLastRow() > 1) st.getRange(2, 1, st.getLastRow() - 1, 2).getValues().forEach(([k, v]) => {
+    k = String(k).trim();
+    if (!SETTING_KEYS.includes(k)) return;
+    v = fmtDate(v);
+    s[k] = k === 'deadline' ? String(v || '') : Number(v) || 0;
+  });
+  return s;
 }
 function saveSettings(s) {
   const st = settingSheet();
-  if (st.getLastRow() > 1) st.getRange(2, 1, st.getLastRow() - 1, 2).clearContent();
-  const rows = SETTING_KEYS.map(k => [k, k === 'deadline' ? String(s[k] || '') : Number(s[k]) || 0]);
-  st.getRange(2, 2, rows.length, 1).setNumberFormat('@');
-  st.getRange(2, 1, rows.length, 2).setValues(rows);
+  const keys = st.getLastRow() > 1 ? st.getRange(2, 1, st.getLastRow() - 1, 1).getValues().map(r => String(r[0]).trim()) : [];
+  SETTING_KEYS.forEach(k => {
+    if (!(k in s)) return;
+    const v = k === 'deadline' ? String(s[k] || '') : Number(s[k]) || 0;
+    let i = keys.indexOf(k);
+    if (i < 0) { keys.push(k); i = keys.length - 1; }
+    st.getRange(i + 2, 2).setNumberFormat('@');
+    st.getRange(i + 2, 1, 1, 2).setValues([[k, v]]);
+  });
 }
 
-/* ===== 마케팅 탭 (연간 플랜 · 채널 셋업 · SNS · 시딩) =====
- * 관리자 페이지 마케팅 탭 내용을 '마케팅' 시트에 통째로(JSON) 저장
- * 이미 쓰고 있는 스크립트가 있다면: 이 블록(mktRead, mktWrite)과
- * doPost 안의 'mkt' · 'mktSave' 두 줄만 추가하고 새 버전으로 다시 배포하면 됨 */
-const MKT_SHEET = '마케팅';
-const MKT_CHUNK = 40000; // 시트 한 칸 글자 수 제한(5만) 아래로 나눠 저장
+/* ---------- 마케팅 탭 (통째로 JSON 저장) ---------- */
+function mktSheet() {
+  let sh = book().getSheetByName(MKT_SHEET);
+  if (!sh) {
+    sh = book().insertSheet(MKT_SHEET);
+    sh.getRange(1, 1, 1, 2).setValues([['part', 'json']]).setFontWeight('bold');
+    sh.setFrozenRows(1);
+  }
+  return sh;
+}
 function mktRead() {
-  const sh = sheet(MKT_SHEET, ['part', 'json']);
+  const sh = mktSheet();
   if (sh.getLastRow() < 2) return null;
   const txt = sh.getRange(2, 2, sh.getLastRow() - 1, 1).getValues().map(r => String(r[0]).replace(/^~/, '')).join('');
+  if (!txt) return null;
   try { return JSON.parse(txt); } catch (e) { return null; }
 }
 function mktWrite(m) {
   const txt = JSON.stringify(m || {});
   if (txt.length > 2000000) throw new Error('too_big');
-  const sh = sheet(MKT_SHEET, ['part', 'json']);
+  const sh = mktSheet();
   if (sh.getLastRow() > 1) sh.getRange(2, 1, sh.getLastRow() - 1, 2).clearContent();
   const rows = [];
   for (let i = 0; i < txt.length; i += MKT_CHUNK) rows.push([rows.length + 1, '~' + txt.slice(i, i + MKT_CHUNK)]); // ~ : 수식으로 읽히지 않게
@@ -117,32 +172,39 @@ function mktWrite(m) {
   sh.getRange(2, 1, rows.length, 2).setValues(rows);
 }
 
+/* ---------- 웹 앱 ---------- */
+function readAll() {
+  return { orders: readRows(ORDERS), vendors: readRows(VENDORS), settings: readSettings() };
+}
 function doGet() { return out({ ok: true, service: 'olive-skin-admin' }); }
 function doPost(e) {
   let b;
   try { b = JSON.parse(e.postData.contents); } catch (x) { return out({ ok: false, error: 'bad_request' }); }
   if (!authed(b.key)) return out({ ok: false, error: 'auth' });
   const lock = LockService.getScriptLock();
-  lock.waitLock(10000);
+  try { lock.waitLock(10000); } catch (x) { return out({ ok: false, error: 'busy' }); }
   try {
-    if (b.action === 'save') saveOrder(b.order || {});
-    else if (b.action === 'delete') deleteOrder(b.id);
-    else if (b.action === 'settings') saveSettings(b.settings || {});
-    else if (b.action === 'mkt') return out({ ok: true, mkt: mktRead() });
-    else if (b.action === 'mktSave') { mktWrite(b.mkt); return out({ ok: true, mkt: mktRead() }); }
-    else if (b.action !== 'list') return out({ ok: false, error: 'bad_action' });
+    switch (b.action) {
+      case 'list': break;
+      case 'save': saveRow(ORDERS, b.order || {}); break;
+      case 'delete': deleteRow(ORDERS, b.id); break;
+      case 'settings': saveSettings(b.settings || {}); break;
+      case 'saveVendor': saveRow(VENDORS, b.vendor || {}); break;
+      case 'deleteVendor': deleteRow(VENDORS, b.id); break;
+      case 'mkt': return out({ ok: true, mkt: mktRead() });
+      case 'mktSave': mktWrite(b.mkt); return out({ ok: true, mkt: mktRead() });
+      default: return out({ ok: false, error: 'bad_action' });
+    }
     return out(Object.assign({ ok: true }, readAll()));
+  } catch (x) {
+    return out({ ok: false, error: 'server', detail: String(x && x.message || x) });
   } finally { lock.releaseLock(); }
 }
 
-/** 처음 한 번만 실행 — 시트를 만들고 지금까지의 목표·비용과 기존 45병을 넣음 */
+/** 처음 한 번만 실행 — 시트를 만들고 기본 설정을 넣음 (이미 있는 내용은 건드리지 않음) */
 function setup() {
-  orderSheet();
-  const st = settingSheet();
-  if (st.getLastRow() < 2) saveSettings({ goal: 3000, price: 6000, upfront: 5595000, deadline: '' });
-  const sh = orderSheet();
-  if (!findRow(sh, 'existing-45')) saveOrder({
-    id: 'existing-45', date: '2026-09-23', buyer: '기존 등록분', channel: '기타', qty: 45, price: 6000,
-    status: '주문받음', owner: '아란', memo: '지금까지 모은 45병 — 누가 몇 병인지 나눠서 고쳐 주세요', createdAt: 1790000000000
-  });
+  table(ORDERS); table(VENDORS); mktSheet();
+  const cur = readSettings(), missing = {};
+  SETTING_KEYS.forEach(k => { if (!(k in cur)) missing[k] = SETTING_DEFAULTS[k]; });
+  saveSettings(missing);
 }
