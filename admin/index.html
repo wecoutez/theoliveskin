@@ -8,7 +8,7 @@
 <meta name="color-scheme" content="light">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500&family=Noto+Sans+KR:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <style>
 :root{
   --bg:#F5F3EE; --paper:#FFFFFF; --ink:#2F3522; --text:#4D5537; --muted:#7C8069; --line:#E1DBD0;
@@ -36,7 +36,7 @@ a.logo{text-decoration:none}
 #lock{min-height:100vh;display:grid;place-items:center;padding:24px}
 #lock form{display:flex;flex-direction:column;gap:14px;width:min(100%,360px)}
 #lock h1{font-size:22px}
-.logo{font-family:var(--sans);font-weight:500;font-size:24px;color:var(--ink);letter-spacing:-.01em}
+.logo{font-family:'Cormorant Garamond',serif;font-weight:500;font-size:28px;line-height:1;text-transform:lowercase;color:var(--ink);letter-spacing:0}
 #updated{font-size:13px;color:var(--muted)}
 #notice{display:none;margin:12px 0 0;padding:10px 14px;border-radius:10px;background:var(--paper);font-size:14px;color:var(--muted)}
 
@@ -208,7 +208,7 @@ body{background:
   box-shadow:0 40px 90px -50px rgba(54,66,30,.35);-webkit-backdrop-filter:blur(18px);backdrop-filter:blur(18px)}
 .side{background:var(--soft);border-radius:26px;padding:26px 14px 14px;position:sticky;top:36px;align-self:start;
   height:calc(100vh - 72px);display:flex;flex-direction:column;gap:14px;overflow:auto}
-.side .logo{padding:0 12px 6px;font-size:22px}
+.side .logo{padding:0 12px 6px;font-size:28px}
 .nav{display:flex;flex-direction:column;gap:2px}
 .nav-h{margin:14px 12px 6px;font-size:11px;letter-spacing:.1em;color:var(--muted);font-weight:500}
 .nav a{display:flex;align-items:center;gap:12px;padding:10px 14px;border-radius:14px;color:var(--text);text-decoration:none;font-size:15px;font-weight:400;transition:background .2s,color .2s}
@@ -337,6 +337,9 @@ a.kpi:hover{transform:translateY(-2px)}
 .status[data-s="게시 완료"]{background:var(--olive);color:#fff;border-color:var(--olive)}
 .status[data-s="예약됨"],.status[data-s="수락"],.status[data-s="제품 발송"]{border-color:var(--oil-d);color:var(--oil-d)}
 .status[data-s="거절"]{color:var(--muted);text-decoration:line-through}
+.status[data-s="샘플 발송"],.status[data-s="협의 중"]{border-color:var(--oil-d);color:var(--oil-d)}
+.status[data-s="거래 시작"]{background:var(--olive);color:#fff;border-color:var(--olive)}
+.status[data-s="보류"]{color:var(--muted)}
 
 @media (max-width:1180px){
   .kpis{grid-template-columns:repeat(2,minmax(0,1fr))}
@@ -595,6 +598,11 @@ a.kpi:hover{transform:translateY(-2px)}
 .b-cal .d{opacity:1;color:var(--sub);font-weight:600}.b-cal .ev small{opacity:1;color:var(--sub)}.b-cal .empty{opacity:1;color:var(--sub)}
 .b-task li b{font-weight:600}.b-task li small{opacity:.85}
 .b-task .more{opacity:1;font-weight:600;display:inline-flex;align-items:center;gap:6px;text-decoration:none;border-bottom:1.5px solid rgba(255,255,255,.5);padding-bottom:2px}
+.leads-t .lead-memo{max-width:340px;font-size:13px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.leads-t td.due{color:#B4532A;font-weight:600}
+.leads-t .rowbtn{margin-left:4px}
+@media (max-width:640px){.leads-t,.leads-t tbody{display:block;min-width:0}.leads-t thead{display:none}.leads-t tr{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:8px 12px;padding:14px 16px;border-bottom:1px solid #F2F1EB}.leads-t tr:last-child{border-bottom:0}.leads-t td{padding:0;border:0}.leads-t td:nth-child(2),.leads-t td:nth-child(4),.leads-t td:nth-child(5){display:none}.leads-t td.t-act{display:flex!important;grid-column:1/-1;gap:14px;justify-content:flex-start}.leads-t .rowbtn{margin:0}.leads-t td.empty{grid-column:1/-1}}
+#leadsSec .sec-head{display:flex;justify-content:space-between;align-items:flex-end;gap:12px}
 </style>
 </head>
 <body>
@@ -700,6 +708,26 @@ a.kpi:hover{transform:translateY(-2px)}
     <div class="card" style="padding:0;overflow:hidden"><div class="table-wrap"><table class="buyers-t">
       <thead><tr><th>주문한 곳·사람</th><th>판매 경로</th><th style="text-align:right">주문</th><th style="text-align:right">병 수</th><th style="text-align:right">금액</th><th style="text-align:right">입금 받음</th><th>마지막 주문</th></tr></thead>
       <tbody id="buyersRows"></tbody></table></div></div>
+  </section>
+  <section id="leadsSec">
+    <div class="sec-head"><div><h2>잠재 거래처</h2><p id="leadsSub">연락해 볼 네일몰·샵·유통처</p></div><button type="button" class="btn primary sm" id="addLead">추가</button></div>
+    <div class="filters" id="leadFilters" role="group" aria-label="진행 상태로 거르기" style="margin-bottom:12px"></div>
+    <div class="card editor" id="leadEdit" hidden>
+      <div class="ed-h"><h3 id="leadTitle">잠재 거래처</h3><button type="button" class="rowbtn" data-close="leadEdit">닫기</button></div>
+      <form id="leadForm" autocomplete="off">
+        <label class="c2">유형<select name="type"></select></label>
+        <label class="c2">이름<input name="name" required placeholder="예: 네일몰, 청담 ○○네일"></label>
+        <label class="c2">진행 상태<select name="status"></select></label>
+        <label class="c3">사이트·인스타<input name="link" placeholder="https://"></label>
+        <label class="c3">연락처·담당자<input name="contact" placeholder="전화, 이메일, 입점 문의 페이지"></label>
+        <label class="c2">다음 연락일<input name="next" type="date"></label>
+        <label class="c4">메모<input name="memo" placeholder="예: 샘플 5병 요청, 도매가 6,000원 제안"></label>
+        <div class="actions"><button class="btn primary" type="submit">저장</button></div>
+      </form>
+    </div>
+    <div class="card" style="padding:0;overflow:hidden"><div class="table-wrap"><table class="buyers-t leads-t">
+      <thead><tr><th>이름</th><th>유형</th><th>상태</th><th>연락처·메모</th><th>다음 연락</th><th></th></tr></thead>
+      <tbody id="leadRows"></tbody></table></div></div>
   </section>
   <section id="add">
     <div class="sec-head"><h2 id="formTitle">주문 등록</h2><p>병 수와 가격만 넣어도 돼요</p></div>
@@ -1312,6 +1340,10 @@ const PILLARS=['제품·사용법','나파밸리 스토리','네일샵·아티�
 const POST_ST=['아이디어','제작 중','예약됨','게시 완료'];
 const SEED_TYPES=['인플루언서','네일 아티스트','언론·매거진','체험단','기타'];
 const SEED_ST=['후보','연락함','수락','제품 발송','게시 완료','거절'];
+const LEAD_TYPES=['네일 도매몰','네일샵·살롱','편집숍·온라인몰','해외 바이어','기타'];
+const LEAD_ST=['후보','연락함','샘플 발송','협의 중','거래 시작','보류'];
+const seedLeads=()=>[['네일몰','http://www.nailmall.net/'],['네일존','https://m.nailzone.co.kr/'],['네일판다몰','https://nailpandamall.com/'],['네일플레이스','https://nailplace.co.kr/'],['더네일샵','https://www.thenailsharp.com/'],['배배뷰티','https://baebaebeauty.com/'],['백억언니','https://100uksister.com/'],['네일스토어','https://nailstore.co.kr/'],['단지네일','https://www.danjinail.co.kr/'],['천사네일','https://www.1004nail.com/shop/']]
+  .map(([name,link],i)=>({id:'lead'+i,type:'네일 도매몰',name,link,status:'후보',contact:'',next:'',memo:''}));
 const MEMBERS=['아란','지선','세실','기타'];
 const platColor=p=>(PLATFORMS.find(x=>x[0]===p)||[,'--muted'])[1];
 const grpColor=g=>(CH_GROUPS.find(x=>x[0]===g)||[,'--sage'])[1];
@@ -1366,7 +1398,7 @@ const seedMilestones=()=>[
   ['2026-12-01','카카오톡 선물하기 입점','판매'],['2026-12-15','홀리데이 기프트 캠페인 시작','프로모션'],['2027-01-15','재구매 쿠폰(CRM) 발송','판매'],
   ['2027-03-02','네일샵 B2B 2차 오더','판매'],['2027-05-01','가정의 달 선물 세트 출시','프로모션'],['2027-09-01','런칭 1주년 · 다음 해 플랜','런칭']
 ].map(([date,title,tag])=>({id:uid(),date,title,tag,done:false}));
-const mktSeed=()=>({v:1,planStart:'2026-10',plan:seedPlan(),channels:seedChannels(),accounts:seedAccounts(),posts:[],seeding:[],milestones:seedMilestones()});
+const mktSeed=()=>({v:1,planStart:'2026-10',plan:seedPlan(),channels:seedChannels(),accounts:seedAccounts(),posts:[],seeding:[],milestones:seedMilestones(),leads:seedLeads()});
 function mktNorm(m){const d=mktSeed();m=m&&typeof m==='object'?m:{};
   for(const k of Object.keys(d))if(m[k]==null||typeof m[k]!==typeof d[k]||Array.isArray(m[k])!==Array.isArray(d[k]))m[k]=d[k];
   return m;}
@@ -1671,6 +1703,34 @@ function drawBuyers(){
     return `<tr><td><b>${esc(b.name)}</b></td><td><span class="ch"><i style="background:${col}"></i>${esc(ch)}</span></td><td class="n">${num(b.n)}건</td><td class="n"><b>${num(b.q)}병</b></td><td class="n">${won(b.amt)}</td><td class="n">${won(b.paid)}</td><td>${esc((b.last||'').replace(/-/g,'.'))}</td></tr>`;}).join('')
     :'<tr><td class="empty" colspan="7">아직 주문이 없어요. 아래에서 첫 주문을 등록해 주세요.</td></tr>';
 }
+let leadFilter='전체',editingLead=null;
+function drawLeads(){
+  const tb=$('leadRows');if(!tb)return;const L=mkt.leads||[];
+  const cnt=st=>L.filter(x=>x.status===st).length;
+  $('leadsSub').textContent=L.length?`${num(L.length)}곳 · 연락 ${num(L.length-cnt('후보'))} · 거래 시작 ${num(cnt('거래 시작'))}`:'연락해 볼 네일몰·샵·유통처';
+  $('leadFilters').replaceChildren(...['전체',...LEAD_ST].map(f=>h('button',{type:'button',class:'chip','aria-pressed':String(leadFilter===f),
+    text:`${f} ${f==='전체'?L.length:cnt(f)}`,onclick:()=>{leadFilter=f;drawLeads();}})));
+  const td=today(),list=L.filter(x=>leadFilter==='전체'||x.status===leadFilter)
+    .sort((a,b)=>(LEAD_ST.indexOf(b.status)-LEAD_ST.indexOf(a.status))||(a.next||'9').localeCompare(b.next||'9'));
+  tb.replaceChildren(...(list.length?list.map(x=>h('tr',{},
+    h('td',{},h('b',{text:x.name})),
+    h('td',{text:x.type||''}),
+    h('td',{},h('button',{type:'button',class:'status','data-s':x.status,title:'눌러서 다음 상태로',text:x.status,onclick:()=>{x.status=LEAD_ST[(LEAD_ST.indexOf(x.status)+1)%LEAD_ST.length];mktSave();}})),
+    h('td',{class:'lead-memo',text:[x.contact,x.memo].filter(Boolean).join(' · ')||'–'}),
+    h('td',{class:x.next&&x.next<=td&&x.status!=='거래 시작'?'due':'',text:x.next?x.next.slice(5).replace('-','.'):'–'}),
+    h('td',{class:'t-act',style:'white-space:nowrap;text-align:right'},
+      x.link&&h('a',{class:'rowbtn',href:safeUrl(x.link),target:'_blank',rel:'noopener',text:'사이트'}),
+      h('button',{type:'button',class:'rowbtn',text:'주문 등록',onclick:()=>{const f=$('orderForm');f.elements.buyer.value=x.name;const ch=f.elements.channel;if(x.type==='네일샵·살롱'||x.type==='네일 도매몰')ch.value='네일샵·살롱';else if(x.type==='편집숍·온라인몰')ch.value='온라인';$('add').scrollIntoView({behavior:'smooth'});f.elements.qty.focus({preventScroll:true});}}),
+      h('button',{type:'button',class:'rowbtn',text:'고치기',onclick:()=>openLead(x)}),
+      h('button',{type:'button',class:'rowbtn del',text:'지우기',onclick:()=>{if(!confirm(`"${x.name}"을(를) 지울까요?`))return;mkt.leads=L.filter(y=>y.id!==x.id);mktSave();}}))))
+    :[h('tr',{},h('td',{colspan:6,class:'empty',text:L.length?'이 상태인 곳이 없어요.':'연락해 볼 네일몰·샵을 추가해 보세요.'}))]));
+}
+function openLead(x){editingLead=x?x.id:null;formSet($('leadForm'),x||{type:LEAD_TYPES[0],status:LEAD_ST[0]});
+  $('leadTitle').textContent=x?`${x.name} 고치기`:'잠재 거래처 추가';openEditor('leadEdit');}
+$('addLead').onclick=()=>openLead(null);
+$('leadForm').addEventListener('submit',ev=>{ev.preventDefault();const d=formGet(ev.target);if(!d.name)return;
+  mkt.leads=mkt.leads||[];const old=mkt.leads.find(x=>x.id===editingLead);if(old)Object.assign(old,d);else mkt.leads.push({id:uid(),...d});
+  $('leadEdit').hidden=true;mktSave();});
 function drawBento(){
   const B=$('bento');if(!B)return;
   const s=state.settings,t=totals(),goal=Math.max(1,+s.goal||DEFAULTS.goal),upfront=+s.upfront||0,retail=+s.retail||16000;
@@ -1753,7 +1813,7 @@ function drawBento(){
     <a class="more" href="#channels">전체 보기<svg class="ic" viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8h9.5M8.5 4l4 4-4 4"/></svg></a></div>`;
   drawGeo();
   B.querySelectorAll('[data-go]').forEach(a=>a.onclick=()=>setTimeout(()=>$(a.dataset.go)?.scrollIntoView({behavior:'smooth',block:'start'}),80));
-  drawBuyers();
+  drawBuyers();drawLeads();
   B.querySelectorAll('[data-todo]').forEach(b=>b.onclick=()=>{const x=todo[+b.dataset.todo];if(!x)return;x.st.done=true;mktSave();drawBento();});
   const more=B.querySelector('a[href="#dash-more"]');if(more)more.onclick=e=>{e.preventDefault();document.querySelector('.view[data-view="dash"] section')?.scrollIntoView({behavior:'smooth'});};
 }
@@ -1771,10 +1831,10 @@ function drawDashMkt(){
     kpi({href:'#seeding',lab:'시딩·PR',val:num(mkt.seeding.length)+'명',sub:`게시 완료 ${mkt.seeding.filter(x=>x.status==='게시 완료').length}건 · 보낸 제품 ${num(mkt.seeding.reduce((a,x)=>a+(+x.qty||0),0))}병`}));
   const nowM=k===today().slice(0,7);
   $('sideCard').replaceChildren(h('span',{class:'sc-k',text:`${k.replace('-','.')} ${nowM?'이번 달':'다음 플랜'}${p.goal?' · '+p.goal:''}`}),
-    h('h3',{text:p.main||'이 달 플랜을 채워 주세요'}),p.creative&&h('p',{text:p.creative}),h('a',{class:'sc-btn',href:'#plan',text:'연간 플랜 보기'}));
+    ...[h('h3',{text:p.main||'이 달 플랜을 채워 주세요'}),p.creative&&h('p',{text:p.creative}),h('a',{class:'sc-btn',href:'#plan',text:'연간 플랜 보기'})].filter(Boolean));
   drawBento();
 }
-function renderMkt(){drawDashMkt();
+function renderMkt(){drawDashMkt();drawLeads();
   if(view==='plan')drawPlan();else if(view==='channels')drawChannels();else if(view==='sns')drawSns();else if(view==='seeding')drawSeeding();}
 
 fill($('monthForm').elements.season,Object.keys(SEASONS));fill($('monthForm').elements.goal,GOALS);
@@ -1782,7 +1842,7 @@ fill($('chForm').elements.group,CH_GROUPS.map(g=>g[0]));fill($('chForm').element
 fill($('accForm').elements.platform,PLATFORMS.map(p=>p[0]));
 fill($('postForm').elements.platform,PLATFORMS.map(p=>p[0]));fill($('postForm').elements.type,POST_TYPES);
 fill($('postForm').elements.pillar,PILLARS);fill($('postForm').elements.status,POST_ST);fill($('postForm').elements.owner,MEMBERS,'정하지 않음');
-fill($('seedForm').elements.type,SEED_TYPES);fill($('seedForm').elements.status,SEED_ST);
+fill($('leadForm').elements.type,LEAD_TYPES);fill($('leadForm').elements.status,LEAD_ST);fill($('seedForm').elements.type,SEED_TYPES);fill($('seedForm').elements.status,SEED_ST);
 
 /* gentle 3D tilt */
 (()=>{if(matchMedia('(prefers-reduced-motion: reduce)').matches)return;
