@@ -7,9 +7,13 @@ index.html 을 고친 뒤 이 파일을 다시 실행하면 kr/ 도 같이 바�
 """
 from pathlib import Path
 
-PAYAPP_URL = "https://www.payapp.kr/L/z4lfT3"  # 국내 소매용 페이앱 결제 링크
+
+RETAIL_URL = ""  # 국내 소매용 페이앱 결제 링크 — 만들면 여기에 넣고 다시 실행 (비어 있으면 구매 버튼은 메일 문의로)
+WHOLESALE_URL = "https://www.payapp.kr/L/z4lfT3"  # 국내 도매용(네일샵) 페이앱 결제 링크
 PRICE_KRW = "16,000"
 SITE = "https://www.theoliveskin.com"
+
+BUY_URL = RETAIL_URL or "mailto:hello@theoliveskin.com?subject=%EA%B8%80%EB%A1%9C%EC%9A%B0%20%EB%93%9C%EB%A1%AD%20%EA%B5%AC%EB%A7%A4%20%EB%AC%B8%EC%9D%98"
 
 root = Path(__file__).resolve().parent.parent
 s = (root / "index.html").read_text(encoding="utf-8")
@@ -47,9 +51,15 @@ rep('announce:"전 세계 배송"', 'announce:"국내 배송 · 간편결제"')
 rep('<div class="qty-row">', '<div class="qty-row" style="display:none">')  # 수량은 페이앱 결제창에서 고름
 rep('<button type="button" class="pill" id="add-bag" data-i18n="addBag">Add to bag</button>',
     '<button type="button" class="pill" id="add-bag" data-i18n="addBag" style="display:none">Add to bag</button>')
-rep("buy.href = 'checkout.html?qty=' + qty + '&lang=' + current;", "buy.href = PAYAPP_URL;")
-rep('<a href="checkout.html" data-i18n="checkout">Checkout</a>', f'<a href="{PAYAPP_URL}" data-i18n="checkout">Checkout</a>')
-rep("var current = 'en';", f"var current = 'en', PAYAPP_URL = '{PAYAPP_URL}';")
+rep("buy.href = 'checkout.html?qty=' + qty + '&lang=' + current;", "buy.href = BUY_URL;")
+if not RETAIL_URL:
+    rep('buyNow:"바로 구매하기"', 'buyNow:"구매 문의하기"')
+# 푸터 '도매 문의' → 도매 결제 링크
+rep('<a href="mailto:hello@theoliveskin.com?subject=Wholesale" data-i18n="wholesale">Wholesale inquiries</a>',
+    f'<a href="{WHOLESALE_URL}" data-i18n="wholesale">Wholesale inquiries</a>')
+rep('wholesale:"도매 문의"', 'wholesale:"도매 주문 (네일샵·살롱)"')
+rep('<a href="checkout.html" data-i18n="checkout">Checkout</a>', f'<a href="{BUY_URL}" data-i18n="checkout">Checkout</a>')
+rep("var current = 'en';", f"var current = 'en', BUY_URL = '{BUY_URL}';")
 
 # 언어: 한국어 고정, EN/JA 는 영어 사이트로 이동
 rep("document.querySelectorAll('.lang button').forEach(function(b){ b.addEventListener('click', function(){ setLang(b.dataset.lang); }); });",

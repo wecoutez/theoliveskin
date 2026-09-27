@@ -444,8 +444,8 @@ if(!location.hash){window.scrollTo(0,0);addEventListener('load',()=>{window.scro
         <h4>Contact</h4>
         <ul>
           <li><a href="mailto:hello@theoliveskin.com">hello@theoliveskin.com</a></li>
-          <li><a href="mailto:hello@theoliveskin.com?subject=Wholesale" data-i18n="wholesale">Wholesale inquiries</a></li>
-          <li><a href="https://www.payapp.kr/L/z4lfT3" data-i18n="checkout">Checkout</a></li>
+          <li><a href="https://www.payapp.kr/L/z4lfT3" data-i18n="wholesale">Wholesale inquiries</a></li>
+          <li><a href="mailto:hello@theoliveskin.com?subject=%EA%B8%80%EB%A1%9C%EC%9A%B0%20%EB%93%9C%EB%A1%AD%20%EA%B5%AC%EB%A7%A4%20%EB%AC%B8%EC%9D%98" data-i18n="checkout">Checkout</a></li>
         </ul>
       </div>
     </div>
@@ -491,11 +491,11 @@ if(!location.hash){window.scrollTo(0,0);addEventListener('load',()=>{window.scro
       accHow:"사용 방법", accIngr:"성분", accDetails:"제품 정보",
       dSize:"용량", dFor:"사용 부위", dForV:"손톱, 큐티클, 손, 팔꿈치, 무릎, 뒤꿈치",
       dMaker:"제조", dMakerV:"믹스앤매치 (코스맥스 네일 전문 계열사)",
-      qty:"수량", buyNow:"바로 구매하기", addBag:"장바구니 담기",
+      qty:"수량", buyNow:"구매 문의하기", addBag:"장바구니 담기",
       m1:"코스맥스의 네일 케어 전문 계열사.", m2:"글로벌 뷰티 브랜드와 같은 기준으로 제조.",
       m3v:"식물성 오일", m3:"콜드프레스 올리브 · 아보카도 오일 베이스.",
       m4v:"안전 결제", m4:"PayPal · 카드 결제",
-      footAbout:"나파 밸리에서 온 한 방울의 힐링.", wholesale:"도매 문의", checkout:"결제하기",
+      footAbout:"나파 밸리에서 온 한 방울의 힐링.", wholesale:"도매 주문 (네일샵·살롱)", checkout:"결제하기",
       added:"장바구니에 담았어요", pause:"영상 일시정지", play:"영상 재생",
       altBottle:"글로우 드롭 병을 든 손", altLedge:"올리브 언덕이 내려다보이는 돌 위의 글로우 드롭",
       altPoster:"올리브 숲 속 글로우 드롭 캠페인 포스터", altPainting:"유화 속 그릇에 담긴 초록 올리브",
@@ -560,7 +560,7 @@ if(!location.hash){window.scrollTo(0,0);addEventListener('load',()=>{window.scro
   en.altBottle = en.altBottle || 'A hand holding the Glow Drop bottle';
   en.added = 'Added to bag'; en.pause = 'Pause video'; en.play = 'Play video';
   I18N.en = en;
-  var current = 'en', PAYAPP_URL = 'https://www.payapp.kr/L/z4lfT3';
+  var current = 'en', BUY_URL = 'mailto:hello@theoliveskin.com?subject=%EA%B8%80%EB%A1%9C%EC%9A%B0%20%EB%93%9C%EB%A1%AD%20%EA%B5%AC%EB%A7%A4%20%EB%AC%B8%EC%9D%98';
 
   var film = document.getElementById('film'), ft = document.getElementById('film-toggle'), icon = document.getElementById('ft-icon');
   function filmLabel(){
@@ -573,7 +573,7 @@ if(!location.hash){window.scrollTo(0,0);addEventListener('load',()=>{window.scro
   function updateBuy(){
     qEl.textContent = qty;
     tEl.textContent = '$' + (qty*PRICE).toFixed(2);
-    buy.href = PAYAPP_URL;
+    buy.href = BUY_URL;
   }
 
   function setLang(l){
