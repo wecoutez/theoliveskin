@@ -241,6 +241,62 @@ footer{background:var(--night);color:#D8D4C8}
   .panel{min-height:320px}
 }
 @media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}*{transition:none!important}}
+
+/* ===== type & buttons refresh — one scale for the whole page =====
+   12 label · 14 small · 16 body · 18 lead · 22–28 sub-head · 36–84 display */
+body{font-size:16px;font-weight:400;line-height:1.75}
+:lang(ko) body,:lang(ja) body{letter-spacing:-.01em}
+p{text-wrap:pretty}
+.hero-sub{font-size:17px;line-height:1.65;max-width:28em;opacity:.95}
+.intro p,.story .copy-p{font-size:16px;line-height:1.8;color:var(--ink-soft)}
+.lead{font-size:16px;line-height:1.75}
+.info .sub{font-size:15px}
+.acc summary{font-size:16px;font-weight:500;padding:18px 0}
+.acc .panel-body{font-size:15px;line-height:1.75}
+.facts .v{font-size:26px}
+.facts p{font-size:14px}
+.story-mid figcaption,.story-right figcaption{font-size:12px}
+.nav{font-size:14px;gap:30px}
+.announce{font-size:12px;letter-spacing:.04em}
+.price small{font-size:14px}
+
+/* Korean & Japanese headings: sans, a touch heavier, tighter, room between lines */
+:lang(ko) .hero h1,:lang(ja) .hero h1{font-family:var(--sans);font-weight:500;font-size:clamp(34px,4.4vw,60px);line-height:1.28;letter-spacing:-.035em}
+:lang(ko) .intro h2,:lang(ja) .intro h2,:lang(ko) .story h2,:lang(ja) .story h2{font-family:var(--sans);font-weight:500;letter-spacing:-.035em;line-height:1.32}
+:lang(ko) .intro h2,:lang(ja) .intro h2{font-size:clamp(28px,3vw,40px)}
+:lang(ko) .story h2,:lang(ja) .story h2{font-size:clamp(28px,3vw,40px)}
+/* 세로로 한 글자씩 쌓이지 않게 */
+:lang(ko) .panel-word,:lang(ja) .panel-word{writing-mode:horizontal-tb;font-family:var(--sans);font-weight:500;font-size:clamp(26px,2.4vw,34px);letter-spacing:-.03em}
+
+/* buttons — taller, clearer, one primary style */
+.pill{min-height:48px;padding:0 28px;font-size:15px;font-weight:500;letter-spacing:.01em;gap:10px;transition:background .2s,color .2s,border-color .2s,transform .2s,box-shadow .2s}
+:lang(ko) .pill,:lang(ja) .pill{letter-spacing:-.01em}
+.pill:hover{transform:translateY(-1px)}
+.pill.dark,.pill.primary{background:var(--olive);border-color:var(--olive);color:#fff;box-shadow:0 8px 20px -10px rgba(75,86,52,.55)}
+.pill.dark:hover,.pill.primary:hover{background:#3C4529;border-color:#3C4529;box-shadow:0 12px 26px -12px rgba(60,69,41,.7)}
+.pill.dark::after,.pill.primary::after{content:"→";font-weight:400;transition:transform .2s}
+.pill.dark:hover::after,.pill.primary:hover::after{transform:translateX(3px)}
+.pill.light{background:var(--bg);border-color:var(--bg);color:var(--ink)}
+.pill.light:hover{background:#fff;border-color:#fff;color:var(--ink)}
+.pill.on-img{backdrop-filter:blur(4px);background:rgba(255,255,255,.08)}
+.pill.on-img:hover{background:#fff;color:var(--ink)!important}
+.intro .pill{min-height:52px;padding:0 32px;font-size:15px}
+.buy .pill{min-height:56px;font-size:16px}
+.stepper button{width:44px;height:44px}
+.qty-row{font-size:15px}
+.panel .pill{min-height:44px;font-size:14px}
+
+@media (max-width:560px){
+  body{font-size:15px;line-height:1.7}
+  .hero-sub{font-size:15px;line-height:1.6}
+  :lang(ko) .hero h1,:lang(ja) .hero h1{font-size:clamp(30px,8.4vw,36px);line-height:1.3}
+  :lang(ko) .intro h2,:lang(ja) .intro h2,:lang(ko) .story h2,:lang(ja) .story h2{font-size:26px;line-height:1.35}
+  .intro p,.story .copy-p{font-size:15px;line-height:1.75}
+  .hero-actions .pill{min-height:46px;padding:0 22px;font-size:14px}
+  .intro .pill{min-height:50px;padding:0 26px;font-size:14px}
+  .buy .pill{min-height:54px;font-size:16px}
+  .facts .v{font-size:24px}
+}
 </style>
 <script>
 /* 새로고침해도 항상 맨 위에서 시작 (주소에 #가 붙은 경우만 예외) */
@@ -285,6 +341,7 @@ if(!location.hash){window.scrollTo(0,0);addEventListener('load',()=>{window.scro
         <h1 id="hero-h" data-i18n="heroTitle">Good ingredients for a gentler tomorrow</h1>
         <p class="hero-sub" data-i18n="heroSub">A healing daily care oil with cold-pressed olive and avocado — inspired by the olive groves of Napa Valley.</p>
         <div class="hero-actions">
+          <a class="pill light" href="#shop" data-i18n="btnShop2">Shop Glow Drop</a>
           <a class="pill ghost on-img" style="color:#fff" href="#story" data-i18n="btnStory">Our story</a>
         </div>
       </div>
@@ -301,7 +358,7 @@ if(!location.hash){window.scrollTo(0,0);addEventListener('load',()=>{window.scro
         <h2 id="intro-h" data-i18n="introTitle">A small, healing ritual for dry nails and skin</h2>
         <p data-i18n="introLead">Olive Skin is about simple care — two cold-pressed plant oils, a light texture that sinks right in, and one drop a day.</p>
         <p data-i18n="introLead2">Inspired by the olive groves of Napa Valley.</p>
-        <a class="pill" href="#shop" data-i18n="btnShop">Shop Glow Drop — $18</a>
+        <a class="pill primary" href="#shop" data-i18n="btnShop">Shop Glow Drop — $18</a>
       </div>
       <div class="float" aria-hidden="true">
         <img class="cast" src="../images/cutout.webp" width="564" height="1374" alt="">
@@ -375,7 +432,7 @@ if(!location.hash){window.scrollTo(0,0);addEventListener('load',()=>{window.scro
           </div>
           <span class="total" id="total">16,000원</span>
         </div>
-        <label class="phone-row" style="display:flex;align-items:center;gap:14px;font-size:13px;margin:14px 0">휴대폰 번호 <input id="buyer-phone" type="tel" inputmode="tel" autocomplete="tel" placeholder="010-0000-0000" required style="flex:1;max-width:220px;font:inherit;padding:8px 14px;border:1px solid var(--line);border-radius:999px;background:#fff"></label>
+        <label class="phone-row" style="display:flex;align-items:center;gap:14px;font-size:15px;margin:14px 0">휴대폰 번호 <input id="buyer-phone" type="tel" inputmode="tel" autocomplete="tel" placeholder="010-0000-0000" required style="flex:1;max-width:240px;font:inherit;padding:10px 16px;border:1px solid var(--line);border-radius:999px;background:#fff"></label>
         <div class="buy">
           <a class="pill dark" id="buy-now" href="checkout.html?qty=1" data-i18n="buyNow">Buy now</a>
           <button type="button" class="pill" id="add-bag" data-i18n="addBag" style="display:none">Add to bag</button>
@@ -420,7 +477,7 @@ if(!location.hash){window.scrollTo(0,0);addEventListener('load',()=>{window.scro
       <div><p class="k">Maker</p><p class="v">Mix and Match</p><p data-i18n="m1">The nail care division of COSMAX.</p></div>
       <div><p class="k">Standard</p><p class="v">COSMAX</p><p data-i18n="m2">Made to global beauty brand standards.</p></div>
       <div><p class="k">Formula</p><p class="v" data-i18n="m3v">Plant oils</p><p data-i18n="m3">Cold-pressed olive and avocado at the base.</p></div>
-      <div><p class="k">Checkout</p><p class="v" data-i18n="m4v">Secure</p><p data-i18n="m4">PayPal · Cards</p></div>
+      <div><p class="k">Checkout</p><p class="v" data-i18n="m4v">Secure checkout</p><p data-i18n="m4">PayPal · Cards</p></div>
     </div>
   </section>
 
@@ -465,8 +522,8 @@ if(!location.hash){window.scrollTo(0,0);addEventListener('load',()=>{window.scro
       announce:"국내 배송 · 간편결제",
       navShop:"구매하기", navStory:"브랜드 이야기", navCare:"사용 방법", navIngr:"성분",
       heroTitle:"좋은 성분으로 채우는 조금 더 다정한 [[내일]]",
-      heroSub:"콜드프레스 올리브 오일과 아보카도 오일을 담은 데일리 케어 오일. 나파 밸리의 올리브 숲에서 영감을 받은 한 방울의 힐링.",
-      btnShop:"글로우 드롭 구매하기 — 16,000원", btnStory:"브랜드 이야기", btnShop2:"지금 구매하기",
+      heroSub:"콜드프레스 올리브 오일과 아보카도 오일로 만든 네일 &amp; 바디 케어 오일. 하루 한 방울이면 충분합니다.",
+      btnShop:"글로우 드롭 구매하기 — 16,000원", btnStory:"브랜드 이야기", btnShop2:"글로우 드롭 구매하기",
       glanceTitle:"글로우 드롭", glanceAside:"사용 방법",
       c1tag:"영양<br>데일리 케어", c1name:"글로우 드롭 데일리 케어 오일",
       c2tag:"콜드프레스", c2name:"올리브 오일", c2sub:"스쿠알렌 · 항산화 성분",
@@ -474,26 +531,26 @@ if(!location.hash){window.scrollTo(0,0);addEventListener('load',()=>{window.scro
       c4name:"순한 포뮬러",
       p1:"손톱", p1btn:"글로우 드롭 구매하기", p2:"손", p2btn:"사용 방법", p3:"건조한 피부", p3btn:"글로우 드롭 구매하기",
       storyTitle:"[[나파 밸리]]에서 온 힐링 오일",
-      storyLead:"올리브 오일은 오래전부터 햇볕과 일에 지친 손과 피부를 달래는 데 쓰여 온 오일. 나파 밸리의 올리브 나무와 금빛 햇살에서 영감을 받아, 그 다정한 쉼의 시간을 매일 쓰는 작은 한 병에 담음.",
-      storyLead2:"제조는 코스맥스의 네일 전문 계열사 믹스앤매치.",
+      storyLead:"올리브 오일은 오래전부터 햇볕과 일에 지친 손과 피부를 달래 왔습니다. 나파 밸리의 올리브 나무와 금빛 햇살에서 영감을 받아, 그 다정한 쉼의 시간을 매일 쓰는 작은 한 병에 담았습니다.",
+      storyLead2:"코스맥스의 네일 전문 계열사, 믹스앤매치에서 만듭니다.",
       capGrove:"해 질 녘 올리브 숲",
       careTitle:"10초면 끝나는 케어.",
-      careLead:"손톱, 큐티클, 팔꿈치, 무릎, 뒤꿈치까지. 건조한 곳이라면 어디든 한 병으로.",
-      s1t:"한 방울 덜어내기", s1d:"손톱과 큐티클, 건조한 부위에 한두 방울. 생각보다 적은 양으로 충분함.",
-      s2t:"지그시 누르며 마사지", s2d:"지그시 눌러 담은 뒤, 작은 원을 그리며 흡수될 때까지 부드럽게.",
-      s3t:"매일 꾸준히", s3d:"아침이나 자기 전, 하루 한 번 이상 사용 권장.",
+      careLead:"손톱, 큐티클, 팔꿈치, 무릎, 뒤꿈치까지. 건조한 곳이라면 어디든 한 병으로 충분합니다.",
+      s1t:"한 방울 덜어내기", s1d:"손톱과 큐티클, 건조한 부위에 한두 방울이면 충분합니다.",
+      s2t:"눌러서 스며들게", s2d:"지그시 눌러 바른 뒤, 작은 원을 그리며 흡수될 때까지 마사지합니다.",
+      s3t:"매일 꾸준히", s3d:"아침이나 잠들기 전, 하루 한 번 이상 사용하세요.",
       introTitle:"건조한 손끝을 위한 작은 힐링 루틴",
-      introLead:"올리브 스킨이 추구하는 건 단순한 케어. 콜드프레스 식물성 오일 두 가지, 겉돌지 않고 바로 스며드는 가벼운 텍스처, 그리고 하루 한 방울.",
-      introLead2:"나파 밸리의 올리브 숲에서 영감을 받은 케어.",
-      shopLead:"콜드프레스 올리브 오일과 아보카도 오일. 겉돌지 않고 빠르게 스며들어 손톱, 큐티클, 팔꿈치의 건조함을 부드럽게 가꿈.",
+      introLead:"올리브 스킨의 케어는 단순합니다. 콜드프레스 식물성 오일 두 가지, 겉돌지 않고 바로 스며드는 가벼운 텍스처, 그리고 하루 한 방울.",
+      introLead2:"나파 밸리의 올리브 숲에서 영감을 받았습니다.",
+      shopLead:"콜드프레스 올리브 오일과 아보카도 오일이 겉돌지 않고 빠르게 스며들어, 손톱과 큐티클, 팔꿈치의 건조함을 부드럽게 가꿉니다.",
       pdpSub:"네일 &amp; 바디 케어 오일 · 15ml / 0.5 fl oz",
-      i1t:"콜드프레스 올리브 오일", i1d:"스쿠알렌과 항산화 성분이 풍부해 피부 장벽을 촉촉하게 감쌈.",
-      i2t:"아보카도 오일", i2d:"비타민 A · D · E를 담아 거칠고 건조한 부위를 매끄럽게 가꿈.",
+      i1t:"콜드프레스 올리브 오일", i1d:"스쿠알렌과 항산화 성분이 풍부해 피부 장벽을 촉촉하게 감쌉니다.",
+      i2t:"아보카도 오일", i2d:"비타민 A · D · E가 거칠고 건조한 부위를 매끄럽게 가꿉니다.",
       accHow:"사용 방법", accIngr:"성분", accDetails:"제품 정보",
       dSize:"용량", dFor:"사용 부위", dForV:"손톱, 큐티클, 손, 팔꿈치, 무릎, 뒤꿈치",
       dMaker:"제조", dMakerV:"믹스앤매치 (코스맥스 네일 전문 계열사)",
       qty:"수량", buyNow:"바로 구매하기", addBag:"장바구니 담기",
-      m1:"코스맥스의 네일 케어 전문 계열사.", m2:"글로벌 뷰티 브랜드와 같은 기준으로 제조.",
+      m1:"코스맥스의 네일 케어 전문 계열사.", m2:"글로벌 뷰티 브랜드와 같은 제조 기준.",
       m3v:"식물성 오일", m3:"콜드프레스 올리브 · 아보카도 오일 베이스.",
       m4v:"안전 결제", m4:"페이앱 · 카드 · 계좌이체 · 간편결제",
       footAbout:"나파 밸리에서 온 한 방울의 힐링.", wholesale:"도매 주문 (네일샵·살롱)", checkout:"결제하기",
