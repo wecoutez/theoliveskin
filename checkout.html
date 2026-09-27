@@ -54,6 +54,7 @@ img{max-width:100%}
 .lines dd{margin:0}
 .lines select{font:inherit;font-size:14px;color:var(--ink);background:transparent;border:1px solid var(--line);border-radius:999px;padding:6px 30px 6px 14px;max-width:62%;appearance:none;-webkit-appearance:none;background-image:linear-gradient(45deg,transparent 50%,currentColor 50%),linear-gradient(135deg,currentColor 50%,transparent 50%);background-position:calc(100% - 16px) 55%,calc(100% - 11px) 55%;background-size:5px 5px;background-repeat:no-repeat;cursor:pointer}
 .lines .ship-row{align-items:center}
+.free-ship{font-size:13px;color:var(--olive);padding-top:12px}
 .total{display:flex;justify-content:space-between;align-items:baseline;padding-top:18px}
 .total span:first-child{font-size:14px}
 .total strong{font-family:var(--display);font-weight:400;font-size:40px;line-height:1;color:var(--olive);font-variant-numeric:tabular-nums}
@@ -131,6 +132,7 @@ footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px}
           <div class="ship-row"><dt><label for="country" data-i18n="shipTo">Ship to</label></dt><dd><select id="country" autocomplete="country"></select></dd></div>
           <div><dt data-i18n="shipping">Shipping</dt><dd id="ship-amt">—</dd></div>
         </dl>
+        <p class="free-ship" id="free-ship" aria-live="polite"></p>
         <div class="total"><span data-i18n="total">Total (USD)</span><strong id="total">$18.00</strong></div>
         <ul class="notes">
           <li data-i18n="n4">Shipped from our factory in Korea by tracked international mail. Shipping is set by destination and order size.</li>
@@ -170,7 +172,7 @@ footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px}
   // Apps Script 웹 앱 주소 (…/exec). 비워 두면 예전처럼 브라우저에서만 결제 처리
   var ORDER_API = "https://script.google.com/macros/s/AKfycbxmSmlmpWncaSchQgttNbCoqv7g3kaGwrdwCcmeqUxUf2DQaEoI_VnuC5QMCdn7ee9Wsw/exec";
   /* ======================================= */
-  var PRICE = 18, MAX = 10;
+  var PRICE = 18, MAX = 10, FREE_SHIP_MIN = 30; // 상품 금액이 $30 이상이면 배송비 무료 — Apps Script 쪽도 같게
   var DEBUG = /[?&]debug=1/.test(location.search);
   function dbg(m){
     if (!DEBUG) return;
@@ -195,7 +197,8 @@ footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px}
       errLoad:"결제창을 불러오지 못했어요. 광고 차단 기능을 끄거나 페이지를 새로고침한 뒤 다시 시도해 주세요.",
       errPay:"결제가 완료되지 않았어요. 금액은 청구되지 않았으니 다시 시도해 주세요. 계속 안 되면 hello@theoliveskin.com으로 알려 주세요.",
       cancelled:"결제를 취소했어요. 준비되면 다시 시도해 주세요.",
-      processing:"결제를 확인하고 있어요. 창을 닫지 말아 주세요…"
+      processing:"결제를 확인하고 있어요. 창을 닫지 말아 주세요…",
+      free:"무료", freeNudge:"{n}개 더 담으면 무료배송이에요 ($30 이상 무료배송).", freeGot:"무료배송이 적용됐어요."
     },
     ja: {
       back:"ストアに戻る", title:"お支払い", sub:"ネイル＆ボディケアオイル · 15ml / 0.5 fl oz · $18.00",
@@ -211,7 +214,8 @@ footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px}
       errLoad:"決済画面を読み込めませんでした。広告ブロックをオフにするか、ページを再読み込みしてください。",
       errPay:"お支払いが完了しませんでした。請求は発生していません。もう一度お試しください。解決しない場合は hello@theoliveskin.com までご連絡ください。",
       cancelled:"お支払いをキャンセルしました。準備ができたら再度お試しください。",
-      processing:"お支払いを確認しています。画面を閉じずにお待ちください…"
+      processing:"お支払いを確認しています。画面を閉じずにお待ちください…",
+      free:"無料", freeNudge:"あと{n}個で送料無料（$30以上で送料無料）。", freeGot:"送料無料が適用されました。"
     }
   };
   var nodes = document.querySelectorAll('[data-i18n]');
@@ -221,6 +225,9 @@ footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px}
   T.en.cancelled = "Payment cancelled. Try again whenever you're ready.";
   T.en.processing = "Confirming your payment. Please keep this page open…";
   T.en.shipMismatch = "We couldn't update shipping to match the country you entered in PayPal. Please choose the right country above and pay again. You haven't been charged.";
+  T.en.free = "Free";
+  T.en.freeNudge = "Add {n} more for free shipping — free on orders $30+.";
+  T.en.freeGot = "You've got free shipping.";
   T.en.noShip = "Sorry, we don't ship to this country yet. Please email hello@theoliveskin.com.";
 
   var params = new URLSearchParams(location.search);
@@ -241,7 +248,7 @@ footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px}
     document.getElementById('back').href = 'index.html?lang=' + lang;
     try { localStorage.setItem('os-lang', lang); } catch(e) {}
   }
-  document.querySelectorAll('.lang button').forEach(function(b){ b.addEventListener('click', function(){ setLang(b.dataset.lang); fillCountries(); }); });
+  document.querySelectorAll('.lang button').forEach(function(b){ b.addEventListener('click', function(){ setLang(b.dataset.lang); fillCountries(); render(); }); });
 
   function money(n){ return '$' + n.toFixed(2); }
 
@@ -259,9 +266,16 @@ footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px}
     else return null;
     return Math.ceil(krw * SHIP.margin / SHIP.fx);
   }
+  // 화면·결제에 쓰는 배송비: 무료배송 기준을 넘으면 0
+  function shipFor(cc, qty){
+    var s = shipUSD(cc, qty);
+    if (s === null) return null;
+    return qty * PRICE >= FREE_SHIP_MIN ? 0 : s;
+  }
   function shipCountries(){ return ['KR'].concat(Object.keys(SHIP.kp), Object.keys(SHIP.z)); }
   
   var countryEl = document.getElementById('country');
+  var freeEl = document.getElementById('free-ship');
   function guessCountry(){
     var c = (params.get('country') || '').toUpperCase();
     if (shipUSD(c, 1) !== null) return c;
@@ -284,10 +298,12 @@ footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px}
   }
   countryEl.addEventListener('change', function(){ country = countryEl.value; render(); });
   function render(){
-    var ship = shipUSD(country, qty) || 0;
+    var ship = shipFor(country, qty) || 0;
     document.getElementById('qty').textContent = qty;
     document.getElementById('subtotal').textContent = money(qty * PRICE);
-    document.getElementById('ship-amt').textContent = money(ship);
+    document.getElementById('ship-amt').textContent = ship === 0 && shipUSD(country, qty) !== null ? T[lang].free : money(ship);
+    var left = FREE_SHIP_MIN - qty * PRICE;
+    freeEl.textContent = left > 0 ? T[lang].freeNudge.replace('{n}', Math.ceil(left / PRICE)) : T[lang].freeGot;
     document.getElementById('total').textContent = money(qty * PRICE + ship);
   }
   document.getElementById('minus').addEventListener('click', function(){ if (qty > 1) { qty--; render(); } });
@@ -313,9 +329,9 @@ footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px}
   }
 
   function clientOrder(actions){
-    var shipAmt = (shipUSD(country, qty) || 0).toFixed(2);
+    var shipAmt = (shipFor(country, qty) || 0).toFixed(2);
     var items = (qty * PRICE).toFixed(2);
-    var total = (qty * PRICE + (shipUSD(country, qty) || 0)).toFixed(2);
+    var total = (qty * PRICE + (shipFor(country, qty) || 0)).toFixed(2);
     return actions.order.create({
       intent: 'CAPTURE',
       purchase_units: [{
