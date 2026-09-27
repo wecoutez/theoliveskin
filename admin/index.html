@@ -405,7 +405,7 @@ a.kpi:hover{transform:translateY(-2px)}
 
 /* ===== 대시보드 (카드형) ===== */
 .view[data-view="dash"] .hero-card,.view[data-view="dash"] #dashMkt{display:none}
-.bento{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));grid-template-areas:"hi hi hi hi" "prod sale goal goal" "geo geo acc task" "cal cal cal task";gap:16px;margin-bottom:28px}
+.bento{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));grid-template-areas:"hi hi hi hi" "prod price goal goal" "geo geo geo task" "acc cal cal task";gap:16px;margin-bottom:28px}
 .bx{background:#fff;border-radius:24px;padding:20px 22px;box-shadow:0 1px 0 rgba(47,53,34,.04),0 12px 30px -22px rgba(47,53,34,.35);min-width:0;position:relative}
 .bx h3{margin:0;font-size:16px;font-weight:600;letter-spacing:-.01em}
 .bx .go{position:absolute;right:16px;top:16px;width:32px;height:32px;border-radius:50%;display:grid;place-items:center;text-decoration:none;color:var(--ink);background:#F2F1EA;font-size:15px}
@@ -434,7 +434,7 @@ a.kpi:hover{transform:translateY(-2px)}
 .b-prod .pinfo span{font-size:13px;opacity:.9}
 .b-prod .chip{border:1px solid rgba(255,255,255,.7);border-radius:14px;padding:6px 10px;text-align:center;backdrop-filter:blur(6px);background:rgba(255,255,255,.14);white-space:nowrap}
 .b-prod .chip b{font-size:15px}.b-prod .chip span{font-size:11px;display:block}
-.b-sale{grid-area:sale}.b-goal{grid-area:goal}.b-geo{grid-area:geo}
+.b-price{grid-area:price}.b-goal{grid-area:goal}.b-geo{grid-area:geo}
 .b-sale .head{display:flex;align-items:baseline;gap:8px;margin:14px 0 2px}.b-sale .head b{font-size:30px;font-weight:600;letter-spacing:-.03em}
 .b-sale .delta{font-size:12px;opacity:.7}
 .cols{display:grid;grid-template-columns:24px repeat(7,1fr);align-items:end;height:130px;gap:6px;margin-top:10px}
@@ -482,15 +482,15 @@ a.kpi:hover{transform:translateY(-2px)}
 .b-task li button{width:22px;height:22px;border-radius:50%;border:1.5px solid rgba(255,255,255,.55);background:none;cursor:pointer;padding:0;color:#fff;font-size:12px}
 .b-task li button:hover{background:rgba(255,255,255,.2)}
 .b-task .more{display:block;margin-top:14px;font-size:13px;color:#fff;opacity:.75}
-@media (max-width:1180px){.bento{grid-template-columns:repeat(2,minmax(0,1fr));grid-template-areas:"hi hi" "prod sale" "goal goal" "geo geo" "acc task" "cal cal"}.b-hi{grid-template-columns:1fr}}
-@media (max-width:640px){.bento{grid-template-columns:1fr;grid-template-areas:"hi" "prod" "goal" "sale" "geo" "task" "cal" "acc"}.b-goal .two,.b-geo .two{grid-template-columns:1fr}.b-goal .mixpart{border-left:0;padding-left:0}.pbars{grid-template-columns:1fr 1fr}.b-cal .evs{display:block}.b-cal .ev{font-size:13px}.b-cal .evd{display:inline;font-weight:600}.bigs{gap:16px;flex-wrap:wrap}.bigs b{font-size:28px}.b-cal .evs,.b-cal .wk{grid-template-columns:repeat(7,minmax(0,1fr))}}
+@media (max-width:1180px){.bento{grid-template-columns:repeat(2,minmax(0,1fr));grid-template-areas:"hi hi" "prod price" "goal goal" "geo geo" "acc task" "cal cal"}.b-hi{grid-template-columns:1fr}}
+@media (max-width:640px){.bento{grid-template-columns:1fr;grid-template-areas:"hi" "prod" "price" "goal" "geo" "task" "cal" "acc"}.b-goal .two,.b-geo .two{grid-template-columns:1fr}.b-goal .mixpart{border-left:0;padding-left:0}.pbars{grid-template-columns:1fr 1fr}.b-cal .evs{display:block}.b-cal .ev{font-size:13px}.b-cal .evd{display:inline;font-weight:600}.bigs{gap:16px;flex-wrap:wrap}.bigs b{font-size:28px}.b-cal .evs,.b-cal .wk{grid-template-columns:repeat(7,minmax(0,1fr))}}
 
 .view[data-view="dash"] .vsec-old{display:none}
 .b-sale .two{display:grid;grid-template-columns:1.15fr 1fr;gap:28px;margin-top:6px}
 .b-sale .mixpart{border-left:1px solid #EEECE4;padding-left:24px}
 .b-sale .mixpart .top{display:flex;justify-content:space-between;align-items:baseline;margin-top:14px}
 .b-sale .mixpart .top span{font-size:14px;opacity:.7}.b-sale .mixpart .top b{font-size:22px;font-weight:600}
-.b-geo .two{display:grid;grid-template-columns:1.25fr 1fr;gap:18px;align-items:center;margin-top:10px}
+.b-geo .two{display:grid;grid-template-columns:1.9fr 1fr;gap:18px;align-items:center;margin-top:10px}
 .b-geo .livebadge{position:absolute;right:16px;top:14px;display:inline-flex;align-items:center;gap:8px;font-size:14px;padding:6px 12px;border-radius:999px;background:rgba(192,138,46,.12)}
 .b-geo .livebadge i{width:8px;height:8px;border-radius:50%;background:#C08A2E;animation:vpulse 1.8s infinite}
 .b-geo .livebadge b{font-weight:600}
@@ -554,6 +554,15 @@ a.kpi:hover{transform:translateY(-2px)}
 .b-goal .mixpart .top{display:flex;justify-content:space-between;align-items:baseline}
 .b-goal .mixpart .top span{font-size:14px;opacity:.7}
 .b-goal .foot{display:flex;justify-content:space-between;font-size:13px;margin-top:6px;opacity:.8}
+
+.b-price .pp-main{margin:18px 0 12px;padding:14px 16px;border-radius:16px;background:linear-gradient(135deg,#EEF0E2,#E2E6CC)}
+.b-price .pp-main small{display:block;font-size:12px;opacity:.7}
+.b-price .pp-main b{font-size:30px;font-weight:600;letter-spacing:-.03em;color:var(--olive)}
+.b-price .pp{list-style:none;margin:0;padding:0;display:grid;gap:2px}
+.b-price .pp li{display:flex;justify-content:space-between;align-items:center;padding:9px 2px;border-bottom:1px solid #F0EEE7;font-size:14px}
+.b-price .pp li:last-child{border-bottom:0}
+.b-price .pp span{opacity:.7}.b-price .pp b{font-weight:600;font-variant-numeric:tabular-nums}
+.b-price .pp li.cost b{color:#8A6A45}
 </style>
 </head>
 <body>
@@ -1679,12 +1688,14 @@ function drawBento(){
     <div class="pinfo"><div><b>Glow Drop</b><span>네일 & 바디 오일 · 15ml</span></div>
       <div class="chip"><b>${won(retail)}</b><span>소비자가</span></div></div>
   </a>
-  <div class="bx b-sale"><h3>판매 추이</h3><a class="go" href="#orders" data-go="orderListSec" aria-label="주문 내역으로">↗</a>
-    <div class="head"><b>${num(thisM)}</b><span>병 · 이번 달</span></div>
-    <div class="delta">${delta===null?'지난달 판매 없음':(delta>=0?'↑ ':'↓ ')+Math.abs(delta)+'% 지난달 대비'}</div>
-    <div class="cols"><div class="ax"><span>${num(dmax)}</span><span>${num(dmax/2)}</span><span>0</span></div>
-      ${days.map((d,i)=>`<div class="c${i===6?' today':''}" title="${d.k} · ${num(d.v)}병">${i===6&&d.v?`<em>${num(d.v)}병</em>`:''}<i style="height:${Math.max(6,d.v/dmax*100)}%"></i><span>${d.l}</span></div>`).join('')}
-    </div></div>
+  <div class="bx b-price"><h3>가격표</h3><a class="go" href="#product" aria-label="가격·제작으로">↗</a>
+    <div class="pp-main"><small>소비자가</small><b>${won(retail)}</b></div>
+    <ul class="pp">
+      <li><span>B2B 1차</span><b>${won(+s.b2b1||0)}</b></li>
+      <li><span>B2B 2차</span><b>${won(+s.b2b2||0)}</b></li>
+      <li><span>B2B 3차</span><b>${won(+s.b2b3||0)}</b></li>
+      <li class="cost"><span>한 병 원가</span><b>${won(+s.unitCost||0)}</b></li>
+    </ul></div>
   <div class="bx b-goal"><h3>목표 달성 · 판매 경로</h3><a class="go" href="#orders" data-go="orderListSec" aria-label="주문 내역으로">↗</a>
     <div class="two"><div><div class="ringw"><svg viewBox="0 0 200 200"><circle cx="100" cy="100" r="${R}" fill="none" stroke="#EEECE4" stroke-width="16" stroke-dasharray="4 7"/>
       <circle cx="100" cy="100" r="${R}" fill="none" stroke="var(--olive)" stroke-width="16" stroke-linecap="round" stroke-dasharray="${C*goalP/100} ${C}"/></svg>
@@ -1699,11 +1710,7 @@ function drawBento(){
       <ul id="bgeoList"></ul></div>
     <p class="vmsg" id="bgeoMsg" hidden></p></div>
   <div class="bx b-acc">
-    <details open><summary>가격표</summary><div class="in">
-      <div><span>소비자가</span><b>${won(retail)}</b></div>
-      <div><span>B2B 1차</span><b>${won(+s.b2b1||0)}</b></div><div><span>B2B 2차</span><b>${won(+s.b2b2||0)}</b></div><div><span>B2B 3차</span><b>${won(+s.b2b3||0)}</b></div>
-      <div><span>한 병 원가</span><b>${won(+s.unitCost||0)}</b></div></div></details>
-    <details><summary>제작 업체 <small style="opacity:.6;font-weight:400">${vendors.length}곳</small></summary><div class="in">
+    <details open><summary>제작 업체 <small style="opacity:.6;font-weight:400">${vendors.length}곳</small></summary><div class="in">
       ${vendors.length?vendors.slice(0,6).map(v=>`<div><b>${esc(v.name||'(이름 없음)')}</b><span>${esc(v.role||v.status||'')}</span></div>`).join(''):'<div><span>등록된 업체가 없어요</span></div>'}</div></details>
     <details><summary>입금 현황</summary><div class="in">
       <div><span>주문 금액</span><b>${won(t.sales)}</b></div><div><span>입금 받음</span><b>${won(t.paid)}</b></div><div><span>받을 돈</span><b>${won(Math.max(0,t.sales-t.paid))}</b></div>
