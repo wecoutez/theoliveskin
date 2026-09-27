@@ -24,7 +24,7 @@
 html{scroll-padding-top:env(safe-area-inset-top,0px)}
 *,*::before,*::after{box-sizing:inherit}
 html,body{overflow-x:hidden}
-body{margin:0;background:var(--bg);color:var(--text);font-family:var(--sans);font-weight:300;font-size:16px;line-height:1.65;-webkit-font-smoothing:antialiased;word-break:keep-all;letter-spacing:-.01em}
+body{margin:0;background:var(--bg);color:var(--text);font-family:var(--sans);font-weight:400;font-size:16px;line-height:1.65;-webkit-font-smoothing:antialiased;word-break:keep-all;letter-spacing:-.01em}
 main{max-width:1040px;margin:0 auto;padding:22px 22px 72px}
 h1,h2{font-family:var(--sans);font-weight:600;color:var(--ink);margin:0;letter-spacing:-.01em}
 button,input,select,textarea{font:inherit;color:inherit}
@@ -569,6 +569,32 @@ a.kpi:hover{transform:translateY(-2px)}
 .b-price .pp li:last-child{border-bottom:0}
 .b-price .pp span{opacity:.7}.b-price .pp b{font-weight:600;font-variant-numeric:tabular-nums}
 .b-price .pp li.cost b{color:#8A6A45}
+
+/* ── 선명한 글씨: 흐린 투명도 대신 단색, 가는 글씨 대신 보통·중간 굵기 ── */
+.bento{--sub:#5E6350;color:var(--ink)}
+.bento .ic{width:14px;height:14px;flex:none;fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
+.bx .go{background:var(--ink);color:#fff;width:34px;height:34px;transition:background .15s,transform .15s}
+.bx .go .ic{width:15px;height:15px}.bx .go:hover{background:var(--olive);transform:translate(1px,-1px)}
+.bento h3{font-weight:700;letter-spacing:-.02em;color:var(--ink)}.bento .b-task h3{color:#fff}
+.hirow .hc small{opacity:1;color:var(--sub);font-weight:500;font-size:13px}
+.hirow .hc b{font-weight:700;font-size:24px;color:var(--ink)}
+.hirow .hc b span{opacity:1;color:var(--sub);font-weight:500}
+.hirow .hc em{opacity:1;color:var(--olive);font-weight:600;font-size:13px;display:inline-flex;align-items:center;gap:4px}
+.hirow .hc i{height:5px;background:#E6E3D8}
+.ringw .ctr b{font-weight:700}.ringw .ctr span{opacity:1;color:var(--sub);font-weight:500}
+.b-goal .foot,.b-ring .foot{opacity:1;color:var(--sub);font-weight:500}
+.mixbar div small{opacity:1;color:var(--ink);font-weight:600}
+.mixleg span{color:var(--ink);font-weight:500}
+.b-goal .mixpart .top span,.b-sale .mixpart .top span{opacity:1;color:var(--sub);font-weight:600}
+.b-price .pp-main small{opacity:1;color:var(--sub);font-weight:500}.b-price .pp-main b{font-weight:700}
+.b-price .pp li span{opacity:1;color:var(--sub);font-weight:500}.b-price .pp li b{font-weight:700;color:var(--ink)}
+.b-prod .pinfo b{font-weight:700}.b-prod .pinfo span{opacity:1;font-weight:500}.b-prod .chip b{font-weight:700}
+.b-geo .sub{opacity:1;color:var(--sub);font-weight:500;font-size:13px}
+.b-geo li{font-weight:500;color:var(--ink)}.b-geo li strong{font-weight:700}.b-geo li.none{opacity:1;color:var(--sub)}
+.b-acc summary{font-weight:700}.b-acc summary::after{opacity:1}.b-acc .in span{opacity:1;color:var(--sub)}.b-acc .in b{font-weight:600}
+.b-cal .d{opacity:1;color:var(--sub);font-weight:600}.b-cal .ev small{opacity:1;color:var(--sub)}.b-cal .empty{opacity:1;color:var(--sub)}
+.b-task li b{font-weight:600}.b-task li small{opacity:.85}
+.b-task .more{opacity:1;font-weight:600;display:inline-flex;align-items:center;gap:6px;text-decoration:none;border-bottom:1.5px solid rgba(255,255,255,.5);padding-bottom:2px}
 </style>
 </head>
 <body>
@@ -1680,10 +1706,10 @@ function drawBento(){
   <div class="bx b-hi">
     <h2>안녕하세요, <em>올리브 스킨</em></h2>
     <div class="hirow">
-      <a class="hc lk" href="#orders" data-go="orderListSec"><small>판매한 병</small><b>${num(t.bottles)}<span>병</span></b><em>주문 보기 →</em></a>
+      <a class="hc lk" href="#orders" data-go="orderListSec"><small>판매한 병</small><b>${num(t.bottles)}<span>병</span></b><em>주문 보기<svg class="ic" viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8h9.5M8.5 4l4 4-4 4"/></svg></em></a>
       ${[['목표 달성',goalP],['제작비 회수',beP]].map(([l,v])=>`<div class="hc"><small>${l}</small><b>${pctTxt(v)}</b><i><u style="width:${Math.min(100,Math.max(0,+v||0))}%"></u></i></div>`).join('')}
-      <a class="hc lk" href="#orders" data-go="orderListSec"><small>주문 · 매출</small><b>${num(state.orders.length)}<span>건</span></b><em>${won(t.sales)} →</em></a>
-      <a class="hc lk" href="#orders" data-go="buyersSec"><small>거래처 · 고객</small><b>${num(buyers)}<span>곳</span></b><em>구매자 보기 →</em></a>
+      <a class="hc lk" href="#orders" data-go="orderListSec"><small>주문 · 매출</small><b>${num(state.orders.length)}<span>건</span></b><em>${won(t.sales)}<svg class="ic" viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8h9.5M8.5 4l4 4-4 4"/></svg></em></a>
+      <a class="hc lk" href="#orders" data-go="buyersSec"><small>거래처 · 고객</small><b>${num(buyers)}<span>곳</span></b><em>구매자 보기<svg class="ic" viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8h9.5M8.5 4l4 4-4 4"/></svg></em></a>
     </div>
   </div>
   <a class="bx b-prod" href="#product" aria-label="가격·제작으로 이동">
@@ -1691,7 +1717,7 @@ function drawBento(){
     <div class="pinfo"><div><b>Glow Drop</b><span>네일 & 바디 오일 · 15ml</span></div>
       <div class="chip"><b>${won(retail)}</b><span>소비자가</span></div></div>
   </a>
-  <div class="bx b-price"><h3>가격표</h3><a class="go" href="#product" aria-label="가격·제작으로">↗</a>
+  <div class="bx b-price"><h3>가격표</h3><a class="go" href="#product" aria-label="가격·제작으로"><svg class="ic" viewBox="0 0 16 16" aria-hidden="true"><path d="M4.5 11.5l7-7M6 4.5h5.5V10"/></svg></a>
     <div class="pp-main"><small>소비자가</small><b>${won(retail)}</b></div>
     <ul class="pp">
       <li><span>B2B 1차</span><b>${won(+s.b2b1||0)}</b></li>
@@ -1699,7 +1725,7 @@ function drawBento(){
       <li><span>B2B 3차</span><b>${won(+s.b2b3||0)}</b></li>
       <li class="cost"><span>한 병 원가</span><b>${won(+s.unitCost||0)}</b></li>
     </ul></div>
-  <div class="bx b-goal"><h3>목표 달성 · 판매 경로</h3><a class="go" href="#orders" data-go="orderListSec" aria-label="주문 내역으로">↗</a>
+  <div class="bx b-goal"><h3>목표 달성 · 판매 경로</h3><a class="go" href="#orders" data-go="orderListSec" aria-label="주문 내역으로"><svg class="ic" viewBox="0 0 16 16" aria-hidden="true"><path d="M4.5 11.5l7-7M6 4.5h5.5V10"/></svg></a>
     <div class="two"><div><div class="ringw"><svg viewBox="0 0 200 200"><circle cx="100" cy="100" r="${R}" fill="none" stroke="#EEECE4" stroke-width="16" stroke-dasharray="4 7"/>
       <circle cx="100" cy="100" r="${R}" fill="none" stroke="var(--olive)" stroke-width="16" stroke-linecap="round" stroke-dasharray="${C*goalP/100} ${C}"/></svg>
       <div class="ctr"><b>${num(t.bottles)}</b><span>/ ${num(goal)}병</span></div></div>
@@ -1719,12 +1745,12 @@ function drawBento(){
     <details><summary>최근 주문</summary><div class="in">
       ${recent.length?recent.map(o=>`<div><b>${esc(o.buyer||'(이름 없음)')}</b><span>${esc((o.date||'').slice(5).replace('-','.'))} · ${num(+o.qty||0)}병</span></div>`).join(''):'<div><span>아직 주문이 없어요</span></div>'}</div></details>
   </div>
-  <div class="bx b-cal"><h3>이번 주 콘텐츠</h3><a class="go" href="#sns" aria-label="SNS·콘텐츠로">↗</a>
+  <div class="bx b-cal"><h3>이번 주 콘텐츠</h3><a class="go" href="#sns" aria-label="SNS·콘텐츠로"><svg class="ic" viewBox="0 0 16 16" aria-hidden="true"><path d="M4.5 11.5l7-7M6 4.5h5.5V10"/></svg></a>
     <div class="wk">${week.map(w=>`<div class="d${w.k===td?' now':''}">${w.l}<b>${w.n}</b></div>`).join('')}</div>
     <div class="evs">${wAny?wPosts.map((ps,wi)=>`<div>${ps.map(p=>`<div class="ev${p.status==='게시 완료'?' done':''}"><span class="evd">${week[wi].l} ${week[wi].n}일 · </span>${esc(p.topic||p.type||'콘텐츠')}<small>${esc(p.platform||'')} · ${esc(p.status||'')}</small></div>`).join('')}</div>`).join(''):'<p class="empty">이번 주에 잡힌 콘텐츠가 없어요 · SNS·콘텐츠에서 추가해 주세요</p>'}</div></div>
   <div class="bx b-task"><div class="top"><h3>채널 셋업 할 일</h3><b>${num(done)}/${num(steps.length)}</b></div>
     <ul>${todo.length?todo.map((x,i)=>`<li><i>${icon(x.c.group)}</i><div><b>${esc(x.st.t)}</b><small>${esc(x.c.name)}</small></div><button type="button" data-todo="${i}" aria-label="완료로 표시">✓</button></li>`).join(''):'<li><i>🎉</i><div><b>모든 셋업을 끝냈어요</b></div><span></span></li>'}</ul>
-    <a class="more" href="#channels">전체 보기 →</a></div>`;
+    <a class="more" href="#channels">전체 보기<svg class="ic" viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8h9.5M8.5 4l4 4-4 4"/></svg></a></div>`;
   drawGeo();
   B.querySelectorAll('[data-go]').forEach(a=>a.onclick=()=>setTimeout(()=>$(a.dataset.go)?.scrollIntoView({behavior:'smooth',block:'start'}),80));
   drawBuyers();
