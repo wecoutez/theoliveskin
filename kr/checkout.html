@@ -49,6 +49,12 @@ legend{font-size:18px;font-weight:500;padding:0;margin-bottom:14px}
 .btn.primary:hover::after{transform:translateX(3px)}
 .btn.primary[disabled]{opacity:.6;cursor:progress;transform:none}
 textarea{resize:vertical;min-height:52px}
+.seg{display:grid;grid-template-columns:1fr 1fr;gap:6px;padding:5px;border-radius:999px;background:var(--cell);margin-bottom:28px;max-width:520px}
+.seg button{min-height:46px;border:0;border-radius:999px;background:transparent;font-size:15px;font-weight:500;cursor:pointer;color:var(--ink-soft)}
+.seg button[aria-pressed="true"]{background:var(--white);color:var(--ink);box-shadow:0 2px 8px -4px rgba(40,36,28,.35)}
+.b2b-only{display:none}
+.is-b2b .b2b-only{display:revert}
+.tier{font-size:13px;color:var(--olive);padding-top:10px}
 .summary{background:var(--white);border:1px solid var(--line);border-radius:18px;padding:clamp(20px,3vw,28px);position:sticky;top:20px}
 .item{display:grid;grid-template-columns:72px 1fr;gap:16px;align-items:center;padding-bottom:18px;border-bottom:1px solid var(--line)}
 .thumb{background:linear-gradient(180deg,#EFE6DA,#E6DBCC);border-radius:10px;aspect-ratio:4/5;display:grid;place-items:center}
@@ -82,7 +88,7 @@ footer{border-top:1px solid var(--line);font-size:13px;color:var(--ink-soft);pad
 .done .ref{font-size:14px;color:var(--ink);margin-top:12px}
 @media (max-width:820px){
   .grid{grid-template-columns:1fr}
-  .summary{position:static;order:-1}
+  .summary{position:static}
 }
 </style>
 </head>
@@ -98,10 +104,19 @@ footer{border-top:1px solid var(--line);font-size:13px;color:var(--ink-soft);pad
 <main class="wrap">
   <div id="checkout">
     <h1>주문하기</h1>
+    <div class="seg" role="group" aria-label="구매 유형">
+      <button type="button" data-type="retail" aria-pressed="true">개인 구매</button>
+      <button type="button" data-type="b2b" aria-pressed="false">도매 구매 · 네일샵·살롱</button>
+    </div>
     <form class="grid" id="form" novalidate>
       <div>
+        <fieldset class="b2b-only">
+          <legend>샵 정보</legend>
+          <div class="field"><label for="shop">상호명<em>*</em></label><input id="shop" autocomplete="organization" maxlength="60" placeholder="예) 올리브 네일"></div>
+          <div class="field"><label for="biz">사업자등록번호 (선택)</label><input id="biz" inputmode="numeric" maxlength="12" placeholder="000-00-00000"></div>
+        </fieldset>
         <fieldset>
-          <legend>주문하시는 분</legend>
+          <legend id="who-h">주문하시는 분</legend>
           <div class="field"><label for="name">이름<em>*</em></label><input id="name" autocomplete="name" required maxlength="40"></div>
           <div class="field"><label for="phone">휴대폰 번호<em>*</em></label><input id="phone" type="tel" inputmode="tel" autocomplete="tel" placeholder="010-0000-0000" required maxlength="13"><span class="hint">배송 안내 문자와 결제 알림을 보내드려요.</span></div>
           <div class="field"><label for="email">이메일 (선택)</label><input id="email" type="email" autocomplete="email" maxlength="80"></div>
@@ -127,7 +142,9 @@ footer{border-top:1px solid var(--line);font-size:13px;color:var(--ink-soft);pad
         <div class="qty-row"><span>수량</span>
           <div class="stepper"><button type="button" id="minus" aria-label="수량 줄이기">−</button><output id="qty" aria-live="polite">1</output><button type="button" id="plus" aria-label="수량 늘리기">+</button></div>
         </div>
+        <p class="tier b2b-only" id="tier"></p>
         <dl class="lines">
+          <div><dt>병당 가격</dt><dd id="unit">16,000원</dd></div>
           <div><dt>상품 금액</dt><dd id="subtotal">16,000원</dd></div>
           <div><dt>배송비</dt><dd>무료</dd></div>
         </dl>
@@ -167,7 +184,8 @@ footer{border-top:1px solid var(--line);font-size:13px;color:var(--ink-soft);pad
   var ORDER_API = "https://script.google.com/macros/s/AKfycbxmSmlmpWncaSchQgttNbCoqv7g3kaGwrdwCcmeqUxUf2DQaEoI_VnuC5QMCdn7ee9Wsw/exec"; // checkout.html 과 같은 Apps Script
   var PAYAPP_USERID = 'krawn';
   var PAYAPP_SHOP = 'Olive Skin 올리브스킨';
-  var PRICE = 16000, MAX = 10;   // 금액은 Apps Script 가 다시 계산함 — 같게 유지
+  var PRICE = 16000, MAX = 10;   // 개인 구매 — 금액은 Apps Script 가 다시 계산함, 같게 유지
+  var B2B = { unit: 7000, bulkUnit: 6000, bulkFrom: 50, step: 10, max: 500 };  // 도매 — Apps Script 와 같게
   /* ================ */
   var $ = function(id){ return document.getElementById(id); };
   var params = new URLSearchParams(location.search);
@@ -179,16 +197,33 @@ footer{border-top:1px solid var(--line);font-size:13px;color:var(--ink-soft);pad
     return;
   }
 
-  var qty = Math.max(1, Math.min(MAX, parseInt(params.get('qty'), 10) || 1));
+  var type = params.get('type') === 'b2b' ? 'b2b' : 'retail';
+  var qty = parseInt(params.get('qty'), 10) || 0;
   function won(n){ return n.toLocaleString('ko-KR') + '원'; }
+  function unit(){ return type === 'b2b' ? (qty >= B2B.bulkFrom ? B2B.bulkUnit : B2B.unit) : PRICE; }
+  function clampQty(){
+    qty = type === 'b2b' ? Math.max(B2B.step, Math.min(B2B.max, Math.round(qty / B2B.step) * B2B.step || B2B.step)) : Math.max(1, Math.min(MAX, qty || 1));
+  }
   function render(){
     $('qty').textContent = qty;
-    $('subtotal').textContent = won(qty * PRICE);
-    $('total').textContent = won(qty * PRICE);
+    $('unit').textContent = won(unit());
+    $('subtotal').textContent = won(qty * unit());
+    $('total').textContent = won(qty * unit());
+    var left = B2B.bulkFrom - qty;
+    $('tier').textContent = type !== 'b2b' ? '' : left > 0 ? '10병 단위 주문 · ' + left + '병 더 담으면 병당 6,000원' : '50병 이상 할인가 적용 · 병당 6,000원';
   }
-  $('minus').onclick = function(){ if (qty > 1) { qty--; render(); } };
-  $('plus').onclick = function(){ if (qty < MAX) { qty++; render(); } };
-  render();
+  function setType(t){
+    if (t !== type) qty = t === 'b2b' ? B2B.step : 1;   // 유형을 바꾸면 수량을 기본값으로
+    type = t;
+    document.body.classList.toggle('is-b2b', t === 'b2b');
+    document.querySelectorAll('.seg button').forEach(function(b){ b.setAttribute('aria-pressed', b.dataset.type === t ? 'true' : 'false'); });
+    $('who-h').textContent = t === 'b2b' ? '담당자' : '주문하시는 분';
+    clampQty(); render();
+  }
+  document.querySelectorAll('.seg button').forEach(function(b){ b.onclick = function(){ setType(b.dataset.type); }; });
+  $('minus').onclick = function(){ qty -= type === 'b2b' ? B2B.step : 1; clampQty(); render(); };
+  $('plus').onclick = function(){ qty += type === 'b2b' ? B2B.step : 1; clampQty(); render(); };
+  setType(type);
 
   // 주소 찾기 (카카오 우편번호 서비스)
   $('find').onclick = function(){
@@ -220,7 +255,8 @@ footer{border-top:1px solid var(--line);font-size:13px;color:var(--ink-soft);pad
       mark('name', !$('name').value.trim()) && 'name',
       mark('phone', !/^01[0-9]{8,9}$/.test(phone)) && 'phone',
       mark('zip', !$('zip').value) && 'zip',
-      mark('email', !!$('email').value && !$('email').checkValidity()) && 'email'
+      mark('email', !!$('email').value && !$('email').checkValidity()) && 'email',
+      mark('shop', type === 'b2b' && !$('shop').value.trim()) && 'shop'
     ].filter(Boolean);
     if (bad.length) { showErr('표시된 항목을 확인해 주세요.'); $(bad[0] === 'zip' ? 'find' : bad[0]).focus(); return; }
     if (!$('agree').checked) { showErr('개인정보 수집·이용에 동의해 주세요.'); $('agree').focus(); return; }
@@ -228,10 +264,11 @@ footer{border-top:1px solid var(--line);font-size:13px;color:var(--ink-soft);pad
 
     var btn = $('pay'); btn.disabled = true; btn.textContent = '주문서 저장 중…';
     fetch(ORDER_API, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify({
-      action: 'krOrder', qty: qty, name: $('name').value.trim(), phone: phone, email: $('email').value.trim(),
+      action: 'krOrder', type: type, shop: $('shop').value.trim(), biz: $('biz').value.trim(), qty: qty, name: $('name').value.trim(), phone: phone, email: $('email').value.trim(),
       zip: $('zip').value, addr1: $('addr1').value, addr2: $('addr2').value.trim(), memo: $('memo').value.trim(), agree: true
     })}).then(function(r){ return r.json(); }).then(function(res){
       if (!res || !res.ok) throw new Error(res && res.error || 'save');
+      if ((res.type || 'retail') !== type || res.price !== qty * unit()) throw new Error('price');  // 서버와 금액이 다르면 결제하지 않음
       var back = location.href.split('?')[0] + '?done=' + encodeURIComponent(res.orderNo);
       PayApp.setDefault('userid', PAYAPP_USERID);
       PayApp.setDefault('shopname', PAYAPP_SHOP);
