@@ -42,6 +42,8 @@ rep('<meta name="description" content="Olive Skin Glow Drop — a healing daily 
 for attr, n in (("src", 14), ("data-src", 4), ("poster", 1)):
     rep(f' {attr}="images/', f' {attr}="../images/', n)
 
+rep('<script src="analytics.js" defer></script>', '<script src="../analytics.js" defer></script>')
+
 # 가격 · 구매 — 원화, 페이앱
 rep('<p class="price">$18<small>USD</small></p>', f'<p class="price">{PRICE_KRW}<small>원</small></p>')
 rep('announce:"전 세계 배송"', 'announce:"국내 배송 · 간편결제"')
