@@ -1131,7 +1131,7 @@ async function mktPush(){
   try{await mktCall({action:'mktSave',mkt});mktDirty=false;mktNote('');}
   catch(e){
     if(e?.error==='bad_action'){mktMode='local';mktDirty=false;mktNote(LOCAL_NOTE);}
-    else if(e?.error==='auth')lockOut('다시 비밀번호를 넣어 주세요.');
+    else if(e?.error==='auth'||e?.error==='no_admin_key')lockOut(e.error==='auth'?'비밀번호가 Apps Script 의 ADMIN_KEY 와 달라요. 스크립트 속성의 ADMIN_KEY 를 확인해 주세요.':'Apps Script 스크립트 속성에 ADMIN_KEY 가 없어요. 프로젝트 설정 → 스크립트 속성 → ADMIN_KEY = 관리자 비밀번호 를 추가하고 새 버전으로 배포해 주세요.');
     else{mktNote('마케팅 내용을 서버에 저장하지 못했어요. 이 기기에는 저장돼 있고, 잠시 뒤 다시 시도할게요.');clearTimeout(mktTimer);mktTimer=setTimeout(mktPush,15000);}
   }
 }
@@ -1417,12 +1417,12 @@ async function api(body,tries=2){
         const m=txt.replace(/<[^>]+>/g,' ').replace(/\s+/g,' ').trim().slice(0,160);
         throw {error:'server',detail:'서버 응답이 올바르지 않아요 ('+r.status+'): '+(m||'빈 응답')};
       }
-      if(!j.ok){if(j.error==='auth')lockOut('비밀번호가 바뀌었어요. 다시 들어가 주세요.');throw j;}
+      if(!j.ok){if(j.error==='auth')lockOut('비밀번호가 Apps Script 의 ADMIN_KEY 와 달라요. 스크립트 속성의 ADMIN_KEY 를 확인해 주세요.');else if(j.error==='no_admin_key')lockOut('Apps Script 스크립트 속성에 ADMIN_KEY 가 없어요. 프로젝트 설정 → 스크립트 속성 → ADMIN_KEY = 관리자 비밀번호 를 추가하고 새 버전으로 배포해 주세요.');throw j;}
       apply(j);return j;
     }catch(e){
       clearTimeout(tm);
       lastErr=e?.name==='AbortError'?{error:'timeout',detail:'구글 서버가 30초 동안 답하지 않았어요.'}:(e?.error?e:{error:'network',detail:'서버에 연결하지 못했어요 (접근 권한 또는 인터넷 문제).'});
-      if(lastErr.error==='auth'||lastErr.error==='locked'||lastErr.error==='timeout')throw lastErr;
+      if(lastErr.error==='auth'||lastErr.error==='no_admin_key'||lastErr.error==='locked'||lastErr.error==='timeout')throw lastErr;
       if(n<tries-1)await new Promise(r=>setTimeout(r,1200));
     }
   }
@@ -1463,7 +1463,7 @@ async function loadVisitors(){
   }
 }
 async function refresh(){mktPull();loadVisitors();try{await api({action:'list'});$('notice').style.display='none';}
-  catch(e){if(e?.error==='auth'||e?.error==='locked')lockOut('다시 비밀번호를 넣어 주세요.');else showError(e);}}
+  catch(e){if(e?.error==='no_admin_key')return;if(e?.error==='auth'||e?.error==='locked')lockOut($('lockMsg').textContent||'다시 비밀번호를 넣어 주세요.');else showError(e);}}
 
 /* 비밀번호는 코드에 없음. 아래는 비밀번호를 거꾸로 알아낼 수 없는 확인값만 있음 → 맞는지 즉시 판단 */
 const PW_SALT='0IR1ZeueXFTwXly7bDNW8Q==', PW_CHECK='+jMtXcV1aefwooReIFMRC5FAGpS1yqhB+zBfi0jPRG4=';
