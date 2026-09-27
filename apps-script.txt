@@ -461,39 +461,25 @@ function visitors() {
   const property = 'properties/' + String(id).replace(/[^0-9]/g, '');
   const cache = CacheService.getScriptCache();
 
-  let month = cache.get('visitors28');
-  if (month) month = JSON.parse(month);
+  // 사이트 연 뒤로 지금까지 들어와 본 모든 나라 (실시간은 안 씀)
+  let all = cache.get('visitorsAll');
+  if (all) all = JSON.parse(all);
   else {
     const rows = gaRows(AnalyticsData.Properties.runReport({
-      dateRanges: [{ startDate: '28daysAgo', endDate: 'today' }],
+      dateRanges: [{ startDate: '2020-01-01', endDate: 'today' }],
       dimensions: [{ name: 'countryId' }, { name: 'country' }],
       metrics: [{ name: 'activeUsers' }, { name: 'sessions' }],
       orderBys: [{ metric: { metricName: 'activeUsers' }, desc: true }],
       limit: 250
     }, property), true);
-    month = { rows: rows, users: rows.reduce((a, r) => a + r.users, 0) };
-    cache.put('visitors28', JSON.stringify(month), 1800);   // 30분 보관
+    all = { rows: rows, users: rows.reduce((a, r) => a + r.users, 0) };
+    cache.put('visitorsAll', JSON.stringify(all), 3600);   // 1시간 보관
   }
-
-  let live = cache.get('visitorsLive');
-  if (live) live = JSON.parse(live);
-  else {
-    let rows = [];
-    try {
-      rows = gaRows(AnalyticsData.Properties.runRealtimeReport({
-        dimensions: [{ name: 'countryId' }, { name: 'country' }],
-        metrics: [{ name: 'activeUsers' }],
-        limit: 250
-      }, property), false);
-    } catch (e) { console.error('realtime', e); }
-    live = { rows: rows, users: rows.reduce((a, r) => a + r.users, 0) };
-    cache.put('visitorsLive', JSON.stringify(live), 60);   // 1분 보관
-  }
-  return { ok: true, days: 28, rows: month.rows, users: month.users, live: live, at: Date.now() };
+  return { ok: true, days: 0, rows: all.rows, users: all.users, at: Date.now() };
 }
 
 /* ===== 웹 앱 ===== */
-const SCRIPT_VERSION = '2026-09-27f';
+const SCRIPT_VERSION = '2026-09-27g';
 function doGet() { let sheet = ''; try { sheet = book().getName(); } catch (e) { sheet = ''; }
   return out({ ok: true, service: 'olive-skin', version: SCRIPT_VERSION, adminKey: !!prop('ADMIN_KEY'), sheet: sheet }); }
 const CHECKOUT_ACTIONS = ['create', 'patch', 'capture', 'krOrder'];

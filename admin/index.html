@@ -503,7 +503,7 @@ a.kpi:hover{transform:translateY(-2px)}
 .b-geo li.none{display:block;opacity:.6}
 .b-geo .vmap{aspect-ratio:960/500;width:100%;background:#FAF9F5;border-radius:14px;overflow:hidden}
 .b-geo .vmap svg{width:100%;height:100%}
-.b-geo #bgeoList{height:206px;align-content:start;overflow:hidden}
+.b-geo #bgeoList{height:206px;align-content:start;overflow-y:auto;padding-right:4px}
 .b-geo .vmsg{font-size:13px;max-width:80%;box-shadow:0 6px 18px -12px rgba(47,53,34,.5)}
 @media (max-width:640px){.b-geo .two{grid-template-columns:1fr}.b-geo #bgeoList{height:196px}}
 
@@ -1709,7 +1709,6 @@ function drawBento(){
     <div class="mixbar">${mixTot?mix.filter(x=>x.q).map(x=>`<div style="flex:${x.q};background:${x.col}" title="${esc(x.n)} ${num(x.q)}병"><small>${Math.round(x.q/mixTot*100)}%</small></div>`).join(''):'<div style="flex:1;background:#EEECE4"><small>아직 판매 없음</small></div>'}</div>
     <div class="mixleg">${mix.map(x=>`<span><i style="background:${x.col}"></i>${esc(x.n)} ${num(x.q)}</span>`).join('')}</div></div></div></div>
   <div class="bx b-geo"><h3>나라별 접속자</h3><p class="sub" id="bgeoSub">Google Analytics</p>
-    <span class="livebadge"><i></i>지금 접속 <b id="bgeoLive">–</b>명</span>
     <div class="two"><div class="vmap"><svg id="bgeoMap" role="img" aria-label="나라별 방문자 지도"></svg><div class="vtip" id="bgeoTip" hidden></div><p class="vmsg" id="bgeoMsg" hidden></p></div>
       <ul id="bgeoList"><li class="none">불러오는 중…</li></ul></div></div>
   <div class="bx b-acc">
@@ -1824,11 +1823,11 @@ const sv=(tag,attrs)=>{const e=document.createElementNS(SVGNS,tag);for(const k i
 function drawMap(w,j,svg,tip){
   svg=svg||$('vmap');tip=tip||$('vtip');svg.setAttribute('viewBox',`0 0 ${w.w} ${w.h}`);svg.replaceChildren();
   svg.append(sv('path',{d:w.sphere,fill:'#F7F5EF'}));
-  const by={},live={};(j?.rows||[]).forEach(r=>by[r.code]=r);(j?.live?.rows||[]).forEach(r=>live[r.code]=r);
+  const by={},live={};(j?.rows||[]).forEach(r=>by[r.code]=r);
   const max=Math.max(1,...Object.values(by).map(r=>r.users));
   const box=svg.parentNode;
   const show=(ev,code)=>{const r=by[code],l=live[code];const b=box.getBoundingClientRect();
-    tip.textContent=`${flag(code)} ${kname(code,r?.country||l?.country)} · 28일 ${r?r.users.toLocaleString('ko-KR'):0}명${l?' · 지금 '+l.users+'명':''}`;
+    tip.textContent=`${flag(code)} ${kname(code,r?.country||l?.country)} · ${j?.days?`최근 ${j.days}일 `:''}방문자 ${r?r.users.toLocaleString('ko-KR'):0}명`;
     tip.style.left=(ev.clientX-b.left)+'px';tip.style.top=(ev.clientY-b.top)+'px';tip.hidden=false;};
   for(const code in w.c){const c=w.c[code];if(!c.d)continue;
     const r=by[code];const p=sv('path',{d:c.d,class:'land'});
@@ -1844,11 +1843,10 @@ function drawGeo(){
   const svg=$('bgeoMap');if(!svg)return;
   const j=geo.j;
   if(geo.w)drawMap(geo.w,j,svg,$('bgeoTip'));
-  $('bgeoLive').textContent=j?num(j.live?.users||0):'–';
-  $('bgeoSub').textContent=j?`최근 ${j.days}일 방문자 ${num(j.users)}명 · ${j.rows.length}개국`:'Google Analytics';
+  $('bgeoSub').textContent=j?`${j.days?`최근 ${j.days}일`:'지금까지'} ${j.rows.length}개국에서 방문 · 방문자 ${num(j.users)}명`:'Google Analytics';
   const m=$('bgeoMsg');m.textContent=geo.err;m.hidden=!geo.err;
-  const rows=j?.rows||[],max=rows[0]?.users||1,live={};(j?.live?.rows||[]).forEach(x=>live[x.code]=x.users);
-  $('bgeoList').innerHTML=rows.length?rows.slice(0,6).map(x=>`<li><span>${flag(x.code)} ${esc(kname(x.code,x.country))}${live[x.code]?` <em>● ${num(live[x.code])}</em>`:''}</span><i><b style="width:${Math.max(4,x.users/max*100)}%"></b></i><strong>${num(x.users)}</strong></li>`).join(''):'<li class="none">나라별 방문자가 여기 표시돼요</li>';
+  const rows=j?.rows||[],max=rows[0]?.users||1;
+  $('bgeoList').innerHTML=rows.length?rows.map(x=>`<li><span>${flag(x.code)} ${esc(kname(x.code,x.country))}</span><i><b style="width:${Math.max(4,x.users/max*100)}%"></b></i><strong>${num(x.users)}</strong></li>`).join(''):'<li class="none">들어와 본 나라가 여기 표시돼요</li>';
 }
 async function loadVisitors(){
   const list=$('visits'),msg=$('vmsg');
@@ -1860,7 +1858,7 @@ async function loadVisitors(){
     geo.j=j;
     if(w)drawMap(w,j);note('');
     $('liveN').textContent=(j.live?.users||0).toLocaleString('ko-KR');
-    $('visitSub').textContent=`최근 ${j.days}일 · 방문자 ${j.users.toLocaleString('ko-KR')}명 · ${j.rows.length}개국 · 1분마다 새로고침`;
+    $('visitSub').textContent=`${j.days?`최근 ${j.days}일`:'지금까지'} · 방문자 ${j.users.toLocaleString('ko-KR')}명 · ${j.rows.length}개국`;
     if(!j.rows.length){list.replaceChildren();note(j.live?.users?'':'아직 방문 기록이 없어요. 방문자가 생기면 하루 안에 지도에 색이 칠해져요.');return;}
     const max=j.rows[0].users||1;
     list.replaceChildren(...j.rows.slice(0,12).map(r=>h('div',{style:'display:grid;grid-template-columns:minmax(110px,170px) 1fr 56px;gap:10px;align-items:center;padding:6px 0;font-size:14px'},
@@ -1875,7 +1873,7 @@ async function loadVisitors(){
     else note('방문자 정보를 불러오지 못했어요. '+(e?.detail||''));
   }
 }
-setInterval(()=>{if(!document.hidden&&KEY&&!$('app').hidden&&location.hash.replace('#','')in{'':1,dash:1})loadVisitors();},60000);
+setInterval(()=>{if(!document.hidden&&KEY&&!$('app').hidden&&location.hash.replace('#','')in{'':1,dash:1})loadVisitors();},1800000);
 async function refresh(){
   const pr=await probeApi();
   if(!pr.ok&&pr.res.some(x=>x.auth)){const n=$('notice');n.replaceChildren('Apps Script 권한 허용이 필요해요. Apps Script 편집기 위쪽 함수 목록에서 test 를 고르고 ▶ 실행 → 권한 검토 → 계정 선택 → 고급 → (안전하지 않음)으로 이동 → 허용 을 눌러 주세요. 그다음 이 페이지를 새로고침하면 돼요.');n.style.display='block';$('updated').textContent='불러오지 못함';return;}
