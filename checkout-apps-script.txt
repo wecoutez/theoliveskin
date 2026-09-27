@@ -1,0 +1,210 @@
+/**
+ * Olive Skin 결제(checkout.html)용 Apps Script — 전체 파일
+ * ------------------------------------------------------------
+ * PayPal 주문 만들기(create) · 결제 확정(capture) · 배송 국가 변경(patch)
+ * + 결제 완료 주문을 '온라인 주문' 시트에 기록
+ *
+ * [업데이트 방법]
+ * 1) 결제용 Apps Script 프로젝트 열기 (checkout.html 의 ORDER_API 주소가 가리키는 프로젝트)
+ * 2) 기존 코드를 전부 지우고 이 파일 내용을 붙여 넣고 저장
+ * 3) 프로젝트 설정(톱니바퀴) → 스크립트 속성에 아래 두 개가 있는지 확인 (이름이 다르면 맞게 고치기)
+ *      PAYPAL_CLIENT_ID  : PayPal Live 앱 Client ID (checkout.html 과 같은 값)
+ *      PAYPAL_SECRET     : PayPal Live 앱 Secret
+ *    (테스트용 샌드박스라면 PAYPAL_ENV = sandbox 추가)
+ * 4) 배포 → 배포 관리 → (연필) 기존 배포 수정 → 버전: 새 버전 → 배포
+ *    ※ "새 배포"가 아니라 "기존 배포 수정"이어야 주소(…/exec)가 그대로 유지됨
+ *
+ * 가격·배송비는 여기서 계산함 (브라우저가 보낸 금액은 믿지 않음). checkout.html 과 값을 같게 유지.
+ */
+const PRICE = 18;            // 한 병 가격 (USD)
+const MAX_QTY = 10;
+const FREE_SHIP_MIN = 30;    // 상품 금액이 $30 이상이면 배송비 무료
+const SKU = 'OS-GLOWDROP-15';
+const ORDER_SHEET = '온라인 주문';
+const TZ = 'Asia/Seoul';
+
+/* ===== 배송비 표 (우체국 요금 기준) — checkout.html 의 SHIP 과 같음 ===== */
+const SHIP = {"base":60,"per":80,"fx":1400,"margin":1.15,"reg":4270,"kp":{"AU":[4670,6080,7500,8920,10360,11460,12560,13660,14770,15890],"BR":[5410,7030,8660,10280,11900,13380,14870,16350,17840,19340],"CA":[5540,7240,8920,10610,12310,13620,14930,16240,17560,18890],"CN":[4680,5920,7140,8370,9620,10600,11580,12570,13540,14530],"FR":[5510,7180,8850,10530,12220,13520,14820,16120,17420,18750],"DE":[5450,7100,8770,10420,12090,13390,14670,15950,17250,18550],"HK":[4160,5250,6340,7420,8540,9410,10280,11140,12010,12890],"ID":[4680,5800,6910,8030,9150,10210,11270,12330,13390,14450],"JP":[4550,5730,6930,8120,9340,10290,11240,12190,13130,14090],"MY":[4880,6040,7210,8380,9540,10650,11750,12860,13960,15070],"NZ":[4560,5950,7330,8720,10120,11200,12270,13350,14430,15520],"PH":[4480,5550,6620,7690,8760,9770,10790,11800,12820,13830],"RU":[5510,7180,8850,10530,12230,13530,14830,16130,17430,18760],"SG":[4710,5830,6960,8090,9210,10280,11340,12410,13480,14540],"ES":[5430,7080,8730,10380,12060,13340,14620,15900,17180,18490],"TW":[4330,5460,6590,7720,8880,9790,10690,11590,12500,13410],"TH":[4620,5720,6830,7930,9040,10090,11130,12180,13220,14270],"GB":[5170,6740,8300,9870,11470,12690,13910,15120,16340,17590],"US":[8090,8980,11060,13170,15280,16910,18530,20160,21780,23430],"VN":[5090,5860,6620,7380,8140,8910,9670,10430,11190,11950]},"sp":{"1":[4460,4990,5520,6050,7130,7840,8550,9260,9970,10680],"2":[5020,5740,6460,7180,8630,9220,9810,10400,10990,11540],"3":[5120,6130,7140,8150,10200,11150,12100,13050,14000,14940],"4":[5450,6580,7710,8840,11140,12550,13960,15370,16780,18230]},"kr":[3110,3350,3590,3830,4070,4310,4550,4790,5030,5270],"z":{"MO":1,"BD":2,"BN":2,"MM":2,"KH":2,"TL":2,"LA":2,"MN":2,"AL":3,"AD":3,"AT":3,"BE":3,"BA":3,"BG":3,"HR":3,"CY":3,"CZ":3,"DK":3,"EE":3,"FI":3,"GR":3,"HU":3,"IS":3,"IE":3,"IT":3,"LV":3,"LI":3,"LT":3,"LU":3,"MT":3,"MD":3,"MC":3,"ME":3,"NL":3,"MK":3,"NO":3,"PL":3,"PT":3,"RO":3,"SM":3,"RS":3,"SK":3,"SI":3,"SE":3,"CH":3,"UA":3,"AE":3,"BH":3,"IL":3,"JO":3,"KW":3,"LB":3,"OM":3,"QA":3,"SA":3,"TR":3,"IQ":3,"IN":3,"NP":3,"PK":3,"LK":3,"MV":3,"BT":3,"KZ":3,"UZ":3,"KG":3,"AZ":3,"AM":3,"GE":3,"PG":3,"GU":3,"MP":3,"MX":4,"AR":4,"CL":4,"CO":4,"PE":4,"UY":4,"EC":4,"BO":4,"PY":4,"CR":4,"PA":4,"GT":4,"HN":4,"SV":4,"NI":4,"DO":4,"JM":4,"TT":4,"BS":4,"BB":4,"PR":4,"ZA":4,"EG":4,"KE":4,"MA":4,"NG":4,"GH":4,"TZ":4,"UG":4,"TN":4,"ET":4,"MU":4,"SN":4,"CI":4,"DZ":4,"RW":4,"BW":4,"NA":4,"ZM":4,"FJ":4,"WS":4,"TO":4,"VU":4,"PF":4,"NC":4}};
+
+function shipUSD(cc, qty) {
+  cc = String(cc || '').toUpperCase();
+  const g = SHIP.base + SHIP.per * qty;
+  const i = Math.max(0, Math.min(9, Math.ceil(g / 100) - 1));
+  let krw;
+  if (cc === 'KR') krw = SHIP.kr[i];
+  else if (SHIP.kp[cc]) krw = SHIP.kp[cc][i];
+  else if (SHIP.z[cc]) krw = SHIP.sp[String(SHIP.z[cc])][i] + SHIP.reg;
+  else return null;
+  return Math.ceil(krw * SHIP.margin / SHIP.fx);
+}
+// 실제로 받는 배송비: 무료배송 기준을 넘으면 0
+function shipFor(cc, qty) {
+  const s = shipUSD(cc, qty);
+  if (s === null) return null;
+  return qty * PRICE >= FREE_SHIP_MIN ? 0 : s;
+}
+function amountFor(cc, qty) {
+  const ship = shipFor(cc, qty);
+  if (ship === null) return null;
+  const items = qty * PRICE;
+  return {
+    currency_code: 'USD',
+    value: (items + ship).toFixed(2),
+    breakdown: {
+      item_total: { currency_code: 'USD', value: items.toFixed(2) },
+      shipping: { currency_code: 'USD', value: ship.toFixed(2) }
+    }
+  };
+}
+
+/* ===== PayPal ===== */
+function prop(k) { return PropertiesService.getScriptProperties().getProperty(k); }
+function ppBase() { return prop('PAYPAL_ENV') === 'sandbox' ? 'https://api-m.sandbox.paypal.com' : 'https://api-m.paypal.com'; }
+function ppToken() {
+  const cache = CacheService.getScriptCache();
+  const hit = cache.get('pp_token');
+  if (hit) return hit;
+  const r = UrlFetchApp.fetch(ppBase() + '/v1/oauth2/token', {
+    method: 'post',
+    headers: { Authorization: 'Basic ' + Utilities.base64Encode(prop('PAYPAL_CLIENT_ID') + ':' + prop('PAYPAL_SECRET')) },
+    payload: { grant_type: 'client_credentials' },
+    muteHttpExceptions: true
+  });
+  const j = JSON.parse(r.getContentText());
+  if (!j.access_token) throw new Error('paypal_auth ' + r.getContentText().slice(0, 200));
+  cache.put('pp_token', j.access_token, Math.min(21600, (j.expires_in || 3600) - 300));
+  return j.access_token;
+}
+function pp(method, path, body, extraHeaders) {
+  const opt = {
+    method: method,
+    contentType: 'application/json',
+    headers: Object.assign({ Authorization: 'Bearer ' + ppToken() }, extraHeaders || {}),
+    muteHttpExceptions: true
+  };
+  if (body !== undefined) opt.payload = JSON.stringify(body);
+  const r = UrlFetchApp.fetch(ppBase() + path, opt);
+  const t = r.getContentText();
+  return { code: r.getResponseCode(), body: t ? JSON.parse(t) : {} };
+}
+function issue(res) { return (res.body && res.body.details && res.body.details[0] && res.body.details[0].issue) || ''; }
+
+/* ===== 동작 ===== */
+function createOrder(b) {
+  const qty = Math.max(1, Math.min(MAX_QTY, parseInt(b.qty, 10) || 1));
+  const cc = String(b.country || 'US').toUpperCase();
+  const amount = amountFor(cc, qty);
+  if (!amount) return { ok: false, error: 'no_ship' };
+  const res = pp('post', '/v2/checkout/orders', {
+    intent: 'CAPTURE',
+    purchase_units: [{
+      reference_id: 'default',
+      custom_id: cc + '|' + qty,           // 주문 만들 때 기준 국가·수량 (확정 때 비교용)
+      description: 'Olive Skin Glow Drop 15ml',
+      amount: amount,
+      items: [{
+        name: 'Glow Drop Daily Care Oil 15ml', sku: SKU,
+        unit_amount: { currency_code: 'USD', value: PRICE.toFixed(2) },
+        quantity: String(qty), category: 'PHYSICAL_GOODS'
+      }]
+    }],
+    application_context: { brand_name: 'Olive Skin', shipping_preference: 'GET_FROM_FILE' }
+  });
+  if (res.code >= 300 || !res.body.id) return { ok: false, error: 'create', detail: issue(res) };
+  return { ok: true, id: res.body.id };
+}
+
+function patchOrder(b) {
+  const id = String(b.orderID || '');
+  const cc = String(b.country || '').toUpperCase();
+  const got = pp('get', '/v2/checkout/orders/' + encodeURIComponent(id));
+  if (got.code >= 300) return { ok: false, error: 'patch' };
+  const qty = orderQty(got.body);
+  const amount = amountFor(cc, qty);
+  if (!amount) return { ok: false, error: 'no_ship' };
+  const res = pp('patch', '/v2/checkout/orders/' + encodeURIComponent(id), [
+    { op: 'replace', path: "/purchase_units/@reference_id=='default'/amount", value: amount },
+    { op: 'replace', path: "/purchase_units/@reference_id=='default'/custom_id", value: cc + '|' + qty }
+  ]);
+  if (res.code >= 300) return { ok: false, error: 'patch', detail: issue(res) };
+  return { ok: true };
+}
+
+function captureOrder(b) {
+  const id = String(b.orderID || '');
+  const got = pp('get', '/v2/checkout/orders/' + encodeURIComponent(id));
+  if (got.code >= 300) return { ok: false, error: 'capture' };
+  const o = got.body;
+  if (o.status === 'COMPLETED') return { ok: true, id: id };   // 이미 확정된 주문 (새로고침 등)
+  const pu = o.purchase_units[0];
+  const qty = orderQty(o);
+  const cc = String((pu.shipping && pu.shipping.address && pu.shipping.address.country_code) || '').toUpperCase();
+  // 구매자가 PayPal 에서 입력한 나라 기준으로 금액이 맞는지 확인 — 다르면 확정하지 않음 (청구 안 됨)
+  const want = amountFor(cc, qty);
+  if (!want) return { ok: false, error: 'no_ship', country: cc };
+  if (want.value !== pu.amount.value) return { ok: false, error: 'country_mismatch', country: cc };
+
+  const res = pp('post', '/v2/checkout/orders/' + encodeURIComponent(id) + '/capture', {}, { 'PayPal-Request-Id': 'cap-' + id });
+  if (issue(res) === 'INSTRUMENT_DECLINED') return { ok: false, retry: true };
+  if (issue(res) === 'ORDER_ALREADY_CAPTURED') return { ok: true, id: id };
+  if (res.code >= 300 || res.body.status !== 'COMPLETED') return { ok: false, error: 'capture', detail: issue(res) };
+  try { logOrder(res.body, qty, want); } catch (e) { console.error('log failed', e); }  // 기록 실패해도 결제는 완료
+  return { ok: true, id: id };
+}
+
+function orderQty(o) {
+  const it = o.purchase_units && o.purchase_units[0].items && o.purchase_units[0].items[0];
+  return Math.max(1, Math.min(MAX_QTY, parseInt(it && it.quantity, 10) || 1));
+}
+
+/* ===== 시트 기록 ===== */
+function logOrder(o, qty, amount) {
+  const ss = SpreadsheetApp.getActiveSpreadsheet() || SpreadsheetApp.openById(prop('SHEET_ID'));
+  let sh = ss.getSheetByName(ORDER_SHEET);
+  if (!sh) {
+    sh = ss.insertSheet(ORDER_SHEET);
+    sh.appendRow(['결제 시각', 'PayPal 주문번호', '결제번호', '수량', '상품 금액', '배송비', '합계(USD)', '받는 사람', '이메일', '국가', '주소', '진행 상태']);
+    sh.getRange(1, 1, 1, 12).setFontWeight('bold'); sh.setFrozenRows(1);
+  }
+  const pu = o.purchase_units[0];
+  const cap = pu.payments && pu.payments.captures && pu.payments.captures[0];
+  const a = (pu.shipping && pu.shipping.address) || {};
+  const addr = [a.address_line_1, a.address_line_2, a.admin_area_2, a.admin_area_1, a.postal_code].filter(String).join(', ');
+  const safe = v => /^[=+\-@]/.test(String(v)) ? "'" + v : v;   // 시트 수식으로 읽히지 않게
+  sh.appendRow([
+    Utilities.formatDate(new Date(), TZ, 'yyyy-MM-dd HH:mm'), o.id, cap ? cap.id : '', qty,
+    amount.breakdown.item_total.value, amount.breakdown.shipping.value, amount.value,
+    safe((pu.shipping && pu.shipping.name && pu.shipping.name.full_name) || ''),
+    safe((o.payer && o.payer.email_address) || ''), a.country_code || '', safe(addr), '발송 대기'
+  ]);
+}
+
+/* ===== 웹 앱 ===== */
+function out(o) { return ContentService.createTextOutput(JSON.stringify(o)).setMimeType(ContentService.MimeType.JSON); }
+function doGet() { return out({ ok: true, service: 'olive-skin-checkout' }); }
+function doPost(e) {
+  let b;
+  try { b = JSON.parse(e.postData.contents); } catch (x) { return out({ ok: false, error: 'bad_request' }); }
+  try {
+    switch (b.action) {
+      case 'create': return out(createOrder(b));
+      case 'patch': return out(patchOrder(b));
+      case 'capture': {
+        const lock = LockService.getScriptLock();
+        lock.waitLock(20000);
+        try { return out(captureOrder(b)); } finally { lock.releaseLock(); }
+      }
+      default: return out({ ok: false, error: 'bad_action' });
+    }
+  } catch (x) {
+    console.error(x);
+    return out({ ok: false, error: 'server' });
+  }
+}
+
+/** 붙여 넣은 뒤 한 번 실행해 보기 — PayPal 연결과 배송비 계산 확인 (주문은 만들지 않음) */
+function test() {
+  console.log('token ok:', !!ppToken());
+  console.log('US 1병', JSON.stringify(amountFor('US', 1)));   // 배송비 $8 → 합계 $26
+  console.log('US 2병', JSON.stringify(amountFor('US', 2)));   // 무료배송 → 합계 $36
+}
