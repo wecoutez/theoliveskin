@@ -652,7 +652,7 @@ a.kpi:hover{transform:translateY(-2px)}
       <a href="#dash" data-v="dash"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="7" height="9" rx="2"/><rect x="14" y="3" width="7" height="5" rx="2"/><rect x="14" y="12" width="7" height="9" rx="2"/><rect x="3" y="16" width="7" height="5" rx="2"/></svg>대시보드</a>
       <a href="#orders" data-v="orders"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3h12v18l-3-2-3 2-3-2-3 2z"/><path d="M9 8h6M9 12h6"/></svg>주문</a>
       <a href="#leads" data-v="leads"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 21V9l9-6 9 6v12"/><path d="M9 21v-6h6v6"/></svg>거래처</a>
-      <a href="#product" data-v="product"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 8l-9-5-9 5v8l9 5 9-5z"/><path d="M3 8l9 5 9-5M12 13v8"/></svg>가격·제작</a>
+      <a href="#product" data-v="product"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 8l-9-5-9 5v8l9 5 9-5z"/><path d="M3 8l9 5 9-5M12 13v8"/></svg>가격 구조</a>
       <p class="nav-h">마케팅</p>
       <a href="#plan" data-v="plan"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="3"/><path d="M8 3v4M16 3v4M3 10h18"/></svg>연간 플랜</a>
       <a href="#channels" data-v="channels"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="6" cy="12" r="2.5"/><circle cx="18" cy="6" r="2.5"/><circle cx="18" cy="18" r="2.5"/><path d="M8.2 10.8l7.6-3.6M8.2 13.2l7.6 3.6"/></svg>채널 셋업</a>
@@ -1329,7 +1329,7 @@ $('settingsForm').addEventListener('submit',async ev=>{
 });
 
 /* ===================== 화면 이동 (사이드 메뉴) ===================== */
-const VIEWS={dash:'대시보드',orders:'주문',leads:'거래처',product:'가격·제작',plan:'연간 마케팅 플랜',channels:'마케팅 채널 셋업',sns:'SNS·콘텐츠',seeding:'시딩·PR',settings:'설정'};
+const VIEWS={dash:'대시보드',orders:'주문',leads:'거래처',product:'가격 구조',plan:'연간 마케팅 플랜',channels:'마케팅 채널 셋업',sns:'SNS·콘텐츠',seeding:'시딩·PR',settings:'설정'};
 let view='dash';
 function go(v){
   if(!VIEWS[v])v='dash';
@@ -1436,9 +1436,14 @@ const seedMilestones=()=>[
 const mktSeed=()=>({v:1,planStart:'2026-10',plan:seedPlan(),channels:seedChannels(),accounts:seedAccounts(),posts:[],seeding:[],milestones:seedMilestones(),leads:seedLeads()});
 function mktNorm(m){const d=mktSeed();m=m&&typeof m==='object'?m:{};
   for(const k of Object.keys(d))if(m[k]==null||typeof m[k]!==typeof d[k]||Array.isArray(m[k])!==Array.isArray(d[k]))m[k]=d[k];
+  // 한 번만 적용하는 데이터 업데이트
+  m.mig=Array.isArray(m.mig)?m.mig:[];
+  if(!m.mig.includes('nailmall-sample')){const x=m.leads.find(l=>l.name==='네일몰');
+    if(x){x.status='샘플 발송';x.memo=x.memo?'태핑 및 샘플 전달 완료 · '+x.memo:'태핑 및 샘플 전달 완료';}
+    m.mig.push('nailmall-sample');m._changed=true;}
   return m;}
 function mktLocal(){try{return JSON.parse(localStorage.getItem('olv-mkt')||'null');}catch(e){return null;}}
-let mkt=mktNorm(mktLocal()),mktMode=API_URL?'server':'local',mktDirty=false,mktTimer=0;
+let mkt=mktNorm(mktLocal());delete mkt._changed;let mktMode=API_URL?'server':'local',mktDirty=false,mktTimer=0;
 function mktNote(msg){const n=$('mktNote');n.textContent=msg;n.hidden=!msg;}
 async function mktCall(body){
   await probeApi();
@@ -1470,7 +1475,7 @@ async function mktPull(){
   try{
     const j=await mktCall({action:'mkt'});
     if(mktDirty)return;
-    if(j.mkt){mkt=mktNorm(j.mkt);try{localStorage.setItem('olv-mkt',JSON.stringify(mkt));}catch(e){}if(!typing())renderMkt();}
+    if(j.mkt){mkt=mktNorm(j.mkt);const ch=mkt._changed;delete mkt._changed;try{localStorage.setItem('olv-mkt',JSON.stringify(mkt));}catch(e){}if(ch)mktSave();else if(!typing())renderMkt();}
     else{mktDirty=true;await mktPush();} // 서버가 비어 있으면 이 기기 내용(없으면 기본 플랜)을 올림
     if(!mktDirty)mktNote('');
   }catch(e){
@@ -1820,12 +1825,12 @@ function drawBento(){
       <a class="hc lk" href="#leads" data-go="buyersSec"><small>거래처 · 고객</small><b>${num(buyers)}<span>곳</span></b><em>구매자 보기<svg class="ic" viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8h9.5M8.5 4l4 4-4 4"/></svg></em></a>
     </div>
   </div>
-  <a class="bx b-prod" href="#product" aria-label="가격·제작으로 이동">
+  <a class="bx b-prod" href="#product" aria-label="가격 구조으로 이동">
     <img src="../images/cutout.webp" alt="Glow Drop 15ml">
     <div class="pinfo"><div><b>Glow Drop</b><span>네일 & 바디 오일 · 15ml</span></div>
       <div class="chip"><b>${won(retail)}</b><span>소비자가</span></div></div>
   </a>
-  <div class="bx b-price"><h3>가격표</h3><a class="go" href="#product" aria-label="가격·제작으로"><svg class="ic" viewBox="0 0 16 16" aria-hidden="true"><path d="M4.5 11.5l7-7M6 4.5h5.5V10"/></svg></a>
+  <div class="bx b-price"><h3>가격표</h3><a class="go" href="#product" aria-label="가격 구조으로"><svg class="ic" viewBox="0 0 16 16" aria-hidden="true"><path d="M4.5 11.5l7-7M6 4.5h5.5V10"/></svg></a>
     <div class="pp-main"><small>소비자가</small><b>${won(retail)}</b></div>
     <ul class="pp">
       <li><span>B2B 1차</span><b>${won(+s.b2b1||0)}</b></li>
