@@ -632,6 +632,42 @@ a.kpi:hover{transform:translateY(-2px)}
 .ch-gh i{width:10px;height:10px;border-radius:3px}.ch-gh b{font-size:16px;font-weight:700}.ch-gh span{margin-left:auto;font-size:13px;font-weight:500;color:var(--muted)}
 @media (max-width:640px){.cp-groups li{grid-template-columns:90px minmax(0,1fr) 54px;gap:10px}.cp-big b{font-size:36px}}
 #buyersSec{margin-bottom:32px}
+.road-card{margin-bottom:22px}
+.road-wrap{overflow-x:auto;margin:6px -4px 0;padding:0 4px}
+.road{position:relative;height:340px;min-width:900px;margin-left:54px}
+.road-grid span{position:absolute;left:0;right:0;border-top:1px dashed #E3E0D5}
+.road-grid em{position:absolute;right:calc(100% + 10px);top:-9px;font-style:normal;font-size:12px;font-weight:600;color:var(--muted);white-space:nowrap}
+.road-line{position:absolute;inset:0;width:100%;height:calc(100% - 0px);overflow:visible;pointer-events:none}
+.road-line polyline{fill:none;stroke:#B9BD9C;stroke-width:2;vector-effect:non-scaling-stroke;stroke-linejoin:round}
+.road .rc{position:absolute;top:0;bottom:0;width:calc(100%/12);border:0;background:none;padding:0;cursor:pointer;font:inherit;color:inherit;border-radius:12px}
+.road .rc:hover,.road .rc.sel{background:rgba(75,87,40,.05)}.road .rc.now{background:rgba(192,138,46,.08)}
+.road .dot{position:absolute;left:50%;width:14px;height:14px;border-radius:50%;transform:translate(-50%,-50%);box-shadow:0 0 0 3px #fff,0 2px 6px rgba(0,0,0,.2)}
+.road .rc.now .dot{box-shadow:0 0 0 3px #fff,0 0 0 6px rgba(192,138,46,.35)}
+.road .lab{position:absolute;left:4px;right:4px;display:flex;flex-direction:column;align-items:center;gap:2px;text-align:center}
+.road .lab b{font-size:12px;font-weight:600;line-height:1.35;color:var(--ink);display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;word-break:keep-all}
+.road .lab i{font-style:normal;font-size:11px;font-weight:700}
+.road .mo-l{position:absolute;left:0;right:0;bottom:-26px;text-align:center;font-size:13px;font-weight:700;color:var(--ink)}
+.road .mo-l small{display:block;font-size:10px;font-weight:500;color:var(--muted);line-height:1}
+.road{margin-bottom:34px}
+.qs{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+.qc{background:var(--paper);border-radius:20px;padding:18px 20px 8px;box-shadow:0 1px 2px rgba(54,66,30,.05);border:1.5px solid transparent;min-width:0}
+.qc.now{border-color:#D8C58F}
+.q-h{display:flex;justify-content:space-between;align-items:flex-end;gap:12px;padding-bottom:12px;border-bottom:2px solid var(--ink)}
+.q-h b{display:block;font-size:20px;font-weight:700;color:var(--ink);letter-spacing:-.02em}.q-h span{font-size:13px;font-weight:500;color:var(--muted)}
+.q-h dl{display:flex;gap:18px;margin:0}.q-h dt{font-size:11px;font-weight:600;color:var(--muted)}.q-h dd{margin:0;font-size:15px;font-weight:700;color:var(--ink);font-variant-numeric:tabular-nums}
+.q-m{display:grid;grid-template-columns:78px minmax(0,1fr);gap:14px;width:100%;text-align:left;font:inherit;color:inherit;background:none;border:0;border-bottom:1px solid #ECE9DF;padding:14px 6px;cursor:pointer;border-radius:10px}
+.q-m:last-child{border-bottom:0}.q-m:hover,.q-m.sel{background:#F7F6F0}.q-m.cur .q-mo b{color:#A87A22}
+.q-mo b{display:block;font-size:17px;font-weight:700;color:var(--ink)}
+.q-mo .lv{font-size:10px;letter-spacing:1px;color:var(--olive)}
+.q-top{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:4px}
+.q-top .tag{font-size:11px;font-weight:700;color:#fff;padding:2px 9px;border-radius:6px}
+.q-top .iss{font-size:12px;font-weight:500;color:var(--muted)}
+.q-m .main{margin:0;font-size:15px;font-weight:700;color:var(--ink);line-height:1.4}
+.q-m .sub{margin:3px 0 0;font-size:13px;color:var(--sub,#5E6350);line-height:1.45}
+@media (max-width:900px){.qs{grid-template-columns:1fr}}
+@media (max-width:640px){.q-h{flex-direction:column;align-items:flex-start}.q-m{grid-template-columns:58px minmax(0,1fr);gap:10px}}
+/* 제목 밑 회색 설명 줄은 모두 숨김 */
+.sec-head p,.today{display:none}
 </style>
 </head>
 <body>
@@ -834,6 +870,11 @@ a.kpi:hover{transform:translateY(-2px)}
 
   <!-- ===== 연간 마케팅 플랜 ===== -->
   <div class="view" data-view="plan" hidden>
+    <section class="card road-card">
+      <div class="sec-head"><div><h2>연간 액션 로드맵</h2><p>점 = 그 달의 메인 액션 · 위로 갈수록 어려운 일 · 점을 누르면 고칠 수 있어요</p></div>
+        <label class="inline">시작 달<select id="planStart"></select></label></div>
+      <div class="road-wrap"><div class="road" id="road"></div></div>
+    </section>
     <div class="kpis" id="planKpis"></div>
     <section class="card ms-card">
       <div class="sec-head"><div><h2>마일스톤</h2><p id="msSub">런칭까지 꼭 지켜야 할 날짜</p></div>
@@ -846,21 +887,16 @@ a.kpi:hover{transform:translateY(-2px)}
       <div class="ms-next" id="msTrack"></div>
       <ol class="ms-list" id="msList"></ol>
     </section>
-    <section class="card">
-      <div class="sec-head"><div><h2>월별 목표 매출과 실적</h2><p>실적은 주문 내역(주문일 기준)에서 자동으로 계산돼요</p></div>
-        <label class="inline">시작 달<select id="planStart"></select></label></div>
-      <div class="chart"><svg id="planChart" role="img" aria-label="월별 목표 매출, 실적 매출, 마케팅 예산 막대 그래프"></svg></div>
-      <div class="legend"><span><i style="background:var(--bar-soft)"></i>목표 매출</span><span><i style="background:var(--olive)"></i>실적 매출</span><span><i style="background:var(--oil)"></i>마케팅 예산</span></div>
-    </section>
     <section>
-      <div class="sec-head"><h2>12개월 플랜</h2><p>달을 누르면 시즌·목표·광고·예산을 고칠 수 있어요</p></div>
-      <div class="months" id="months"></div>
+      <div class="sec-head"><div><h2>분기별 플랜</h2><p>세 달씩 묶었어요 · 달을 누르면 시즌·목표·광고·예산을 고칠 수 있어요</p></div></div>
+      <div class="qs" id="months"></div>
     </section>
     <div class="card editor" id="monthEdit" hidden>
       <div class="ed-h"><h3 id="monthTitle">월 플랜</h3><button type="button" class="rowbtn" data-close="monthEdit">닫기</button></div>
       <form id="monthForm" autocomplete="off">
         <label class="c2">시즌<select name="season"></select></label>
         <label class="c2">이 달의 목표<select name="goal"></select></label>
+        <label class="c2">난이도<select name="level"><option value="1">1 · 쉬움</option><option value="2">2</option><option value="3">3 · 보통</option><option value="4">4</option><option value="5">5 · 어려움</option></select></label>
         <label class="c2">이슈·기념일<input name="issue" placeholder="예: 빼빼로데이, 블랙프라이데이"></label>
         <label class="c3">메인 할 일<input name="main"></label>
         <label class="c3">서브 할 일<input name="sub"></label>
@@ -1516,6 +1552,8 @@ const kpi=(o)=>h(o.href?'a':'article',{class:'kpi'+(o.accent?' accent':''),href:
 /* --- 연간 플랜 --- */
 const budgetOf=p=>(+p?.bMedia||0)+(+p?.bMake||0)+(+p?.bInfl||0)+(+p?.bPR||0);
 const targetOf=p=>(+p?.tOwn||0)+(+p?.tExt||0);
+const GOAL_LV={'준비':3,'인지도':2,'BOOST':4,'매스마케팅':4};
+const levelOf=p=>Math.max(1,Math.min(5,+p?.level||(/런칭/.test(p?.main||'')?5:/B2B|선주문/.test(p?.main||'')?4:GOAL_LV[p?.goal]||2)));
 const planMonths=()=>Array.from({length:12},(_,i)=>mAdd(mkt.planStart,i));
 function salesByMonth(){const r={};for(const o of state.orders){const k=(o.date||'').slice(0,7);if(k)r[k]=(r[k]||0)+(+o.qty||0)*(+o.price||0);}return r;}
 function focusMonth(){const cur=today().slice(0,7),ms=planMonths();return cur<ms[0]?ms[0]:cur;}
@@ -1565,21 +1603,34 @@ function drawPlan(){
   const sel=$('planStart');if(!sel.options.length){const base=mAdd(today().slice(0,7),-12);for(let i=0;i<37;i++){const k=mAdd(base,i);sel.append(new Option(k.replace('-','년 ')+'월',k));}}
   if(![...sel.options].some(o=>o.value===mkt.planStart))sel.append(new Option(mkt.planStart,mkt.planStart));
   sel.value=mkt.planStart;
-  drawBars($('planChart'),ms.map(mLabel),[
-    {name:'목표 매출',color:cssVar('--bar-soft'),values:ms.map(k=>targetOf(mkt.plan[k]))},
-    {name:'실적 매출',color:cssVar('--olive'),values:ms.map(k=>sb[k]||0)},
-    {name:'마케팅 예산',color:cssVar('--oil'),values:ms.map(k=>budgetOf(mkt.plan[k]))}],shortWon,ms.indexOf(cur));
-  $('months').replaceChildren(...ms.map(k=>{const p=mkt.plan[k]||{},a=sb[k]||0;
-    return h('button',{type:'button',class:'mo'+(k===cur?' now':'')+(k===editingMonth?' sel':''),onclick:()=>openMonth(k)},
-      h('div',{class:'season',style:`background:${SEASONS[p.season]||'var(--empty)'}`}),
-      h('div',{class:'mo-h'},h('b',{},mLabel(k),h('small',{text:k.slice(0,4)+(p.season?' · '+p.season:'')})),p.goal&&h('span',{class:'tag',style:`background:var(${GOAL_C[p.goal]||'--sage'})`,text:p.goal})),
-      p.issue&&h('p',{class:'iss',text:p.issue}),
-      h('p',{class:'main',text:p.main||'비어 있어요 — 눌러서 채우기'}),
-      p.creative&&h('p',{text:'✦ '+p.creative}),
-      (p.fixedAds||p.varAds)&&h('p',{class:'ads',text:[p.fixedAds,p.varAds].filter(Boolean).join(' / ')}),
-      h('div',{class:'nums'},h('span',{},'예산',h('b',{text:shortWon(budgetOf(p))})),h('span',{},'목표',h('b',{text:shortWon(targetOf(p))})),h('span',{},'실적',h('b',{text:shortWon(a)}))));}));
+  // 연간 액션 로드맵: 달마다 점 하나, 높이 = 난이도
+  const lv=k=>levelOf(mkt.plan[k]);
+  const H=100,y=l=>H-(8+(l-1)/4*62);
+  const pts=ms.map((k,i)=>`${i+.5},${y(lv(k))}`).join(' ');
+  $('road').innerHTML=`<div class="road-grid">${[5,4,3,2,1].map(l=>`<span style="top:${y(l)}%"><em>${l===5?'어려움':l===3?'보통':l===1?'쉬움':''}</em></span>`).join('')}</div>
+    <svg class="road-line" viewBox="0 0 12 ${H}" preserveAspectRatio="none" aria-hidden="true"><polyline points="${pts}"/></svg>
+    ${ms.map((k,i)=>{const p=mkt.plan[k]||{},l=lv(k);return `<button type="button" class="rc${k===cur?' now':''}${k===editingMonth?' sel':''}" data-k="${k}" style="left:${i/12*100}%">
+      <span class="lab" style="bottom:${100-y(l)+4}%"><b>${esc(p.main||'비어 있음')}</b></span>
+      <span class="dot" style="top:${y(l)}%;background:var(${GOAL_C[p.goal]||'--sage'})"></span>
+      <span class="mo-l">${mLabel(k)}${i===0||k.endsWith('-01')?`<small>${k.slice(0,4)}</small>`:''}</span></button>`;}).join('')}`;
+  $('road').querySelectorAll('.rc').forEach(b=>b.onclick=()=>openMonth(b.dataset.k));
+  // 분기별 플랜: 세 달씩
+  const dots=l=>'●'.repeat(l)+'○'.repeat(5-l);
+  $('months').replaceChildren(...[0,1,2,3].map(q=>{const qm=ms.slice(q*3,q*3+3);
+    const qb=qm.reduce((a,k)=>a+budgetOf(mkt.plan[k]),0),qt=qm.reduce((a,k)=>a+targetOf(mkt.plan[k]),0),qa=qm.reduce((a,k)=>a+(sb[k]||0),0);
+    const now=qm.includes(cur);
+    return h('div',{class:'qc'+(now?' now':'')},
+      h('div',{class:'q-h'},h('div',{},h('b',{text:`${q+1}분기`}),h('span',{text:`${qm[0].replace('-','.')} – ${qm[2].replace('-','.')}`})),
+        h('dl',{},h('div',{},h('dt',{text:'예산'}),h('dd',{text:shortWon(qb)})),h('div',{},h('dt',{text:'목표'}),h('dd',{text:shortWon(qt)})),h('div',{},h('dt',{text:'실적'}),h('dd',{text:shortWon(qa)})))),
+      ...qm.map(k=>{const p=mkt.plan[k]||{};
+        return h('button',{type:'button',class:'q-m'+(k===cur?' cur':'')+(k===editingMonth?' sel':''),onclick:()=>openMonth(k)},
+          h('div',{class:'q-mo'},h('b',{text:mLabel(k)}),h('span',{class:'lv',title:'난이도 '+levelOf(p),text:dots(levelOf(p))})),
+          h('div',{class:'q-body'},
+            h('div',{class:'q-top'},p.goal&&h('span',{class:'tag',style:`background:var(${GOAL_C[p.goal]||'--sage'})`,text:p.goal}),p.issue&&h('span',{class:'iss',text:p.issue})),
+            h('p',{class:'main',text:p.main||'비어 있어요 — 눌러서 채우기'}),
+            (p.sub||p.creative)&&h('p',{class:'sub',text:[p.sub,p.creative&&'✦ '+p.creative].filter(Boolean).join('  ·  ')})));}));}));
 }
-function openMonth(k){editingMonth=k;const f=$('monthForm');formSet(f,mkt.plan[k]||{});
+function openMonth(k){editingMonth=k;const f=$('monthForm');formSet(f,{...(mkt.plan[k]||{}),level:String(levelOf(mkt.plan[k]))});
   $('monthTitle').textContent=`${k.slice(0,4)}년 ${mLabel(k)} 플랜`;$('monthMsg').textContent='';drawPlan();openEditor('monthEdit');}
 $('monthForm').addEventListener('submit',ev=>{ev.preventDefault();if(!editingMonth)return;
   mkt.plan[editingMonth]=formGet(ev.target);mktSave();flash('monthMsg','저장했어요.');});
