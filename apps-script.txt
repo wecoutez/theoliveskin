@@ -467,6 +467,8 @@ function doPost(e) {
   }
 
   // 관리자 (비밀번호 필요)
+  // 스크립트 속성에 ADMIN_KEY 가 없으면 '비밀번호 틀림'이 아니라 설정이 빠진 것 — 따로 알려 줌
+  if (!prop('ADMIN_KEY')) return out({ ok: false, error: 'no_admin_key' });
   if (!authed(b.key)) return out({ ok: false, error: 'auth' });
   if (b.action === 'visitors') {
     try { return out(visitors()); } catch (x) { return out({ ok: false, error: 'ga', detail: String(x && x.message || x) }); }
