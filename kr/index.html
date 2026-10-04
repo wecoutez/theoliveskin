@@ -44,8 +44,8 @@ h1,h2,h3{margin:0;font-family:var(--sans);font-weight:400;line-height:1.2;letter
 
 /* announcement + header */
 .announce{background:var(--white);text-align:center;font-size:12px;padding:7px 16px;border-bottom:1px solid var(--line)}
-.site-head{position:sticky;top:env(safe-area-inset-top,0px);z-index:30;padding:10px 10px 0}
-.head-bar{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;min-height:54px;color:var(--white);background:var(--sage-deep);border-radius:16px;transition:box-shadow .3s}
+.site-head{position:sticky;top:env(safe-area-inset-top,0px);z-index:30;height:0;padding-inline:10px}
+.head-bar{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;min-height:54px;margin-top:10px;color:var(--white);background:var(--sage-deep);border-radius:16px;transition:box-shadow .3s}
 .site-head.solid .head-bar{box-shadow:0 10px 30px -14px rgba(40,44,28,.45)}
 .logo{font-family:var(--display);font-size:26px;font-weight:500;text-decoration:none;text-transform:lowercase;line-height:1;justify-self:start}
 .nav{display:flex;gap:26px;font-size:13px;justify-self:center}
@@ -58,15 +58,23 @@ h1,h2,h3{margin:0;font-family:var(--sans);font-weight:400;line-height:1.2;letter
 .bag{display:flex;align-items:center;gap:4px;text-decoration:none;font-size:12px;padding:6px}
 .bag svg{width:20px;height:20px}
 
-/* hero — giant wordmark with the model breaking through it */
-.hero{padding-top:12px}
+/* hero film */
+.hero{position:relative;height:clamp(540px,88vh,860px);overflow:hidden;background:var(--night);color:var(--white)}
+.hero video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.hero::after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,rgba(20,20,14,.45),rgba(20,20,14,.05) 60%),linear-gradient(180deg,rgba(20,20,14,.35),transparent 22%);pointer-events:none}
+.hero-copy{position:absolute;z-index:2;left:0;right:0;bottom:clamp(48px,9vh,110px)}
+.hero h1{font-size:clamp(44px,6vw,84px);max-width:11em;margin-bottom:20px}
+.hero-sub{font-size:14px;max-width:30em;opacity:.92;margin-bottom:24px}
+.hero-actions{display:flex;flex-wrap:wrap;gap:10px}
+.hero-meta{position:absolute;z-index:2;right:clamp(16px,3vw,32px);bottom:24px;display:flex;align-items:center;gap:14px;font-size:11px;letter-spacing:.18em;text-transform:uppercase}
+.film-toggle{border:1px solid rgba(255,255,255,.7);background:transparent;color:var(--white);border-radius:999px;width:30px;height:30px;display:grid;place-items:center;cursor:pointer}
+.film-toggle svg{width:12px;height:12px;fill:currentColor}
+
+/* brand — giant wordmark with the model breaking through it */
+.brand{padding-top:clamp(16px,2vw,24px)}
 .hero-stage{position:relative;height:clamp(440px,60vw,780px);overflow:hidden;border-radius:18px;background:radial-gradient(ellipse 60% 70% at 50% 70%,#FFFFFF 0%,rgba(255,255,255,0) 70%),linear-gradient(180deg,#F3EFE6,#ECE6D9)}
 .hero-word{position:absolute;left:0;right:0;top:3%;margin:0;text-align:center;white-space:nowrap;font-family:var(--display);font-weight:500;font-size:clamp(84px,19.5vw,272px);line-height:.9;letter-spacing:-.035em;color:var(--sage-deep);text-transform:lowercase;user-select:none}
 .hero-model{position:absolute;z-index:1;left:50%;bottom:0;height:100%;width:auto;max-width:none;transform:translateX(-50%);filter:drop-shadow(0 24px 30px rgba(60,52,36,.16))}
-.hero-copy{display:grid;grid-template-columns:1.1fr .9fr;gap:clamp(20px,4vw,64px);align-items:end;padding-block:clamp(28px,4vw,48px) clamp(8px,2vw,16px)}
-.hero h1{font-size:clamp(40px,4.6vw,66px);max-width:11em;color:var(--olive)}
-.hero-sub{font-size:14px;max-width:30em;color:var(--ink-soft);margin-bottom:20px}
-.hero-actions{display:flex;flex-wrap:wrap;gap:10px}
 
 /* rhode-style rounded cards */
 .uses{display:grid;grid-template-columns:repeat(3,1fr);gap:clamp(12px,2vw,24px);padding-block:clamp(32px,4vw,56px)}
@@ -237,7 +245,7 @@ footer{background:var(--night);color:#D8D4C8}
   .tiles{grid-template-columns:1fr;max-width:440px;margin-inline:auto}
   .checker-grid{grid-template-columns:1fr}
   .checker-grid .c2{order:4}
-  .hero-copy{grid-template-columns:1fr}
+  .hero-meta span{display:none}
   .banner img{aspect-ratio:4/3}
 }
 @media (max-width:420px){
@@ -247,11 +255,14 @@ footer{background:var(--night);color:#D8D4C8}
 
 @media (max-width:560px){
   body{line-height:1.6}
-  .hero-stage{height:min(118vw,560px)}
-  .hero-word{top:5%;font-size:clamp(64px,21vw,120px)}
-  .hero h1{font-size:clamp(34px,9.6vw,42px);line-height:1;margin-bottom:0}
+  .hero{height:min(76svh,620px);min-height:500px}
+  .hero-copy{bottom:64px}
+  .hero h1{font-size:clamp(34px,9.6vw,42px);line-height:1;margin-bottom:14px}
   .hero-sub{font-size:13px;line-height:1.55;margin-bottom:18px;max-width:22em}
   .hero-actions .pill{min-height:36px;padding:0 18px;font-size:12px}
+  .hero-meta{bottom:18px}
+  .hero-stage{height:min(118vw,560px)}
+  .hero-word{top:5%;font-size:clamp(64px,21vw,120px)}
   .intro{padding-block:48px 56px}
   .intro-grid{grid-template-columns:1fr;row-gap:0}
   .float{order:-1;justify-self:center;width:84px;margin:4px 0 40px}
@@ -282,7 +293,7 @@ footer{background:var(--night);color:#D8D4C8}
 body{font-size:16px;font-weight:400;line-height:1.75}
 :lang(ko) body,:lang(ja) body{letter-spacing:-.01em}
 p{text-wrap:pretty}
-.hero-sub{font-size:17px;line-height:1.65;max-width:28em}
+.hero-sub{font-size:17px;line-height:1.65;max-width:28em;opacity:.95}
 .intro p,.story .copy-p{font-size:16px;line-height:1.8;color:var(--ink-soft)}
 .lead{font-size:16px;line-height:1.75}
 .info .sub{font-size:15px}
@@ -368,20 +379,28 @@ if(!location.hash){window.scrollTo(0,0);addEventListener('load',()=>{window.scro
 </header>
 
 <main id="top">
-  <section class="hero wrap" aria-labelledby="hero-h">
-    <div class="hero-stage">
-      <p class="hero-word" aria-hidden="true">olive skin</p>
-      <img class="hero-model" src="https://d8j0ntlcm91z4.cloudfront.net/user_3C3M55Xq2zz3haT6AE7PPQ12doD/hf_20261004_104911_7fe910f2-e441-4d61-8d4d-324557736577.png" width="1792" height="2240" fetchpriority="high" alt="Model raising a Glow Drop bottle overhead" data-i18n-alt="altModel">
-    </div>
+  <section class="hero" aria-labelledby="hero-h">
+    <video id="film" src="../images/grove-walk.mp4" poster="../images/grove-walk-poster.webp" muted loop playsinline preload="metadata" aria-hidden="true"></video>
     <div class="hero-copy">
-      <h1 id="hero-h" data-i18n="heroTitle">Good ingredients for a gentler tomorrow</h1>
-      <div>
+      <div class="wrap">
+        <h1 id="hero-h" data-i18n="heroTitle">Good ingredients for a gentler tomorrow</h1>
         <p class="hero-sub" data-i18n="heroSub">A healing daily care oil with cold-pressed olive and avocado — inspired by the olive groves of Napa Valley.</p>
         <div class="hero-actions">
-          <a class="pill primary" href="#shop" data-i18n="btnShop2">Shop Glow Drop</a>
-          <a class="pill ghost" href="#story" data-i18n="btnStory">Our story</a>
+          <a class="pill light" href="#shop" data-i18n="btnShop2">Shop Glow Drop</a>
+          <a class="pill ghost on-img" style="color:#fff" href="#story" data-i18n="btnStory">Our story</a>
         </div>
       </div>
+    </div>
+    <div class="hero-meta">
+      <span>Napa Valley, California</span>
+      <button type="button" class="film-toggle" id="film-toggle" aria-label="Pause video"><svg viewBox="0 0 12 12" aria-hidden="true"><path id="ft-icon" d="M2 1h3v10H2zM7 1h3v10H7z"/></svg></button>
+    </div>
+  </section>
+
+  <section class="brand wrap" aria-label="Olive Skin">
+    <div class="hero-stage">
+      <p class="hero-word" aria-hidden="true">olive skin</p>
+      <img class="hero-model" src="https://d8j0ntlcm91z4.cloudfront.net/user_3C3M55Xq2zz3haT6AE7PPQ12doD/hf_20261004_104911_7fe910f2-e441-4d61-8d4d-324557736577.png" width="1792" height="2240" loading="lazy" alt="Model raising a Glow Drop bottle overhead" data-i18n-alt="altModel">
     </div>
   </section>
 
@@ -702,6 +721,12 @@ if(!location.hash){window.scrollTo(0,0);addEventListener('load',()=>{window.scro
   I18N.en = en;
   var current = 'en', PRICE_WON = 16000;
 
+  var film = document.getElementById('film'), ft = document.getElementById('film-toggle'), icon = document.getElementById('ft-icon');
+  function filmLabel(){
+    ft.setAttribute('aria-label', film.paused ? I18N[current].play : I18N[current].pause);
+    icon.setAttribute('d', film.paused ? 'M2 1l9 5-9 5z' : 'M2 1h3v10H2zM7 1h3v10H7z');
+  }
+
   var qty = 1, bag = 0;
   var qEl = document.getElementById('qty'), tEl = document.getElementById('total'), buy = document.getElementById('buy-now');
   function updateBuy(){
@@ -720,7 +745,7 @@ if(!location.hash){window.scrollTo(0,0);addEventListener('load',()=>{window.scro
     document.getElementById('inci-ko').hidden = (l !== 'ko');
     document.querySelectorAll('.lang button').forEach(function(b){ b.setAttribute('aria-pressed', b.dataset.lang===l ? 'true':'false'); });
     try{ localStorage.setItem('os-lang', l); }catch(e){}
-    updateBuy();
+    updateBuy(); filmLabel();
     if(typeof mainImg!=='undefined' && mainImg) mainImg.alt = d[mainKey] || mainImg.alt;
     document.querySelectorAll('.thumbs button').forEach(function(b){ b.setAttribute('aria-label', d[b.dataset.alt] || ''); });
   }
@@ -753,13 +778,18 @@ if(!location.hash){window.scrollTo(0,0);addEventListener('load',()=>{window.scro
   });
   if(location.hash) openAcc(location.hash.slice(1));
 
+  var reduce = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
+  film.addEventListener('play', filmLabel); film.addEventListener('pause', filmLabel);
+  if(!reduce){ var pr = film.play(); if(pr && pr.catch) pr.catch(filmLabel); }
+  ft.addEventListener('click', function(){ if(film.paused) film.play(); else film.pause(); });
+
   var head = document.getElementById('site-head');
   function onScroll(){ head.classList.toggle('solid', window.scrollY > 10); }
   window.addEventListener('scroll', onScroll, {passive:true}); onScroll();
 
   var start = 'ko';
   document.documentElement.lang = 'en';
-  if(start !== 'en') setLang(start); else updateBuy();
+  if(start !== 'en') setLang(start); else { updateBuy(); filmLabel(); }
 })();
 </script>
 
