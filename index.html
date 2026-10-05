@@ -13,7 +13,7 @@
 <style>
 :root{
   --bg:#F6F1EA; --cell:#F2EBE3; --white:#FFFFFF; --ink:#27251F; --ink-soft:#6A655B;
-  --muted:#B9B1A6; --line:#E2D9CE; --olive:#4B5634; --gold:#C9A25B; --night:#1F211A;
+  --muted:#B9B1A6; --sage:#8A9278; --sage-deep:#6E7856; --card:#ECE8DC; --line:#E2D9CE; --olive:#4B5634; --gold:#C9A25B; --night:#1F211A;
   --display:'Cormorant Garamond','Noto Sans KR',serif;
   --sans:'Noto Sans KR',sans-serif;
   color-scheme:light;
@@ -42,9 +42,9 @@ h1,h2,h3{margin:0;font-family:var(--sans);font-weight:400;line-height:1.2;letter
 
 /* announcement + header */
 .announce{background:var(--white);text-align:center;font-size:12px;padding:7px 16px;border-bottom:1px solid var(--line)}
-.site-head{position:sticky;top:env(safe-area-inset-top,0px);z-index:30;height:0}
-.head-bar{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;min-height:60px;color:var(--white);transition:background .3s,color .3s}
-.site-head.solid .head-bar{background:rgba(246,241,234,.95);backdrop-filter:blur(10px);color:var(--ink);box-shadow:0 1px 0 var(--line)}
+.site-head{position:sticky;top:env(safe-area-inset-top,0px);z-index:30;height:0;padding-inline:10px}
+.head-bar{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;min-height:54px;margin-top:10px;color:var(--white);background:var(--sage-deep);border-radius:16px;transition:box-shadow .3s}
+.site-head.solid .head-bar{box-shadow:0 10px 30px -14px rgba(40,44,28,.45)}
 .logo{font-family:var(--display);font-size:26px;font-weight:500;text-decoration:none;text-transform:lowercase;line-height:1;justify-self:start}
 .nav{display:flex;gap:26px;font-size:13px;justify-self:center}
 .nav a{text-decoration:none}
@@ -68,16 +68,53 @@ h1,h2,h3{margin:0;font-family:var(--sans);font-weight:400;line-height:1.2;letter
 .film-toggle{border:1px solid rgba(255,255,255,.7);background:transparent;color:var(--white);border-radius:999px;width:30px;height:30px;display:grid;place-items:center;cursor:pointer}
 .film-toggle svg{width:12px;height:12px;fill:currentColor}
 
+/* brand — giant wordmark with the model breaking through it */
+.brand{padding-top:clamp(16px,2vw,24px)}
+.hero-stage{position:relative;height:clamp(440px,60vw,780px);overflow:hidden;border-radius:18px;background:radial-gradient(ellipse 60% 70% at 50% 70%,#FFFFFF 0%,rgba(255,255,255,0) 70%),linear-gradient(180deg,#F3EFE6,#ECE6D9)}
+.hero-word{position:absolute;left:0;right:0;top:3%;margin:0;text-align:center;white-space:nowrap;font-family:var(--display);font-weight:500;font-size:clamp(84px,19.5vw,272px);line-height:.9;letter-spacing:-.035em;color:var(--sage-deep);text-transform:lowercase;user-select:none}
+.hero-model{position:absolute;z-index:1;left:50%;bottom:0;height:100%;width:auto;max-width:none;transform:translateX(-50%);filter:drop-shadow(0 24px 30px rgba(60,52,36,.16))}
 
-/* where it goes — tall panels */
-.panels{display:grid;grid-template-columns:repeat(3,1fr);margin-top:clamp(56px,7vw,96px)}
-.panel{position:relative;overflow:hidden;background:var(--night);color:var(--white);min-height:clamp(420px,42vw,600px)}
-.panel img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;transition:transform .7s}
-.panel:hover img{transform:scale(1.04)}
-.panel::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(20,20,14,.25),transparent 40%,rgba(20,20,14,.25));pointer-events:none}
-.panel-word{position:absolute;z-index:1;left:clamp(14px,2vw,26px);top:clamp(18px,2.4vw,30px);writing-mode:vertical-rl;transform:rotate(180deg);font-family:var(--display);font-size:clamp(44px,4.6vw,68px);letter-spacing:0;line-height:1;margin:0;font-weight:400}
-:lang(ko) .panel-word,:lang(ja) .panel-word{transform:none;letter-spacing:.02em;font-size:clamp(30px,3vw,42px)}
-.panel .pill{position:absolute;z-index:1;left:clamp(14px,2vw,26px);bottom:clamp(18px,2.4vw,30px);border-color:var(--white)}
+/* rhode-style rounded cards */
+.uses{display:grid;grid-template-columns:repeat(3,1fr);gap:clamp(12px,2vw,24px);padding-block:clamp(32px,4vw,56px)}
+.use{display:flex;flex-direction:column;gap:12px;padding:10px 10px 14px;border-radius:16px;background:var(--card);border:1px solid var(--line);text-decoration:none;transition:transform .3s,box-shadow .3s}
+.use:hover{transform:translateY(-3px);box-shadow:0 18px 34px -22px rgba(60,52,36,.5)}
+.use-img{overflow:hidden;border-radius:10px;aspect-ratio:1/1;background:var(--cell)}
+.use-img img{width:100%;height:100%;object-fit:cover;transition:transform .7s}
+.use:hover .use-img img{transform:scale(1.04)}
+.use-row{display:flex;justify-content:space-between;align-items:baseline;gap:10px;padding-inline:6px}
+.use-row .panel-word{font-size:12px;font-weight:500;letter-spacing:.16em;text-transform:uppercase;color:var(--ink)}
+.use-row span{font-size:13px;color:var(--ink-soft)}
+
+/* two tiles with overlapping pill buttons */
+.tiles{display:grid;grid-template-columns:repeat(2,minmax(0,440px));justify-content:center;gap:clamp(16px,3vw,40px);padding-block:clamp(24px,4vw,56px) clamp(56px,7vw,96px)}
+.tile{position:relative;aspect-ratio:1/1;border-radius:16px;border:1px solid var(--line);background:var(--white);margin-bottom:24px}
+.tile > img{width:100%;height:100%;object-fit:cover;border-radius:15px}
+.tile .pill{position:absolute;left:8%;right:8%;bottom:-24px;background:var(--sage);border-color:var(--sage);color:#fff}
+.tile .pill:hover{background:var(--olive);border-color:var(--olive)}
+.dict{display:grid;grid-template-columns:1fr auto;gap:12px;align-items:center;padding:clamp(20px,3vw,34px)}
+.dict-label{grid-column:1/-1;align-self:start;text-align:center;font-size:12px;letter-spacing:.06em;color:var(--ink-soft)}
+.dict-word{font-family:var(--display);font-size:clamp(34px,3.4vw,46px);line-height:1;color:var(--olive);margin-bottom:6px}
+.dict-pron{font-size:12px;color:var(--ink-soft);font-style:italic;margin-bottom:12px}
+.dict-def{font-size:14px;line-height:1.7;color:var(--ink-soft);max-width:20em}
+.dict img{width:clamp(64px,8vw,104px);height:auto;transform:rotate(8deg);filter:drop-shadow(0 12px 14px rgba(60,52,36,.2))}
+
+/* full-bleed model banner */
+.banner{margin:0;background:var(--night)}
+.banner img{width:100%;aspect-ratio:21/8;object-fit:cover;object-position:60% 40%}
+
+/* checkerboard */
+.checker{padding-block:clamp(40px,6vw,80px)}
+.checker-grid{display:grid;grid-template-columns:1fr 1fr;border-radius:18px;overflow:hidden;background:var(--sage)}
+.checker-grid > img{width:100%;height:100%;aspect-ratio:1/1;object-fit:cover}
+.chk{display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;gap:14px;padding:clamp(28px,5vw,72px);color:#fff}
+.chk h3{font-family:var(--display);font-weight:400;font-size:clamp(32px,3.6vw,52px);line-height:1}
+.chk p{font-size:15px;max-width:24em;opacity:.92}
+.chk .pill{margin-top:12px;background:#fff;border-color:#fff;color:var(--olive);min-width:60%}
+.chk .pill:hover{background:var(--olive);border-color:var(--olive);color:#fff}
+:lang(ko) .chk h3,:lang(ja) .chk h3{font-family:var(--sans);font-weight:500;font-size:clamp(24px,2.4vw,32px);letter-spacing:-.03em;line-height:1.3}
+:lang(ko) .dict-def,:lang(ja) .dict-def{word-break:keep-all}
+
+
 
 /* story collage */
 .story{position:relative;padding-block:clamp(64px,8vw,120px);overflow:hidden}
@@ -200,9 +237,14 @@ footer{background:var(--night);color:#D8D4C8}
   .gallery{grid-template-columns:1fr}
   .thumbs{flex-direction:row;order:2}
   .thumbs button{flex:1}
-  .panels{grid-template-columns:1fr}
-  .panel{min-height:380px}
+  .uses{grid-template-columns:1fr 1fr}
+  .uses .use:last-child{grid-column:1/-1}
+  .uses .use:last-child .use-img{aspect-ratio:2/1}
+  .tiles{grid-template-columns:1fr;max-width:440px;margin-inline:auto}
+  .checker-grid{grid-template-columns:1fr}
+  .checker-grid .c2{order:4}
   .hero-meta span{display:none}
+  .banner img{aspect-ratio:4/3}
 }
 @media (max-width:420px){
   .facts{grid-template-columns:1fr}
@@ -217,6 +259,8 @@ footer{background:var(--night);color:#D8D4C8}
   .hero-sub{font-size:13px;line-height:1.55;margin-bottom:18px;max-width:22em}
   .hero-actions .pill{min-height:36px;padding:0 18px;font-size:12px}
   .hero-meta{bottom:18px}
+  .hero-stage{height:min(118vw,560px)}
+  .hero-word{top:5%;font-size:clamp(64px,21vw,120px)}
   .intro{padding-block:48px 56px}
   .intro-grid{grid-template-columns:1fr;row-gap:0}
   .float{order:-1;justify-self:center;width:84px;margin:4px 0 40px}
@@ -234,9 +278,11 @@ footer{background:var(--night);color:#D8D4C8}
   .price{font-size:34px}
   .buy .pill{min-height:46px;font-size:13px}
   .story h2{font-size:34px}
-  .panel-word{font-size:40px}
-  .panels{margin-top:0}
-  .panel{min-height:320px}
+  .uses{grid-template-columns:none;grid-auto-flow:column;grid-auto-columns:72%;gap:12px;overflow-x:auto;scroll-snap-type:x mandatory;scroll-padding-inline:16px;scrollbar-width:none}
+  .uses::-webkit-scrollbar{display:none}
+  .use{scroll-snap-align:start}
+  .uses .use:last-child{grid-column:auto}
+  .uses .use:last-child .use-img{aspect-ratio:1/1}
 }
 @media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}*{transition:none!important}}
 
@@ -264,7 +310,6 @@ p{text-wrap:pretty}
 :lang(ko) .intro h2,:lang(ja) .intro h2{font-size:clamp(28px,3vw,40px)}
 :lang(ko) .story h2,:lang(ja) .story h2{font-size:clamp(28px,3vw,40px)}
 /* 세로로 한 글자씩 쌓이지 않게 */
-:lang(ko) .panel-word,:lang(ja) .panel-word{writing-mode:horizontal-tb;font-family:var(--sans);font-weight:500;font-size:clamp(26px,2.4vw,34px);letter-spacing:-.03em}
 
 /* buttons — taller, clearer, one primary style */
 .pill{min-height:48px;padding:0 28px;font-size:15px;font-weight:500;letter-spacing:.01em;gap:10px;transition:background .2s,color .2s,border-color .2s,transform .2s,box-shadow .2s}
@@ -282,7 +327,6 @@ p{text-wrap:pretty}
 .buy .pill{min-height:56px;font-size:16px}
 .stepper button{width:44px;height:44px}
 .qty-row{font-size:15px}
-.panel .pill{min-height:44px;font-size:14px}
 
 @media (max-width:560px){
   body{font-size:15px;line-height:1.7}
@@ -351,6 +395,28 @@ if(!location.hash){window.scrollTo(0,0);addEventListener('load',()=>{window.scro
     </div>
   </section>
 
+  <section class="brand wrap" aria-label="Olive Skin">
+    <div class="hero-stage">
+      <p class="hero-word" aria-hidden="true">olive skin</p>
+      <img class="hero-model" src="https://d8j0ntlcm91z4.cloudfront.net/user_3C3M55Xq2zz3haT6AE7PPQ12doD/hf_20261004_104911_7fe910f2-e441-4d61-8d4d-324557736577.png" width="1792" height="2240" loading="lazy" alt="Model raising a Glow Drop bottle overhead" data-i18n-alt="altModel">
+    </div>
+  </section>
+
+  <section class="uses wrap" aria-label="Where to use it">
+    <a class="use" href="#shop">
+      <div class="use-img"><img src="images/bottle.webp" width="300" height="440" loading="lazy" alt="A hand holding the Glow Drop bottle" data-i18n-alt="altBottle"></div>
+      <div class="use-row"><p class="panel-word" data-i18n="p1">nails</p><span>Glow Drop →</span></div>
+    </a>
+    <a class="use" href="#how">
+      <div class="use-img"><img src="images/picking.webp" width="430" height="574" loading="lazy" alt="Hands picking olives in sunlight" data-i18n-alt="altPicking"></div>
+      <div class="use-row"><p class="panel-word" data-i18n="p2">hands</p><span>Glow Drop →</span></div>
+    </a>
+    <a class="use" href="#shop">
+      <div class="use-img"><img src="images/face.webp" width="470" height="660" loading="lazy" alt="Model with dewy skin in sunlight" data-i18n-alt="altFace"></div>
+      <div class="use-row"><p class="panel-word" data-i18n="p3">dry skin</p><span>Glow Drop →</span></div>
+    </a>
+  </section>
+
   <section class="intro wrap" aria-labelledby="intro-h">
     <div class="intro-grid">
       <div>
@@ -366,18 +432,41 @@ if(!location.hash){window.scrollTo(0,0);addEventListener('load',()=>{window.scro
     </div>
   </section>
 
-  <section class="panels" aria-hidden="true">
-    <div class="panel">
-      <img src="images/bottle.webp" width="300" height="440" alt="A hand holding the Glow Drop bottle" data-i18n-alt="altBottle">
-      <p class="panel-word" data-i18n="p1">nails</p>
+  <section class="tiles wrap" aria-label="Glow Drop">
+    <div class="tile">
+      <img src="images/ledge.webp" width="430" height="575" loading="lazy" alt="Glow Drop on a stone ledge above olive hills" data-i18n-alt="altLedge">
+      <a class="pill" href="#shop" data-i18n="btnShop">Shop Glow Drop</a>
     </div>
-    <div class="panel">
-      <img src="images/picking.webp" width="430" height="574" alt="Hands picking olives in sunlight" data-i18n-alt="altPicking">
-      <p class="panel-word" data-i18n="p2">hands</p>
+    <div class="tile dict">
+      <p class="dict-label" data-i18n="dictLabel">olive skin dictionary</p>
+      <div>
+        <p class="dict-word">glow drop</p>
+        <p class="dict-pron">(n.) /ɡloʊ drɒp/</p>
+        <p class="dict-def" data-i18n="dictDef">A healing daily care oil. One drop of cold-pressed olive and avocado that sinks in fast — for nails, cuticles and anywhere dry.</p>
+      </div>
+      <img src="images/cutout.webp" width="564" height="1374" loading="lazy" alt="">
+      <a class="pill" href="#ingredients" data-i18n="btnLearn">Learn more</a>
     </div>
-    <div class="panel">
-      <img src="images/face.webp" width="470" height="660" alt="Model with dewy skin in sunlight" data-i18n-alt="altFace">
-      <p class="panel-word" data-i18n="p3">dry skin</p>
+  </section>
+
+  <figure class="banner">
+    <img src="https://d8j0ntlcm91z4.cloudfront.net/user_3C3M55Xq2zz3haT6AE7PPQ12doD/hf_20261004_104911_d98dd751-a8b4-48ae-ba44-bfd73e467551.png" width="2688" height="1152" loading="lazy" alt="Model with glowing skin holding Glow Drop in golden light" data-i18n-alt="altBanner">
+  </figure>
+
+  <section class="checker wrap" aria-label="Glow Drop ritual">
+    <div class="checker-grid">
+      <img src="https://d8j0ntlcm91z4.cloudfront.net/user_3C3M55Xq2zz3haT6AE7PPQ12doD/hf_20261004_104912_706af101-ad23-4aaf-8055-227be1978de9.png" width="2048" height="2048" loading="lazy" alt="Model holding the Glow Drop bottle over one eye" data-i18n-alt="altEye">
+      <div class="chk">
+        <h3 data-i18n="chk1t">Drop, press, glow</h3>
+        <p data-i18n="chk1d">One drop a day melts into nails and skin and keeps them soft until tomorrow.</p>
+        <a class="pill" href="#shop" data-i18n="btnShop">Shop Glow Drop</a>
+      </div>
+      <div class="chk c2">
+        <h3 data-i18n="chk2t">Heal it your way</h3>
+        <p data-i18n="chk2d">Morning or before bed — a small pause for hands worn by sun and work.</p>
+        <a class="pill" href="#story" data-i18n="btnLearn">Learn more</a>
+      </div>
+      <img src="https://d8j0ntlcm91z4.cloudfront.net/user_3C3M55Xq2zz3haT6AE7PPQ12doD/hf_20261004_104911_6f0bf392-7a0c-4fc3-9396-e678ad313bd8.png" width="2048" height="2048" loading="lazy" alt="Model applying a drop of oil to her cuticles in the sun" data-i18n-alt="altCuticle">
     </div>
   </section>
 
@@ -557,7 +646,12 @@ if(!location.hash){window.scrollTo(0,0);addEventListener('load',()=>{window.scro
       altPoster:"올리브 숲 속 글로우 드롭 캠페인 포스터", altPainting:"유화 속 그릇에 담긴 초록 올리브",
       altGrove:"해 질 녘 올리브 나무와 포도밭이 펼쳐진 언덕", altNapa:"'City of Napa Street Dept 1952'가 새겨진 보도블록",
       altPicking:"햇살 속에서 올리브를 따는 손", altFace:"햇살 아래 촉촉한 피부의 모델",
-      altHero:"올리브 나무 아래에서 글로우 드롭을 든 모델", altCutout:"초록 라벨의 글로우 드롭 15ml 스포이트 병", altProduct:"돌 위에 놓인 글로우 드롭 15ml 병"
+      altHero:"올리브 나무 아래에서 글로우 드롭을 든 모델", altCutout:"초록 라벨의 글로우 드롭 15ml 스포이트 병", altProduct:"돌 위에 놓인 글로우 드롭 15ml 병",
+      dictLabel:"올리브 스킨 사전", dictDef:"매일 쓰는 힐링 케어 오일. 콜드프레스 올리브와 아보카도를 담은 한 방울이 빠르게 스며들어, 손톱과 큐티클, 건조한 곳 어디든 촉촉하게.", btnLearn:"더 알아보기",
+      chk1t:"한 방울, 꾹, 반짝", chk1d:"하루 한 방울이 손톱과 피부에 스며들어 내일까지 부드럽게 지켜 줍니다.",
+      chk2t:"나만의 방식으로 힐링", chk2d:"아침이든 잠들기 전이든, 햇볕과 일에 지친 손을 위한 작은 쉼.",
+      altModel:"글로우 드롭을 머리 위로 들어 올린 모델", altBanner:"금빛 햇살 속에서 글로우 드롭을 든 촉촉한 피부의 모델",
+      altEye:"글로우 드롭 병으로 한쪽 눈을 가린 모델", altCuticle:"햇살 아래 큐티클에 오일 한 방울을 바르는 모델"
     },
     ja: {
       announce:"世界中へお届け",
@@ -600,7 +694,12 @@ if(!location.hash){window.scrollTo(0,0);addEventListener('load',()=>{window.scro
       altPoster:"オリーブの森のGlow Dropキャンペーンポスター", altPainting:"油絵に描かれた器の中の緑のオリーブ",
       altGrove:"夕暮れのオリーブの木とぶどう畑の丘", altNapa:"「City of Napa Street Dept 1952」と刻まれた歩道",
       altPicking:"陽ざしの中でオリーブを摘む手", altFace:"陽ざしの中のうるおい肌のモデル",
-      altHero:"オリーブの木の下でGlow Dropを持つモデル", altCutout:"緑のラベルのGlow Drop 15mlスポイトボトル", altProduct:"石の上に置かれたGlow Drop 15mlボトル"
+      altHero:"オリーブの木の下でGlow Dropを持つモデル", altCutout:"緑のラベルのGlow Drop 15mlスポイトボトル", altProduct:"石の上に置かれたGlow Drop 15mlボトル",
+      dictLabel:"オリーブスキン辞典", dictDef:"毎日のヒーリングケアオイル。コールドプレスのオリーブとアボカドの一滴がすっとなじみ、爪・甘皮・乾燥が気になる場所をうるおします。", btnLearn:"詳しく見る",
+      chk1t:"一滴、押して、輝く", chk1d:"1日1滴が爪と肌にとけこみ、明日までやわらかく守ります。",
+      chk2t:"あなたらしく、癒す", chk2d:"朝でも寝る前でも。日差しや仕事で疲れた手のための、小さなひと休み。",
+      altModel:"Glow Dropを頭上に掲げるモデル", altBanner:"黄金色の光の中でGlow Dropを持つうるおい肌のモデル",
+      altEye:"Glow Dropのボトルで片目を隠すモデル", altCuticle:"陽ざしの中で甘皮にオイルを一滴なじませるモデル"
     }
   };
   ['ko','ja'].forEach(function(l){ I18N[l].heroTitle = mk(I18N[l].heroTitle); I18N[l].storyTitle = mk(I18N[l].storyTitle); });
@@ -680,8 +779,8 @@ if(!location.hash){window.scrollTo(0,0);addEventListener('load',()=>{window.scro
   if(!reduce){ var pr = film.play(); if(pr && pr.catch) pr.catch(filmLabel); }
   ft.addEventListener('click', function(){ if(film.paused) film.play(); else film.pause(); });
 
-  var head = document.getElementById('site-head'), hero = document.querySelector('.hero');
-  function onScroll(){ head.classList.toggle('solid', window.scrollY > hero.offsetTop + hero.offsetHeight - 70); }
+  var head = document.getElementById('site-head');
+  function onScroll(){ head.classList.toggle('solid', window.scrollY > 10); }
   window.addEventListener('scroll', onScroll, {passive:true}); onScroll();
 
   var start = 'en';
