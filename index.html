@@ -391,7 +391,7 @@ if(!location.hash){window.scrollTo(0,0);addEventListener('load',()=>{window.scro
 
 <main id="top">
   <section class="hero" aria-labelledby="hero-h">
-    <video id="film" src="images/grove-walk.mp4" poster="images/grove-walk-poster.webp" muted loop playsinline preload="metadata" aria-hidden="true"></video>
+    <video id="film" src="images/grove-walk.mp4" poster="images/grove-walk-poster.webp" autoplay muted loop playsinline webkit-playsinline preload="auto" disablepictureinpicture aria-hidden="true"></video>
     <div class="hero-copy">
       <div class="wrap">
         <h1 id="hero-h" data-i18n="heroTitle">Good ingredients for a gentler tomorrow</h1>
@@ -802,8 +802,20 @@ if(!location.hash){window.scrollTo(0,0);addEventListener('load',()=>{window.scro
 
   var reduce = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
   film.addEventListener('play', filmLabel); film.addEventListener('pause', filmLabel);
-  if(!reduce){ var pr = film.play(); if(pr && pr.catch) pr.catch(filmLabel); }
-  ft.addEventListener('click', function(){ if(film.paused) film.play(); else film.pause(); });
+  film.muted = true; film.defaultMuted = true;
+  var userPaused = false;
+  function tryPlay(){ if(reduce || userPaused || !film.paused) return; var pr = film.play(); if(pr && pr.catch) pr.catch(filmLabel); }
+  if(reduce){ film.pause(); film.removeAttribute('autoplay'); }
+  else {
+    tryPlay();
+    film.addEventListener('loadeddata', tryPlay);
+    /* 저전력 모드·인앱 브라우저처럼 자동재생이 막힌 경우: 첫 터치/스크롤 때 재생 */
+    ['touchstart','pointerdown','scroll','keydown'].forEach(function(ev){
+      window.addEventListener(ev, function once(){ tryPlay(); window.removeEventListener(ev, once); }, {passive:true});
+    });
+    document.addEventListener('visibilitychange', function(){ if(!document.hidden) tryPlay(); });
+  }
+  ft.addEventListener('click', function(){ if(film.paused){ userPaused = false; film.play(); } else { userPaused = true; film.pause(); } });
 
   var head = document.getElementById('site-head');
   function onScroll(){ head.classList.toggle('solid', window.scrollY > 10); }
