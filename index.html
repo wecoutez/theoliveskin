@@ -68,13 +68,6 @@ h1,h2,h3{margin:0;font-family:var(--sans);font-weight:400;line-height:1.2;letter
 .film-toggle{border:1px solid rgba(255,255,255,.7);background:transparent;color:var(--white);border-radius:999px;width:30px;height:30px;display:grid;place-items:center;cursor:pointer}
 .film-toggle svg{width:12px;height:12px;fill:currentColor}
 
-/* brand — giant wordmark with the model breaking through it */
-.brand{padding-top:clamp(16px,2vw,24px)}
-.hero-stage{position:relative;height:clamp(440px,66vw,880px);overflow:hidden;border-radius:18px;background:#EDE7DD}
-.hero-stage .stage-photo,.hero-stage .hero-model{position:absolute;inset:0;width:100%;height:100%;max-width:none;object-fit:cover;object-position:62% 45%}
-.hero-word{position:absolute;left:0;right:0;top:3%;margin:0;text-align:center;white-space:nowrap;font-family:var(--display);font-weight:500;font-size:clamp(84px,19.5vw,272px);line-height:.9;letter-spacing:-.035em;color:var(--sage-deep);text-transform:lowercase;user-select:none}
-.hero-word{z-index:1;color:#FBF8F1;opacity:.94;text-shadow:0 2px 24px rgba(40,44,28,.18)}
-.hero-model{z-index:2;pointer-events:none}
 
 /* rhode-style rounded cards */
 .uses{display:grid;grid-template-columns:repeat(3,1fr);gap:clamp(12px,2vw,24px);padding-block:clamp(32px,4vw,56px)}
@@ -272,8 +265,6 @@ footer{background:var(--night);color:#D8D4C8}
   .hero-sub{font-size:13px;line-height:1.55;margin-bottom:18px;max-width:22em}
   .hero-actions .pill{min-height:36px;padding:0 18px;font-size:12px}
   .hero-meta{bottom:18px}
-  .hero-stage{height:min(118vw,560px)}
-  .hero-word{top:5%;font-size:clamp(64px,21vw,120px)}
   .intro{padding-block:48px 56px}
   .intro-grid{grid-template-columns:1fr;row-gap:0}
   .float{order:-1;justify-self:center;width:84px;margin:4px 0 40px}
@@ -408,26 +399,18 @@ if(!location.hash){window.scrollTo(0,0);addEventListener('load',()=>{window.scro
     </div>
   </section>
 
-  <section class="brand wrap" aria-label="Olive Skin">
-    <div class="hero-stage">
-      <img class="stage-photo" src="images/apply.webp" width="2304" height="1856" loading="lazy" alt="Model at a table applying Glow Drop oil to her nails with the glass dropper" data-i18n-alt="altModel">
-      <p class="hero-word" aria-hidden="true">olive skin</p>
-      <img class="hero-model" src="images/apply-cut.webp" width="2304" height="1856" loading="lazy" alt="">
-    </div>
-  </section>
-
   <section class="uses wrap" aria-label="Where to use it">
     <a class="use" href="#shop">
       <div class="use-img"><img src="images/bottle.webp" width="300" height="440" loading="lazy" alt="A hand holding the Glow Drop bottle" data-i18n-alt="altBottle"></div>
-      <div class="use-row"><p class="panel-word" data-i18n="p1">nails</p><span>Glow Drop →</span></div>
+      <div class="use-row"><p class="panel-word" data-i18n="p1">nails</p></div>
     </a>
     <a class="use" href="#how">
       <div class="use-img"><img src="images/picking.webp" width="430" height="574" loading="lazy" alt="Hands picking olives in sunlight" data-i18n-alt="altPicking"></div>
-      <div class="use-row"><p class="panel-word" data-i18n="p2">hands</p><span>Glow Drop →</span></div>
+      <div class="use-row"><p class="panel-word" data-i18n="p2">hands</p></div>
     </a>
     <a class="use" href="#shop">
       <div class="use-img"><img src="images/face.webp" width="470" height="660" loading="lazy" alt="Model with dewy skin in sunlight" data-i18n-alt="altFace"></div>
-      <div class="use-row"><p class="panel-word" data-i18n="p3">dry skin</p><span>Glow Drop →</span></div>
+      <div class="use-row"><p class="panel-word" data-i18n="p3">dry skin</p></div>
     </a>
   </section>
 
@@ -437,7 +420,6 @@ if(!location.hash){window.scrollTo(0,0);addEventListener('load',()=>{window.scro
         <h2 id="intro-h" data-i18n="introTitle">A small, healing ritual for dry nails and skin</h2>
         <p data-i18n="introLead">Olive Skin is about simple care — two cold-pressed plant oils, a light texture that sinks right in, and one drop a day.</p>
         <p data-i18n="introLead2">Inspired by the olive groves of Napa Valley.</p>
-        <a class="pill primary" href="#shop" data-i18n="btnShop">Shop Glow Drop</a>
       </div>
       <div class="float" aria-hidden="true">
         <img class="cast" src="images/cutout.webp" width="564" height="1374" alt="">
@@ -449,7 +431,6 @@ if(!location.hash){window.scrollTo(0,0);addEventListener('load',()=>{window.scro
   <section class="tiles wrap" aria-label="Glow Drop">
     <div class="tile">
       <img src="images/ledge.webp" width="430" height="575" loading="lazy" alt="Glow Drop on a stone ledge above olive hills" data-i18n-alt="altLedge">
-      <a class="pill" href="#shop" data-i18n="btnShop">Shop Glow Drop</a>
     </div>
     <div class="tile dict">
       <p class="dict-label" data-i18n="dictLabel">olive skin dictionary</p>
@@ -473,7 +454,6 @@ if(!location.hash){window.scrollTo(0,0);addEventListener('load',()=>{window.scro
       <div class="chk">
         <h3 data-i18n="chk1t">Drop, press, glow</h3>
         <p data-i18n="chk1d">One drop a day melts into nails and skin and keeps them soft until tomorrow.</p>
-        <a class="pill" href="#shop" data-i18n="btnShop">Shop Glow Drop</a>
       </div>
       <div class="chk c2">
         <h3 data-i18n="chk2t">Heal it your way</h3>
