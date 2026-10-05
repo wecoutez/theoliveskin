@@ -39,7 +39,7 @@ rep('<meta name="description" content="Olive Skin Glow Drop — a healing daily 
     f'<link rel="alternate" hreflang="ko" href="{SITE}/kr/">')
 
 # kr/ 폴더에서 이미지·영상 경로가 맞도록
-for attr, n in (("src", 21), ("data-src", 4), ("poster", 1)):
+for attr, n in (("src", 22), ("data-src", 4), ("poster", 1)):
     rep(f' {attr}="images/', f' {attr}="../images/', n)
 
 rep('<script src="analytics.js" defer></script>', '<script src="../analytics.js" defer></script>')
