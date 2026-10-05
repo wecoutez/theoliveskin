@@ -104,6 +104,16 @@ h1,h2,h3{margin:0;font-family:var(--sans);font-weight:400;line-height:1.2;letter
 .banner{margin:0;background:var(--night)}
 .banner img{width:100%;aspect-ratio:21/8;object-fit:cover;object-position:60% 40%}
 
+/* one drop — nail close-up */
+.drop{display:grid;grid-template-columns:1.35fr 1fr;gap:clamp(24px,4vw,64px);align-items:center;padding-block:clamp(16px,3vw,40px) clamp(40px,6vw,80px)}
+.drop img{width:100%;aspect-ratio:3/2;object-fit:cover;border-radius:18px}
+.drop-k{font-size:12px;font-weight:500;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-soft);margin-bottom:12px}
+.drop h3{font-family:var(--display);font-weight:400;font-size:clamp(34px,3.8vw,54px);line-height:1;color:var(--olive);margin-bottom:16px}
+.drop p{font-size:16px;color:var(--ink-soft);max-width:26em}
+.drop .pill{margin-top:24px}
+:lang(ko) .drop-k,:lang(ja) .drop-k{letter-spacing:.02em}
+:lang(ko) .drop h3,:lang(ja) .drop h3{font-family:var(--sans);font-weight:500;font-size:clamp(26px,2.6vw,36px);letter-spacing:-.03em;line-height:1.3}
+
 /* checkerboard */
 .checker{padding-block:clamp(40px,6vw,80px)}
 .checker-grid{display:grid;grid-template-columns:1fr 1fr;border-radius:18px;overflow:hidden;background:var(--sage)}
@@ -247,6 +257,7 @@ footer{background:var(--night);color:#D8D4C8}
   .checker-grid .c2{order:4}
   .hero-meta span{display:none}
   .banner img{aspect-ratio:4/3}
+  .drop{grid-template-columns:1fr}
 }
 @media (max-width:420px){
   .facts{grid-template-columns:1fr}
@@ -472,6 +483,16 @@ if(!location.hash){window.scrollTo(0,0);addEventListener('load',()=>{window.scro
     </div>
   </section>
 
+  <section class="drop wrap" aria-labelledby="drop-h">
+    <img src="../images/nail-drop.webp" width="1600" height="1063" loading="lazy" alt="A drop of Glow Drop oil falling onto a nail from the glass dropper" data-i18n-alt="altDrop">
+    <div>
+      <p class="drop-k" data-i18n="dropK">For nails &amp; cuticles</p>
+      <h3 id="drop-h" data-i18n="dropT">One drop on every nail</h3>
+      <p data-i18n="dropD">Let a single drop fall right at the cuticle, then press it in. Cold-pressed olive and avocado sink in fast, leaving nails soft and glossy — never greasy.</p>
+      <a class="pill primary" href="#how" data-i18n="navCare">How to use</a>
+    </div>
+  </section>
+
   <section class="story" id="story" aria-labelledby="story-h">
     <div class="wrap story-grid">
       <div class="story-text">
@@ -655,7 +676,8 @@ if(!location.hash){window.scrollTo(0,0);addEventListener('load',()=>{window.scro
       chk1t:"한 방울, 꾹, 반짝", chk1d:"하루 한 방울이 손톱과 피부에 스며들어 내일까지 부드럽게 지켜 줍니다.",
       chk2t:"나만의 방식으로 힐링", chk2d:"아침이든 잠들기 전이든, 햇볕과 일에 지친 손을 위한 작은 쉼.",
       altModel:"리넨 셔츠를 입고 작은 글로우 드롭 병을 든 모델", altBanner:"나파 포도밭이 보이는 데이베드에서 쉬는 모델",
-      altEye:"어깨 너머로 돌아보는 모델", altCuticle:"햇살 드는 라운저에서 쉬는 모델"
+      altEye:"어깨 너머로 돌아보는 모델",
+      dropK:"손톱 &amp; 큐티클", dropT:"손톱마다 한 방울", dropD:"큐티클 위에 한 방울 똑 떨어뜨리고 지그시 눌러 주세요. 콜드프레스 올리브와 아보카도 오일이 빠르게 스며들어, 끈적임 없이 손톱을 부드럽고 윤기 있게 가꿉니다.", altDrop:"스포이트에서 손톱 위로 떨어지는 글로우 드롭 오일 한 방울", altCuticle:"햇살 드는 라운저에서 쉬는 모델"
     },
     ja: {
       announce:"世界中へお届け",
@@ -703,7 +725,8 @@ if(!location.hash){window.scrollTo(0,0);addEventListener('load',()=>{window.scro
       chk1t:"一滴、押して、輝く", chk1d:"1日1滴が爪と肌にとけこみ、明日までやわらかく守ります。",
       chk2t:"あなたらしく、癒す", chk2d:"朝でも寝る前でも。日差しや仕事で疲れた手のための、小さなひと休み。",
       altModel:"リネンシャツ姿で小さなGlow Dropを持つモデル", altBanner:"ナパのぶどう畑を望むデイベッドでくつろぐモデル",
-      altEye:"肩越しに振り返るモデル", altCuticle:"陽ざしの入るラウンジャーでくつろぐモデル"
+      altEye:"肩越しに振り返るモデル",
+      dropK:"爪 &amp; 甘皮", dropT:"爪に一滴ずつ", dropD:"甘皮の上に一滴落として、やさしく押し込むだけ。コールドプレスのオリーブとアボカドオイルがすっとなじみ、べたつかずに爪をやわらかくつややかに整えます。", altDrop:"スポイトから爪に落ちるGlow Dropオイルの一滴", altCuticle:"陽ざしの入るラウンジャーでくつろぐモデル"
     }
   };
   ['ko','ja'].forEach(function(l){ I18N[l].heroTitle = mk(I18N[l].heroTitle); I18N[l].storyTitle = mk(I18N[l].storyTitle); });
