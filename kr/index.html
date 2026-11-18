@@ -366,6 +366,40 @@ p{text-wrap:pretty}
 .perks span{font-size:13px;color:var(--ink-soft)}
 :lang(ko) .perks b,:lang(ja) .perks b{font-family:var(--sans);font-size:16px;letter-spacing:-.02em}
 @media (max-width:760px){.perks ul{grid-template-columns:1fr 1fr;row-gap:18px}.perks li:nth-child(3){border-left:0}}
+
+/* type: two sizes only — headings and body (2026-11 cleanup) */
+:root{--fs-h:clamp(30px,3.4vw,48px);--fs-b:16px}
+main h1,main h2,main h3,main .price{font-size:var(--fs-h)!important;line-height:1.1!important;letter-spacing:-.01em}
+:lang(ko) main h1,:lang(ko) main h2,:lang(ko) main h3,:lang(ja) main h1,:lang(ja) main h2,:lang(ja) main h3{line-height:1.3!important;letter-spacing:-.03em}
+.hero h1{font-size:calc(var(--fs-h) * 1.25)!important}
+main p,main li,main dd,main dt,main summary,main .pill,main .qty-row,main .total,main .price small,main .panel-body,main .tag,main .sub,main .lead,main .hero-sub,main .use-row .panel-word{font-size:var(--fs-b)!important;line-height:1.65}
+main .info .tag,main .use-row .panel-word{letter-spacing:.04em}
+footer p,footer li,footer h4,footer .copyline{font-size:14px!important}
+.sec-title{text-align:center;font-family:var(--display);font-weight:400;color:var(--olive);margin:0 auto clamp(24px,3vw,40px)}
+:lang(ko) .sec-title,:lang(ja) .sec-title{font-family:var(--sans);font-weight:500}
+.perks ul{grid-template-columns:repeat(4,1fr)}
+.perks li{font-family:var(--display);color:var(--olive);text-align:center;padding:4px 12px}
+:lang(ko) .perks li,:lang(ja) .perks li{font-family:var(--sans);font-weight:500}
+.chk p{opacity:.92}
+.hero-meta span{display:none}
+main small,main .b2b-link,main .b2b-link span{font-size:var(--fs-b)!important}
+/* story: big overlapping collage that fills the screen */
+.story .story-text{max-width:34em;margin:0 auto clamp(32px,4vw,56px);text-align:center;padding-top:0}
+.story .story-text .copy-p{margin-inline:auto}
+.collage{position:relative;height:clamp(560px,66vw,980px)}
+.collage img{position:absolute;object-fit:cover;border-radius:18px;box-shadow:0 30px 60px -34px rgba(40,36,24,.55)}
+.c-a{left:0;top:0;width:58%;height:70%}
+.c-b{right:0;top:9%;width:36%;height:80%;z-index:2}
+.c-c{left:34%;bottom:0;width:30%;height:48%;z-index:3}
+.c-d{left:5%;bottom:3%;width:24%;height:34%;z-index:2}
+@media (max-width:760px){
+  .perks ul{grid-template-columns:1fr 1fr;row-gap:10px}
+  .collage{height:128vw}
+  .c-a{width:72%;height:52%}
+  .c-b{width:50%;height:50%;top:26%}
+  .c-c{left:30%;width:44%;height:40%}
+  .c-d{left:0;width:36%;height:30%;bottom:6%}
+}
 </style>
 <script>
 /* 새로고침해도 항상 맨 위에서 시작 (주소에 #가 붙은 경우만 예외) */
@@ -493,37 +527,36 @@ if(!location.hash){window.scrollTo(0,0);addEventListener('load',()=>{window.scro
 
   <section class="perks wrap" aria-label="Why Glow Drop">
     <ul>
-      <li><b data-i18n="pk1t">Cold-pressed</b><span data-i18n="pk1d">Olive &amp; avocado oils</span></li>
-      <li><b data-i18n="pk2t">Sinks in fast</b><span data-i18n="pk2d">Light, never greasy</span></li>
-      <li><b data-i18n="pk3t">Nails to elbows</b><span data-i18n="pk3d">Cuticles, hands, dry spots</span></li>
-      <li><b data-i18n="pk4t">Made by COSMAX</b><span data-i18n="pk4d">Mix and Match nail lab</span></li>
+      <li data-i18n="pk1t">Cold-pressed</li>
+      <li data-i18n="pk2t">Sinks in fast</li>
+      <li data-i18n="pk3t">Nails to elbows</li>
+      <li data-i18n="pk4t">Made by COSMAX</li>
     </ul>
   </section>
 
   <section class="uses-wrap wrap" aria-labelledby="uses-h">
-    <header class="sec-head"><p class="eyebrow" data-i18n="usesK">Where it goes</p><h2 id="uses-h" data-i18n="usesT">One drop, three ways to care</h2></header>
-  <div class="uses">
-    <a class="use" href="#shop">
-      <div class="use-img"><img src="../images/bottle-hand.webp" width="1000" height="1000" loading="lazy" alt="A hand holding the Glow Drop bottle" data-i18n-alt="altBottle"></div>
-      <div class="use-row"><p class="panel-word" data-i18n="p1">nails</p></div>
-    </a>
-    <a class="use" href="#how">
-      <div class="use-img"><img src="../images/picking.webp" width="430" height="574" loading="lazy" alt="Hands picking olives in sunlight" data-i18n-alt="altPicking"></div>
-      <div class="use-row"><p class="panel-word" data-i18n="p2">hands</p></div>
-    </a>
-    <a class="use" href="#shop">
-      <div class="use-img"><img src="../images/elbow.webp" width="1000" height="1000" loading="lazy" alt="Smoothing Glow Drop oil onto a dry elbow" data-i18n-alt="altFace"></div>
-      <div class="use-row"><p class="panel-word" data-i18n="p3">dry skin</p></div>
-    </a>
-  </div>
+    <h2 class="sec-title" id="uses-h" data-i18n="usesT">One drop, three ways to care</h2>
+    <div class="uses">
+      <a class="use" href="#shop">
+        <div class="use-img"><img src="../images/bottle-hand.webp" width="1000" height="1000" loading="lazy" alt="A hand holding the Glow Drop bottle" data-i18n-alt="altBottle"></div>
+        <div class="use-row"><p class="panel-word" data-i18n="p1">nails</p></div>
+      </a>
+      <a class="use" href="#shop">
+        <div class="use-img"><img src="../images/picking.webp" width="430" height="574" loading="lazy" alt="Hands picking olives in sunlight" data-i18n-alt="altPicking"></div>
+        <div class="use-row"><p class="panel-word" data-i18n="p2">hands</p></div>
+      </a>
+      <a class="use" href="#shop">
+        <div class="use-img"><img src="../images/elbow.webp" width="1000" height="1000" loading="lazy" alt="Smoothing Glow Drop oil onto a dry elbow" data-i18n-alt="altFace"></div>
+        <div class="use-row"><p class="panel-word" data-i18n="p3">dry skin</p></div>
+      </a>
+    </div>
   </section>
 
   <section class="intro wrap" aria-labelledby="intro-h">
     <div class="intro-grid">
       <div>
         <h2 id="intro-h" data-i18n="introTitle">A small, healing ritual for dry nails and skin</h2>
-        <p data-i18n="introLead">Olive Skin is about simple care — two cold-pressed plant oils, a light texture that sinks right in, and one drop a day.</p>
-        <p data-i18n="introLead2">Inspired by the olive groves of Napa Valley.</p>
+        <p data-i18n="introLead">Two cold-pressed plant oils, a light texture, one drop a day.</p>
       </div>
       <div class="float" aria-hidden="true">
         <img class="cast" src="../images/cutout.webp" width="564" height="1374" alt="">
@@ -532,33 +565,16 @@ if(!location.hash){window.scrollTo(0,0);addEventListener('load',()=>{window.scro
     </div>
   </section>
 
-  <section class="tiles wrap" aria-label="Glow Drop">
-    <div class="tile">
-      <img src="../images/ledge.webp" width="430" height="575" loading="lazy" alt="Glow Drop on a stone ledge above olive hills" data-i18n-alt="altLedge">
-    </div>
-    <div class="tile dict">
-      <p class="dict-label" data-i18n="dictLabel">olive skin dictionary</p>
-      <div>
-        <p class="dict-word">glow drop</p>
-        <p class="dict-pron">(n.) /ɡloʊ drɒp/</p>
-        <p class="dict-def" data-i18n="dictDef">A healing daily care oil. One drop of cold-pressed olive and avocado that sinks in fast — for nails, cuticles and anywhere dry.</p>
-      </div>
-      <img src="../images/cutout.webp" width="564" height="1374" loading="lazy" alt="">
-      <a class="pill" href="#ingredients" data-i18n="btnLearn">Learn more</a>
-    </div>
-  </section>
-
   <section class="checker wrap" aria-label="Glow Drop ritual">
     <div class="checker-grid">
       <img src="../images/back.webp" width="1400" height="1400" loading="lazy" alt="Model seen from behind, hand in her hair" data-i18n-alt="altEye">
       <div class="chk">
         <h3 data-i18n="chk1t">Drop, press, glow</h3>
-        <p data-i18n="chk1d">One drop a day melts into nails and skin and keeps them soft until tomorrow.</p>
+        <p data-i18n="chk1d">One drop a day keeps nails soft.</p>
       </div>
       <div class="chk c2">
         <h3 data-i18n="chk2t">Heal it your way</h3>
-        <p data-i18n="chk2d">Morning or before bed — a small pause for hands worn by sun and work.</p>
-        <a class="pill" href="#story" data-i18n="btnLearn">Learn more</a>
+        <p data-i18n="chk2d">Morning or before bed.</p>
       </div>
       <img src="../images/hand-linen.webp" width="1400" height="1400" loading="lazy" alt="A relaxed hand resting on sunlit linen" data-i18n-alt="altCuticle">
     </div>
@@ -567,42 +583,23 @@ if(!location.hash){window.scrollTo(0,0);addEventListener('load',()=>{window.scro
   <section class="drop wrap" aria-labelledby="drop-h">
     <img src="../images/nail-drop.webp" width="1600" height="1063" loading="lazy" alt="Glass dropper placing a drop of Glow Drop oil at the cuticle" data-i18n-alt="altDrop">
     <div>
-      <p class="drop-k" data-i18n="dropK">For nails &amp; cuticles</p>
       <h3 id="drop-h" data-i18n="dropT">One drop on every nail</h3>
-      <p data-i18n="dropD">Touch a single drop right to the cuticle, then press it in. Cold-pressed olive and avocado sink in fast, leaving nails soft and glossy — never greasy.</p>
+      <p data-i18n="dropD">Touch one drop to the cuticle, then press it in.</p>
     </div>
   </section>
 
   <section class="story" id="story" aria-labelledby="story-h">
-    <div class="wrap story-grid">
+    <div class="wrap">
       <div class="story-text">
         <h2 id="story-h" data-i18n="storyTitle">A healing oil from Napa Valley</h2>
-        <p class="copy-p" data-i18n="storyLead">For centuries, olive oil has been used to soothe hands and skin worn by sun and work. Inspired by the olive trees and golden light of Napa Valley, Olive Skin puts that gentle, healing pause into one small bottle for every day.</p>
-        <p class="copy-p" data-i18n="storyLead2">Made by Mix and Match, the nail care division of COSMAX.</p>
+        <p class="copy-p" data-i18n="storyLead">Olive oil has soothed sun-worn hands for centuries. We put that pause into one small bottle.</p>
       </div>
-      <div class="story-mid">
-        <figure>
-          <img src="../images/grove.webp" width="1254" height="1254" alt="Olive trees and vineyards on hills at sunset" data-i18n-alt="altGrove">
-          <figcaption data-i18n="capGrove">Golden hour in the olive grove</figcaption>
-        </figure>
-        <figure class="small">
-          <img src="../images/painting.webp" width="428" height="574" alt="Green olives in a bowl, in an oil painting" data-i18n-alt="altPainting">
-        </figure>
+      <div class="collage">
+        <img class="c-a" src="../images/grove.webp" width="1254" height="1254" loading="lazy" alt="Olive trees and vineyards on hills at sunset" data-i18n-alt="altGrove">
+        <img class="c-b" src="../images/napa.webp" width="1086" height="1448" loading="lazy" alt="Sidewalk stamped 'City of Napa Street Dept 1952'" data-i18n-alt="altNapa">
+        <img class="c-c" src="../images/ledge.webp" width="430" height="575" loading="lazy" alt="Glow Drop on a stone ledge above olive hills" data-i18n-alt="altLedge">
+        <img class="c-d" src="../images/painting.webp" width="428" height="574" loading="lazy" alt="Green olives in a bowl, in an oil painting" data-i18n-alt="altPainting">
       </div>
-      <div class="story-right">
-        <figure>
-          <img src="../images/napa.webp" width="1086" height="1448" alt="Sidewalk stamped 'City of Napa Street Dept 1952'" data-i18n-alt="altNapa">
-          <figcaption>City of Napa · Street Dept. 1952</figcaption>
-        </figure>
-      </div>
-    </div>
-  </section>
-  <section class="closing wrap" aria-label="Olive Skin">
-    <div class="facts">
-      <div><p class="k">Maker</p><p class="v">Mix and Match</p><p data-i18n="m1">The nail care division of COSMAX.</p></div>
-      <div><p class="k">Standard</p><p class="v">COSMAX</p><p data-i18n="m2">Made to global beauty brand standards.</p></div>
-      <div><p class="k">Formula</p><p class="v" data-i18n="m3v">Plant oils</p><p data-i18n="m3">Cold-pressed olive and avocado at the base.</p></div>
-      <div><p class="k">Checkout</p><p class="v" data-i18n="m4v">Secure checkout</p><p data-i18n="m4">PayPal · Cards</p></div>
     </div>
   </section>
 
@@ -656,7 +653,7 @@ if(!location.hash){window.scrollTo(0,0);addEventListener('load',()=>{window.scro
       c4name:"순한 포뮬러",
       p1:"손톱", p1btn:"글로우 드롭 구매하기", p2:"손", p2btn:"사용 방법", p3:"건조한 피부", p3btn:"글로우 드롭 구매하기",
       storyTitle:"[[나파 밸리]]에서 온 힐링 오일",
-      storyLead:"올리브 오일은 오래전부터 햇볕과 일에 지친 손과 피부를 달래 왔습니다. 나파 밸리의 올리브 나무와 금빛 햇살에서 영감을 받아, 그 다정한 쉼의 시간을 매일 쓰는 작은 한 병에 담았습니다.",
+      storyLead:"올리브 오일은 오래전부터 햇볕에 지친 손을 달래 왔어요. 그 쉼을 작은 한 병에 담았습니다.",
       storyLead2:"코스맥스의 네일 전문 계열사, 믹스앤매치에서 만듭니다.",
       capGrove:"해 질 녘 올리브 숲",
       careTitle:"10초면 끝나는 케어.",
@@ -665,7 +662,7 @@ if(!location.hash){window.scrollTo(0,0);addEventListener('load',()=>{window.scro
       s2t:"눌러서 스며들게", s2d:"지그시 눌러 바른 뒤, 작은 원을 그리며 흡수될 때까지 마사지합니다.",
       s3t:"매일 꾸준히", s3d:"아침이나 잠들기 전, 하루 한 번 이상 사용하세요.",
       introTitle:"건조한 손끝을 위한 작은 힐링 루틴",
-      introLead:"올리브 스킨의 케어는 단순합니다. 콜드프레스 식물성 오일 두 가지, 겉돌지 않고 바로 스며드는 가벼운 텍스처, 그리고 하루 한 방울.",
+      introLead:"콜드프레스 식물성 오일 두 가지, 가벼운 텍스처, 하루 한 방울.",
       introLead2:"나파 밸리의 올리브 숲에서 영감을 받았습니다.",
       shopLead:"콜드프레스 올리브 오일과 아보카도 오일이 겉돌지 않고 빠르게 스며들어, 손톱과 큐티클, 팔꿈치의 건조함을 부드럽게 가꿉니다.",
       pdpSub:"네일 &amp; 바디 케어 오일 · 15ml / 0.5 fl oz",
@@ -686,13 +683,13 @@ if(!location.hash){window.scrollTo(0,0);addEventListener('load',()=>{window.scro
       altPicking:"햇살 속에서 올리브를 따는 손", altFace:"건조한 팔꿈치에 글로우 드롭 오일을 펴 바르는 모습",
       altHero:"올리브 나무 아래에서 글로우 드롭을 든 모델", altCutout:"초록 라벨의 글로우 드롭 15ml 스포이트 병", altProduct:"돌 위에 놓인 글로우 드롭 15ml 병",
       dictLabel:"올리브 스킨 사전", dictDef:"매일 쓰는 힐링 케어 오일. 콜드프레스 올리브와 아보카도를 담은 한 방울이 빠르게 스며들어, 손톱과 큐티클, 건조한 곳 어디든 촉촉하게.", btnLearn:"더 알아보기",
-      chk1t:"한 방울, 꾹, 반짝", chk1d:"하루 한 방울이 손톱과 피부에 스며들어 내일까지 부드럽게 지켜 줍니다.",
-      chk2t:"나만의 방식으로 힐링", chk2d:"아침이든 잠들기 전이든, 햇볕과 일에 지친 손을 위한 작은 쉼.",
+      chk1t:"한 방울, 꾹, 반짝", chk1d:"하루 한 방울이면 손톱이 부드러워져요.",
+      chk2t:"나만의 방식으로 힐링", chk2d:"아침이나 잠들기 전에.",
       altModel:"테이블에 앉아 스포이트로 손톱에 글로우 드롭 오일을 바르는 모델", altBanner:"햇살 드는 테라스에서 손톱에 글로우 드롭을 바르는 손",
       altEye:"머리를 쓸어 올리는 모델의 뒷모습",
       pk1t:"콜드프레스", pk1d:"올리브 · 아보카도 오일", pk2t:"빠른 흡수", pk2d:"가볍고 끈적임 없이", pk3t:"손톱부터 팔꿈치까지", pk3d:"큐티클 · 손 · 건조한 곳", pk4t:"코스맥스 제조", pk4d:"믹스앤매치 네일 연구소",
       usesK:"이렇게 쓰세요", usesT:"한 방울, 세 가지 케어",
-      dropK:"손톱 &amp; 큐티클", dropT:"손톱마다 한 방울", dropD:"큐티클에 한 방울 콕 올리고 지그시 눌러 주세요. 콜드프레스 올리브와 아보카도 오일이 빠르게 스며들어, 끈적임 없이 손톱을 부드럽고 윤기 있게 가꿉니다.", altDrop:"스포이트로 큐티클에 글로우 드롭 오일 한 방울을 올리는 모습", altCuticle:"햇살 드는 리넨 위에 편하게 놓인 손"
+      dropK:"손톱 &amp; 큐티클", dropT:"손톱마다 한 방울", dropD:"큐티클에 한 방울 올리고 지그시 눌러 주세요.", altDrop:"스포이트로 큐티클에 글로우 드롭 오일 한 방울을 올리는 모습", altCuticle:"햇살 드는 리넨 위에 편하게 놓인 손"
     },
     ja: {
       announce:"世界中へお届け",
@@ -707,7 +704,7 @@ if(!location.hash){window.scrollTo(0,0);addEventListener('load',()=>{window.scro
       c4name:"クリーンな処方",
       p1:"爪", p1btn:"Glow Dropを購入", p2:"手", p2btn:"使い方", p3:"乾燥肌", p3btn:"Glow Dropを購入",
       storyTitle:"[[ナパ・ヴァレー]]から届く、ヒーリングオイル",
-      storyLead:"オリーブオイルは古くから、日差しや仕事で荒れた手や肌をいたわるために使われてきました。ナパ・ヴァレーのオリーブの木々と黄金色の光に着想を得て、そのやさしい癒しのひとときを毎日使える小さなボトルに込めました。",
+      storyLead:"オリーブオイルは古くから日差しに疲れた手を癒してきました。そのひとときを小さな一本に。",
       storyLead2:"製造はCOSMAXのネイル専門部門Mix and Match。",
       capGrove:"夕暮れのオリーブの森",
       careTitle:"10秒のケアルーティン。",
@@ -716,7 +713,7 @@ if(!location.hash){window.scrollTo(0,0);addEventListener('load',()=>{window.scro
       s2t:"やさしく押しながらマッサージ", s2d:"やさしく押し込み、小さな円を描くようになじませます。",
       s3t:"毎日つづける", s3d:"朝や寝る前に、1日1回以上のご使用がおすすめです。",
       introTitle:"乾燥した指先のための、小さな癒しの習慣",
-      introLead:"オリーブスキンが大切にしているのはシンプルなケア。コールドプレスの植物オイル2種、すっとなじむ軽い質感、そして1日1滴。",
+      introLead:"コールドプレスの植物オイル2種、軽い質感、1日1滴。",
       introLead2:"ナパ・ヴァレーのオリーブの森に着想を得たケア。",
       shopLead:"コールドプレスのオリーブオイルとアボカドオイル。肌の上に残らずすっとなじみ、乾燥しがちな爪・甘皮・ひじをやわらかく整えます。",
       pdpSub:"ネイル＆ボディケアオイル · 15ml / 0.5 fl oz",
@@ -737,13 +734,13 @@ if(!location.hash){window.scrollTo(0,0);addEventListener('load',()=>{window.scro
       altPicking:"陽ざしの中でオリーブを摘む手", altFace:"乾燥したひじにGlow Dropオイルをなじませる様子",
       altHero:"オリーブの木の下でGlow Dropを持つモデル", altCutout:"緑のラベルのGlow Drop 15mlスポイトボトル", altProduct:"石の上に置かれたGlow Drop 15mlボトル",
       dictLabel:"オリーブスキン辞典", dictDef:"毎日のヒーリングケアオイル。コールドプレスのオリーブとアボカドの一滴がすっとなじみ、爪・甘皮・乾燥が気になる場所をうるおします。", btnLearn:"詳しく見る",
-      chk1t:"一滴、押して、輝く", chk1d:"1日1滴が爪と肌にとけこみ、明日までやわらかく守ります。",
-      chk2t:"あなたらしく、癒す", chk2d:"朝でも寝る前でも。日差しや仕事で疲れた手のための、小さなひと休み。",
+      chk1t:"一滴、押して、輝く", chk1d:"1日1滴で、やわらかな爪に。",
+      chk2t:"あなたらしく、癒す", chk2d:"朝や寝る前に。",
       altModel:"テーブルでスポイトを使い爪にGlow Dropオイルを塗るモデル", altBanner:"陽ざしのテラスで爪にGlow Dropを塗る手",
       altEye:"髪をかき上げるモデルの後ろ姿",
       pk1t:"コールドプレス", pk1d:"オリーブ・アボカドオイル", pk2t:"すっとなじむ", pk2d:"軽く、べたつかない", pk3t:"爪からひじまで", pk3d:"甘皮・手・乾燥する場所", pk4t:"COSMAX製造", pk4d:"Mix and Match ネイルラボ",
       usesK:"使う場所", usesT:"一滴で、3つのケア",
-      dropK:"爪 &amp; 甘皮", dropT:"爪に一滴ずつ", dropD:"甘皮に一滴のせて、やさしく押し込むだけ。コールドプレスのオリーブとアボカドオイルがすっとなじみ、べたつかずに爪をやわらかくつややかに整えます。", altDrop:"スポイトで甘皮にGlow Dropオイルを一滴のせる様子", altCuticle:"陽ざしの差すリネンの上でくつろぐ手"
+      dropK:"爪 &amp; 甘皮", dropT:"爪に一滴ずつ", dropD:"甘皮に一滴のせて、やさしく押し込むだけ。", altDrop:"スポイトで甘皮にGlow Dropオイルを一滴のせる様子", altCuticle:"陽ざしの差すリネンの上でくつろぐ手"
     }
   };
   ['ko','ja'].forEach(function(l){ I18N[l].heroTitle = mk(I18N[l].heroTitle); I18N[l].storyTitle = mk(I18N[l].storyTitle); });
