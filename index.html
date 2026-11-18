@@ -93,9 +93,6 @@ h1,h2,h3{margin:0;font-family:var(--sans);font-weight:400;line-height:1.2;letter
 .dict-def{font-size:14px;line-height:1.7;color:var(--ink-soft);max-width:20em}
 .dict img{width:clamp(64px,8vw,104px);height:auto;transform:rotate(8deg);filter:drop-shadow(0 12px 14px rgba(60,52,36,.2))}
 
-/* full-bleed model banner */
-.banner{margin:0;background:var(--night)}
-.banner img{width:100%;aspect-ratio:21/8;object-fit:cover;object-position:50% 100%}
 
 /* one drop — nail close-up */
 .drop{display:grid;grid-template-columns:1.35fr 1fr;gap:clamp(24px,4vw,64px);align-items:center;padding-block:clamp(16px,3vw,40px) clamp(40px,6vw,80px)}
@@ -107,17 +104,9 @@ h1,h2,h3{margin:0;font-family:var(--sans);font-weight:400;line-height:1.2;letter
 :lang(ko) .drop-k,:lang(ja) .drop-k{letter-spacing:.02em}
 :lang(ko) .drop h3,:lang(ja) .drop h3{font-family:var(--sans);font-weight:500;font-size:clamp(26px,2.6vw,36px);letter-spacing:-.03em;line-height:1.3}
 
-/* closing buy */
+/* closing facts */
 .closing{padding-block:clamp(24px,4vw,48px) clamp(56px,8vw,104px)}
 .closing .facts{margin-top:0}
-.closing-cta{display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:clamp(16px,3vw,40px);margin-top:clamp(40px,6vw,72px);padding:clamp(20px,3vw,36px) clamp(20px,4vw,48px);border-radius:18px;background:var(--card);border:1px solid var(--line)}
-.closing-cta img{width:clamp(44px,5vw,64px);height:auto;transform:rotate(-8deg);filter:drop-shadow(0 10px 12px rgba(60,52,36,.2))}
-.closing-cta h2{font-family:var(--display);font-weight:400;font-size:clamp(26px,3vw,40px);line-height:1.05;color:var(--olive);margin-bottom:6px}
-.closing-cta p{font-size:14px;color:var(--ink-soft)}
-.closing-cta .pill{min-height:56px;padding:0 36px;font-size:16px}
-:lang(ko) .closing-cta h2,:lang(ja) .closing-cta h2{font-family:var(--sans);font-weight:500;letter-spacing:-.03em;font-size:clamp(22px,2.4vw,30px);line-height:1.3}
-@media (max-width:640px){.closing-cta{grid-template-columns:auto 1fr}.closing-cta .pill{grid-column:1/-1;width:100%}}
-
 /* checkerboard */
 .checker{padding-block:clamp(40px,6vw,80px)}
 .checker-grid{display:grid;grid-template-columns:1fr 1fr;border-radius:18px;overflow:hidden;background:var(--sage)}
@@ -260,7 +249,6 @@ footer{background:var(--night);color:#D8D4C8}
   .checker-grid{grid-template-columns:1fr}
   .checker-grid .c2{order:4}
   .hero-meta span{display:none}
-  .banner img{aspect-ratio:16/9;object-position:100% 100%}
   .drop{grid-template-columns:1fr}
 }
 @media (max-width:420px){
@@ -354,6 +342,28 @@ p{text-wrap:pretty}
   .buy .pill{min-height:54px;font-size:16px}
   .facts .v{font-size:24px}
 }
+
+/* polish — calmer rhythm, shared section headers (Aesop / Rhode / Glossier patterns) */
+:root{--sec:clamp(64px,8vw,120px)}
+.sec-head{text-align:center;max-width:36em;margin:0 auto clamp(24px,3vw,40px)}
+.eyebrow{font-size:12px;font-weight:500;letter-spacing:.18em;text-transform:uppercase;color:var(--ink-soft);margin-bottom:10px}
+.sec-head h2{font-family:var(--display);font-weight:400;font-size:clamp(32px,3.6vw,48px);line-height:1.05;color:var(--olive)}
+:lang(ko) .sec-head h2,:lang(ja) .sec-head h2{font-family:var(--sans);font-weight:500;letter-spacing:-.03em;font-size:clamp(24px,2.6vw,34px);line-height:1.3}
+:lang(ko) .eyebrow,:lang(ja) .eyebrow{letter-spacing:.04em}
+.uses-wrap{padding-block:var(--sec) 0}
+.uses-wrap .uses{padding-block:0}
+.intro,.story{padding-block:var(--sec)}
+.checker{padding-block:var(--sec) clamp(40px,5vw,72px)}
+.tiles{padding-block:0 var(--sec)}
+.drop{padding-block:clamp(24px,3vw,48px) var(--sec)}
+.pdp{padding-block:clamp(48px,6vw,88px) clamp(32px,4vw,56px)}
+.perks ul{list-style:none;margin:0;padding:clamp(18px,2.4vw,28px) 0;display:grid;grid-template-columns:repeat(4,1fr);border-block:1px solid var(--line)}
+.perks li{display:flex;flex-direction:column;gap:2px;padding-inline:clamp(12px,2vw,24px);text-align:center}
+.perks li + li{border-left:1px solid var(--line)}
+.perks b{font-family:var(--display);font-weight:500;font-size:clamp(18px,1.7vw,22px);color:var(--olive);line-height:1.2}
+.perks span{font-size:13px;color:var(--ink-soft)}
+:lang(ko) .perks b,:lang(ja) .perks b{font-family:var(--sans);font-size:16px;letter-spacing:-.02em}
+@media (max-width:760px){.perks ul{grid-template-columns:1fr 1fr;row-gap:18px}.perks li:nth-child(3){border-left:0}}
 </style>
 <script>
 /* 새로고침해도 항상 맨 위에서 시작 (주소에 #가 붙은 경우만 예외) */
@@ -477,7 +487,18 @@ if(!location.hash){window.scrollTo(0,0);addEventListener('load',()=>{window.scro
     </div>
   </section>
 
-  <section class="uses wrap" aria-label="Where to use it">
+  <section class="perks wrap" aria-label="Why Glow Drop">
+    <ul>
+      <li><b data-i18n="pk1t">Cold-pressed</b><span data-i18n="pk1d">Olive &amp; avocado oils</span></li>
+      <li><b data-i18n="pk2t">Sinks in fast</b><span data-i18n="pk2d">Light, never greasy</span></li>
+      <li><b data-i18n="pk3t">Nails to elbows</b><span data-i18n="pk3d">Cuticles, hands, dry spots</span></li>
+      <li><b data-i18n="pk4t">Made by COSMAX</b><span data-i18n="pk4d">Mix and Match nail lab</span></li>
+    </ul>
+  </section>
+
+  <section class="uses-wrap wrap" aria-labelledby="uses-h">
+    <header class="sec-head"><p class="eyebrow" data-i18n="usesK">Where it goes</p><h2 id="uses-h" data-i18n="usesT">One drop, three ways to care</h2></header>
+  <div class="uses">
     <a class="use" href="#shop">
       <div class="use-img"><img src="images/bottle-hand.webp" width="1000" height="1000" loading="lazy" alt="A hand holding the Glow Drop bottle" data-i18n-alt="altBottle"></div>
       <div class="use-row"><p class="panel-word" data-i18n="p1">nails</p></div>
@@ -490,6 +511,7 @@ if(!location.hash){window.scrollTo(0,0);addEventListener('load',()=>{window.scro
       <div class="use-img"><img src="images/elbow.webp" width="1000" height="1000" loading="lazy" alt="Smoothing Glow Drop oil onto a dry elbow" data-i18n-alt="altFace"></div>
       <div class="use-row"><p class="panel-word" data-i18n="p3">dry skin</p></div>
     </a>
+  </div>
   </section>
 
   <section class="intro wrap" aria-labelledby="intro-h">
@@ -521,10 +543,6 @@ if(!location.hash){window.scrollTo(0,0);addEventListener('load',()=>{window.scro
       <a class="pill" href="#ingredients" data-i18n="btnLearn">Learn more</a>
     </div>
   </section>
-
-  <figure class="banner">
-    <img src="images/banner.webp" width="2400" height="935" loading="lazy" alt="Hands applying Glow Drop to the nails on a sunny terrace" data-i18n-alt="altBanner">
-  </figure>
 
   <section class="checker wrap" aria-label="Glow Drop ritual">
     <div class="checker-grid">
@@ -575,20 +593,12 @@ if(!location.hash){window.scrollTo(0,0);addEventListener('load',()=>{window.scro
       </div>
     </div>
   </section>
-  <section class="closing wrap" aria-labelledby="closing-h">
+  <section class="closing wrap" aria-label="Olive Skin">
     <div class="facts">
       <div><p class="k">Maker</p><p class="v">Mix and Match</p><p data-i18n="m1">The nail care division of COSMAX.</p></div>
       <div><p class="k">Standard</p><p class="v">COSMAX</p><p data-i18n="m2">Made to global beauty brand standards.</p></div>
       <div><p class="k">Formula</p><p class="v" data-i18n="m3v">Plant oils</p><p data-i18n="m3">Cold-pressed olive and avocado at the base.</p></div>
       <div><p class="k">Checkout</p><p class="v" data-i18n="m4v">Secure checkout</p><p data-i18n="m4">PayPal · Cards</p></div>
-    </div>
-    <div class="closing-cta">
-      <img src="images/cutout.webp" width="564" height="1374" loading="lazy" alt="">
-      <div>
-        <h2 id="closing-h" data-i18n="closingT">One drop a day, starting today</h2>
-        <p data-i18n="closingD">Glow Drop · Nail &amp; body care oil · 15ml</p>
-      </div>
-      <a class="pill dark" id="buy-end" href="checkout.html?qty=1" data-i18n="buyNow">Buy now</a>
     </div>
   </section>
 
@@ -676,7 +686,8 @@ if(!location.hash){window.scrollTo(0,0);addEventListener('load',()=>{window.scro
       chk2t:"나만의 방식으로 힐링", chk2d:"아침이든 잠들기 전이든, 햇볕과 일에 지친 손을 위한 작은 쉼.",
       altModel:"테이블에 앉아 스포이트로 손톱에 글로우 드롭 오일을 바르는 모델", altBanner:"햇살 드는 테라스에서 손톱에 글로우 드롭을 바르는 손",
       altEye:"머리를 쓸어 올리는 모델의 뒷모습",
-      closingT:"오늘부터 하루 한 방울", closingD:"글로우 드롭 · 네일 &amp; 바디 케어 오일 · 15ml",
+      pk1t:"콜드프레스", pk1d:"올리브 · 아보카도 오일", pk2t:"빠른 흡수", pk2d:"가볍고 끈적임 없이", pk3t:"손톱부터 팔꿈치까지", pk3d:"큐티클 · 손 · 건조한 곳", pk4t:"코스맥스 제조", pk4d:"믹스앤매치 네일 연구소",
+      usesK:"이렇게 쓰세요", usesT:"한 방울, 세 가지 케어",
       dropK:"손톱 &amp; 큐티클", dropT:"손톱마다 한 방울", dropD:"큐티클에 한 방울 콕 올리고 지그시 눌러 주세요. 콜드프레스 올리브와 아보카도 오일이 빠르게 스며들어, 끈적임 없이 손톱을 부드럽고 윤기 있게 가꿉니다.", altDrop:"스포이트로 큐티클에 글로우 드롭 오일 한 방울을 올리는 모습", altCuticle:"햇살 드는 리넨 위에 편하게 놓인 손"
     },
     ja: {
@@ -726,7 +737,8 @@ if(!location.hash){window.scrollTo(0,0);addEventListener('load',()=>{window.scro
       chk2t:"あなたらしく、癒す", chk2d:"朝でも寝る前でも。日差しや仕事で疲れた手のための、小さなひと休み。",
       altModel:"テーブルでスポイトを使い爪にGlow Dropオイルを塗るモデル", altBanner:"陽ざしのテラスで爪にGlow Dropを塗る手",
       altEye:"髪をかき上げるモデルの後ろ姿",
-      closingT:"今日から、1日1滴", closingD:"Glow Drop · ネイル＆ボディケアオイル · 15ml",
+      pk1t:"コールドプレス", pk1d:"オリーブ・アボカドオイル", pk2t:"すっとなじむ", pk2d:"軽く、べたつかない", pk3t:"爪からひじまで", pk3d:"甘皮・手・乾燥する場所", pk4t:"COSMAX製造", pk4d:"Mix and Match ネイルラボ",
+      usesK:"使う場所", usesT:"一滴で、3つのケア",
       dropK:"爪 &amp; 甘皮", dropT:"爪に一滴ずつ", dropD:"甘皮に一滴のせて、やさしく押し込むだけ。コールドプレスのオリーブとアボカドオイルがすっとなじみ、べたつかずに爪をやわらかくつややかに整えます。", altDrop:"スポイトで甘皮にGlow Dropオイルを一滴のせる様子", altCuticle:"陽ざしの差すリネンの上でくつろぐ手"
     }
   };
@@ -757,7 +769,6 @@ if(!location.hash){window.scrollTo(0,0);addEventListener('load',()=>{window.scro
     qEl.textContent = qty;
     tEl.textContent = '$' + (qty*PRICE).toFixed(2);
     buy.href = 'checkout.html?qty=' + qty + '&lang=' + current;
-    var buyEnd = document.getElementById('buy-end'); if(buyEnd) buyEnd.href = buy.href;
   }
 
   function setLang(l){
