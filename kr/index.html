@@ -434,6 +434,49 @@ html:lang(en) .perks li{font-weight:600;letter-spacing:0}
 html:lang(en) main .tag,html:lang(en) .use-row .panel-word,html:lang(en) main .pill,html:lang(en) .nav a{font-weight:500;letter-spacing:.06em}
 html:lang(en) .use-row .panel-word,html:lang(en) main .tag{text-transform:uppercase}
 html:lang(en) main .pill{text-transform:none;letter-spacing:.02em}
+
+/* chat — 상담 챗봇 (chat.js) */
+.osc{position:fixed;right:20px;bottom:calc(20px + env(safe-area-inset-bottom,0px));z-index:60;font-family:var(--sans)}
+.osc-fab{display:flex;align-items:center;gap:8px;height:var(--btn,48px);padding:0 20px 0 16px;margin-left:auto;border:0;border-radius:999px;background:var(--olive);color:#fff;font:inherit;font-size:16px;font-weight:500;cursor:pointer;box-shadow:0 14px 30px -12px rgba(46,54,30,.65)}
+.osc-fab:hover{background:#3C4529}
+.osc-fab span{display:flex}
+.osc-fab .i-close,.osc.on .osc-fab .i-open,.osc.on .osc-fl{display:none}
+.osc.on .osc-fab .i-close{display:flex}
+.osc.on .osc-fab{width:var(--btn,48px);padding:0;justify-content:center}
+.osc-panel{position:absolute;right:0;bottom:60px;width:370px;height:min(580px,calc(100vh - 120px));background:var(--white);border-radius:var(--r,16px);box-shadow:0 30px 70px -20px rgba(39,37,31,.45),0 0 0 1px rgba(39,37,31,.06);display:flex;flex-direction:column;overflow:hidden}
+.osc-panel[hidden]{display:none}
+.osc-hd{display:flex;align-items:center;gap:12px;padding:16px 16px 14px 18px;border-bottom:1px solid var(--line)}
+.osc-hd i{font-style:normal;width:36px;height:36px;border-radius:10px;background:var(--sage-deep);color:#fff;display:grid;place-items:center;font-family:var(--display);font-size:16px;flex:none}
+.osc-hd b{display:block;font-size:16px;font-weight:500;line-height:1.3}
+.osc-hd small{display:block;font-size:13px;color:var(--ink-soft)}
+.osc-x{margin-left:auto;width:36px;height:36px;border:0;border-radius:10px;background:none;color:var(--ink-soft);cursor:pointer;display:grid;place-items:center}
+.osc-x:hover{background:var(--bg)}
+.osc-log{flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:10px;background:var(--bg);overscroll-behavior:contain}
+.osc-m{max-width:88%;font-size:15px;line-height:1.6;padding:11px 14px;border-radius:16px}
+.osc-m.bot{background:var(--white);color:var(--ink);border-top-left-radius:6px;box-shadow:0 1px 2px rgba(39,37,31,.06)}
+.osc-m.me{align-self:flex-end;background:var(--olive);color:#fff;border-top-right-radius:6px}
+.osc-next{color:var(--ink-soft)}
+.osc-go{display:inline-block;margin-top:6px;color:var(--olive);font-weight:500}
+.osc-chips{max-width:100%;padding:0;display:flex;flex-wrap:wrap;gap:6px}
+.osc-chips button{font:inherit;font-size:14px;color:var(--olive);background:var(--white);border:1px solid #C9CDB8;border-radius:999px;padding:6px 12px;cursor:pointer;text-align:left}
+.osc-chips button:hover{border-color:var(--olive)}
+.osc-chips .osc-human,.osc-human{display:inline-flex;align-items:center;gap:6px;font:inherit;font-size:14px;font-weight:500;border:0;border-radius:999px;padding:7px 14px;background:var(--olive)!important;color:#fff!important;text-decoration:none;cursor:pointer}
+.osc-human.kk{background:#FEE500!important;color:#191919!important}
+.osc-form{display:flex;flex-direction:column;gap:10px;width:88%}
+.osc-form label{display:flex;flex-direction:column;gap:4px;font-size:13px;color:var(--ink-soft)}
+.osc-form textarea,.osc-form input{font:inherit;font-size:16px;color:var(--ink);border:1px solid var(--line);border-radius:10px;padding:9px 11px;resize:vertical;background:var(--white)}
+.osc-form textarea:focus,.osc-form input:focus{outline:none;border-color:var(--olive)}
+.osc-row{display:flex;align-items:center;gap:12px}
+.osc-mail{font-size:14px;color:var(--ink-soft)}
+.osc-in{display:flex;gap:8px;padding:12px;border-top:1px solid var(--line);background:var(--white)}
+.osc-in input{flex:1;min-width:0;height:44px;border:1px solid var(--line);border-radius:12px;padding:0 13px;font:inherit;font-size:16px}
+.osc-in input:focus{outline:none;border-color:var(--olive)}
+.osc-in button{width:44px;height:44px;border:0;border-radius:12px;background:var(--olive);color:#fff;display:grid;place-items:center;cursor:pointer;flex:none}
+@media (max-width:680px){
+  .osc{right:14px;bottom:calc(14px + env(safe-area-inset-bottom,0px))}
+  .osc-panel{position:fixed;left:10px;right:10px;bottom:calc(72px + env(safe-area-inset-bottom,0px));width:auto;height:min(560px,calc(100dvh - 150px))}
+}
+@media print{.osc{display:none}}
 </style>
 <script>
 /* 새로고침해도 항상 맨 위에서 시작 (주소에 #가 붙은 경우만 예외) */
@@ -442,6 +485,7 @@ if(!location.hash){window.scrollTo(0,0);addEventListener('load',()=>{window.scro
   addEventListener('pageshow',e=>{if(e.persisted)window.scrollTo(0,0);});}
 </script>
 <script src="../analytics.js" defer></script>
+<script src="../chat.js?v=202611181" defer></script>
 </head>
 <body>
 

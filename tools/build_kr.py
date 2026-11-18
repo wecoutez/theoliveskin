@@ -43,6 +43,7 @@ for attr, n in (("src", 17), ("data-src", 3), ("poster", 1)):
     rep(f' {attr}="images/', f' {attr}="../images/', n)
 
 rep('<script src="analytics.js" defer></script>', '<script src="../analytics.js" defer></script>')
+rep('<script src="chat.js?v=202611181" defer></script>', '<script src="../chat.js?v=202611181" defer></script>')
 
 # 가격 · 구매 — 원화, 페이앱
 rep('<p class="price">$18<small>USD</small></p>', f'<p class="price">{PRICE_KRW}<small>원</small></p>')
