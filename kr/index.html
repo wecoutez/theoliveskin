@@ -109,6 +109,17 @@ h1,h2,h3{margin:0;font-family:var(--sans);font-weight:400;line-height:1.2;letter
 :lang(ko) .drop-k,:lang(ja) .drop-k{letter-spacing:.02em}
 :lang(ko) .drop h3,:lang(ja) .drop h3{font-family:var(--sans);font-weight:500;font-size:clamp(26px,2.6vw,36px);letter-spacing:-.03em;line-height:1.3}
 
+/* closing buy */
+.closing{padding-block:clamp(24px,4vw,48px) clamp(56px,8vw,104px)}
+.closing .facts{margin-top:0}
+.closing-cta{display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:clamp(16px,3vw,40px);margin-top:clamp(40px,6vw,72px);padding:clamp(20px,3vw,36px) clamp(20px,4vw,48px);border-radius:18px;background:var(--card);border:1px solid var(--line)}
+.closing-cta img{width:clamp(44px,5vw,64px);height:auto;transform:rotate(-8deg);filter:drop-shadow(0 10px 12px rgba(60,52,36,.2))}
+.closing-cta h2{font-family:var(--display);font-weight:400;font-size:clamp(26px,3vw,40px);line-height:1.05;color:var(--olive);margin-bottom:6px}
+.closing-cta p{font-size:14px;color:var(--ink-soft)}
+.closing-cta .pill{min-height:56px;padding:0 36px;font-size:16px}
+:lang(ko) .closing-cta h2,:lang(ja) .closing-cta h2{font-family:var(--sans);font-weight:500;letter-spacing:-.03em;font-size:clamp(22px,2.4vw,30px);line-height:1.3}
+@media (max-width:640px){.closing-cta{grid-template-columns:auto 1fr}.closing-cta .pill{grid-column:1/-1;width:100%}}
+
 /* checkerboard */
 .checker{padding-block:clamp(40px,6vw,80px)}
 .checker-grid{display:grid;grid-template-columns:1fr 1fr;border-radius:18px;overflow:hidden;background:var(--sage)}
@@ -401,6 +412,75 @@ if(!location.hash){window.scrollTo(0,0);addEventListener('load',()=>{window.scro
     </div>
   </section>
 
+  <section class="pdp wrap" id="shop" aria-labelledby="shop-h">
+    <div class="pdp-grid">
+      <div class="gallery">
+        <div class="thumbs" role="group" aria-label="Product photos">
+          <button type="button" class="cut" aria-pressed="true" data-src="../images/cutout.webp" data-alt="altCutout" data-cut="1"><img src="../images/cutout.webp" width="565" height="1380" alt=""></button>
+          <button type="button" aria-pressed="false" data-src="../images/ledge.webp" data-alt="altLedge"><img src="../images/ledge.webp" width="430" height="575" alt=""></button>
+          <button type="button" aria-pressed="false" data-src="../images/poster2.webp" data-alt="altPoster"><img src="../images/poster2.webp" width="430" height="575" alt=""></button>
+        </div>
+        <figure class="main-img is-cutout" id="main-fig"><img id="main-img" src="../images/cutout.webp" width="565" height="1380" alt="Glow Drop 15ml dropper bottle with a green label"></figure>
+      </div>
+      <div class="info">
+        <p class="tag">Olive Skin · Daily care oil</p>
+        <h2 id="shop-h">Glow Drop</h2>
+        <p class="sub" data-i18n="pdpSub">Nail &amp; body care oil · 15ml / 0.5 fl oz</p>
+        <p class="price">16,000<small>원</small></p>
+        <p class="lead" data-i18n="shopLead">Cold-pressed olive and avocado oils that sink in fast — never sit on top — softening dry nails, cuticles and elbows.</p>
+        <div class="qty-row">
+          <span data-i18n="qty">Quantity</span>
+          <div class="stepper">
+            <button type="button" id="qty-minus" aria-label="Decrease quantity">−</button>
+            <output id="qty" aria-live="polite">1</output>
+            <button type="button" id="qty-plus" aria-label="Increase quantity">+</button>
+          </div>
+          <span class="total" id="total">16,000원</span>
+        </div>
+        <div class="buy">
+          <a class="pill dark" id="buy-now" href="checkout.html?qty=1" data-i18n="buyNow">Buy now</a>
+          <button type="button" class="pill" id="add-bag" data-i18n="addBag" style="display:none">Add to bag</button>
+          <a class="b2b-link" href="checkout.html?type=b2b">네일샵·살롱 도매 구매 <span aria-hidden="true">→</span></a>
+          <style>.b2b-link{flex-basis:100%;text-align:center;font-size:15px;color:var(--ink-soft);text-underline-offset:4px;padding:6px 0}.b2b-link:hover{color:var(--ink)}</style>
+        </div>
+        <div class="acc">
+          <details id="how">
+            <summary data-i18n="accHow">How to use</summary>
+            <div class="panel-body">
+              <ol class="steps">
+                <li><b data-i18n="s1t">Take a drop</b><span data-i18n="s1d">One or two drops on nails, cuticles or any dry area. You need less than you think.</span></li>
+                <li><b data-i18n="s2t">Press and massage</b><span data-i18n="s2d">Press in gently, then work it in with small circles until absorbed.</span></li>
+                <li><b data-i18n="s3t">Use daily</b><span data-i18n="s3d">Morning or before bed — at least once a day.</span></li>
+              </ol>
+            </div>
+          </details>
+          <details id="ingredients">
+            <summary data-i18n="accIngr">Ingredients</summary>
+            <div class="panel-body ingr">
+              <p><b data-i18n="i1t">Cold-pressed olive oil</b><span data-i18n="i1d">Rich in squalane and antioxidants to wrap the skin barrier in moisture.</span></p>
+              <p><b data-i18n="i2t">Avocado oil</b><span data-i18n="i2d">With vitamins A, D and E to smooth rough, stubborn patches.</span></p>
+              <div class="inci" id="inci-ko" lang="ko" hidden>
+                <b>전성분</b>
+                <p>올리브열매오일, 아보카도오일, 향료, 호호바씨오일, 토코페릴아세테이트, 벤질살리실레이트, 리날룰, 시트로넬올, 헥실신남알, 오렌지껍질오일, 로즈힙열매오일, 블랙커민씨오일, 석류씨오일, 유차나무씨오일, 제라니올, 리모넨, 알파‑아이소메틸아이오논, 하이드록시시트로넬알, 신나밀알코올</p>
+                <small>향료 속 알레르기 유발 성분: 벤질살리실레이트, 리날룰, 시트로넬올, 헥실신남알, 제라니올, 리모넨, 알파‑아이소메틸아이오논, 하이드록시시트로넬알, 신나밀알코올</small>
+              </div>
+            </div>
+          </details>
+          <details>
+            <summary data-i18n="accDetails">Details</summary>
+            <div class="panel-body">
+              <dl class="dl">
+                <dt data-i18n="dSize">Size</dt><dd>15ml / 0.5 fl oz</dd>
+                <dt data-i18n="dFor">For</dt><dd data-i18n="dForV">Nails, cuticles, hands, elbows, knees, heels</dd>
+                <dt data-i18n="dMaker">Made by</dt><dd data-i18n="dMakerV">Mix and Match, the nail care division of COSMAX</dd>
+              </dl>
+            </div>
+          </details>
+        </div>
+      </div>
+    </div>
+  </section>
+
   <section class="uses wrap" aria-label="Where to use it">
     <a class="use" href="#shop">
       <div class="use-img"><img src="../images/bottle-hand.webp" width="1000" height="1000" loading="lazy" alt="A hand holding the Glow Drop bottle" data-i18n-alt="altBottle"></div>
@@ -472,7 +552,6 @@ if(!location.hash){window.scrollTo(0,0);addEventListener('load',()=>{window.scro
       <p class="drop-k" data-i18n="dropK">For nails &amp; cuticles</p>
       <h3 id="drop-h" data-i18n="dropT">One drop on every nail</h3>
       <p data-i18n="dropD">Touch a single drop right to the cuticle, then press it in. Cold-pressed olive and avocado sink in fast, leaving nails soft and glossy — never greasy.</p>
-      <a class="pill primary" href="#how" data-i18n="navCare">How to use</a>
     </div>
   </section>
 
@@ -500,78 +579,20 @@ if(!location.hash){window.scrollTo(0,0);addEventListener('load',()=>{window.scro
       </div>
     </div>
   </section>
-  <section class="pdp wrap" id="shop" aria-labelledby="shop-h">
-    <div class="pdp-grid">
-      <div class="gallery">
-        <div class="thumbs" role="group" aria-label="Product photos">
-          <button type="button" class="cut" aria-pressed="true" data-src="../images/cutout.webp" data-alt="altCutout" data-cut="1"><img src="../images/cutout.webp" width="565" height="1380" alt=""></button>
-          <button type="button" aria-pressed="false" data-src="../images/ledge.webp" data-alt="altLedge"><img src="../images/ledge.webp" width="430" height="575" alt=""></button>
-          <button type="button" aria-pressed="false" data-src="../images/poster2.webp" data-alt="altPoster"><img src="../images/poster2.webp" width="430" height="575" alt=""></button>
-        </div>
-        <figure class="main-img is-cutout" id="main-fig"><img id="main-img" src="../images/cutout.webp" width="565" height="1380" alt="Glow Drop 15ml dropper bottle with a green label"></figure>
-      </div>
-      <div class="info">
-        <p class="tag">Olive Skin · Daily care oil</p>
-        <h2 id="shop-h">Glow Drop</h2>
-        <p class="sub" data-i18n="pdpSub">Nail &amp; body care oil · 15ml / 0.5 fl oz</p>
-        <p class="price">16,000<small>원</small></p>
-        <p class="lead" data-i18n="shopLead">Cold-pressed olive and avocado oils that sink in fast — never sit on top — softening dry nails, cuticles and elbows.</p>
-        <div class="qty-row">
-          <span data-i18n="qty">Quantity</span>
-          <div class="stepper">
-            <button type="button" id="qty-minus" aria-label="Decrease quantity">−</button>
-            <output id="qty" aria-live="polite">1</output>
-            <button type="button" id="qty-plus" aria-label="Increase quantity">+</button>
-          </div>
-          <span class="total" id="total">16,000원</span>
-        </div>
-        <div class="buy">
-          <a class="pill dark" id="buy-now" href="checkout.html?qty=1" data-i18n="buyNow">Buy now</a>
-          <button type="button" class="pill" id="add-bag" data-i18n="addBag" style="display:none">Add to bag</button>
-          <a class="b2b-link" href="checkout.html?type=b2b">네일샵·살롱 도매 구매 <span aria-hidden="true">→</span></a>
-          <style>.b2b-link{flex-basis:100%;text-align:center;font-size:15px;color:var(--ink-soft);text-underline-offset:4px;padding:6px 0}.b2b-link:hover{color:var(--ink)}</style>
-        </div>
-        <div class="acc">
-          <details id="how">
-            <summary data-i18n="accHow">How to use</summary>
-            <div class="panel-body">
-              <ol class="steps">
-                <li><b data-i18n="s1t">Take a drop</b><span data-i18n="s1d">One or two drops on nails, cuticles or any dry area. You need less than you think.</span></li>
-                <li><b data-i18n="s2t">Press and massage</b><span data-i18n="s2d">Press in gently, then work it in with small circles until absorbed.</span></li>
-                <li><b data-i18n="s3t">Use daily</b><span data-i18n="s3d">Morning or before bed — at least once a day.</span></li>
-              </ol>
-            </div>
-          </details>
-          <details id="ingredients">
-            <summary data-i18n="accIngr">Ingredients</summary>
-            <div class="panel-body ingr">
-              <p><b data-i18n="i1t">Cold-pressed olive oil</b><span data-i18n="i1d">Rich in squalane and antioxidants to wrap the skin barrier in moisture.</span></p>
-              <p><b data-i18n="i2t">Avocado oil</b><span data-i18n="i2d">With vitamins A, D and E to smooth rough, stubborn patches.</span></p>
-              <div class="inci" id="inci-ko" lang="ko" hidden>
-                <b>전성분</b>
-                <p>올리브열매오일, 아보카도오일, 향료, 호호바씨오일, 토코페릴아세테이트, 벤질살리실레이트, 리날룰, 시트로넬올, 헥실신남알, 오렌지껍질오일, 로즈힙열매오일, 블랙커민씨오일, 석류씨오일, 유차나무씨오일, 제라니올, 리모넨, 알파‑아이소메틸아이오논, 하이드록시시트로넬알, 신나밀알코올</p>
-                <small>향료 속 알레르기 유발 성분: 벤질살리실레이트, 리날룰, 시트로넬올, 헥실신남알, 제라니올, 리모넨, 알파‑아이소메틸아이오논, 하이드록시시트로넬알, 신나밀알코올</small>
-              </div>
-            </div>
-          </details>
-          <details>
-            <summary data-i18n="accDetails">Details</summary>
-            <div class="panel-body">
-              <dl class="dl">
-                <dt data-i18n="dSize">Size</dt><dd>15ml / 0.5 fl oz</dd>
-                <dt data-i18n="dFor">For</dt><dd data-i18n="dForV">Nails, cuticles, hands, elbows, knees, heels</dd>
-                <dt data-i18n="dMaker">Made by</dt><dd data-i18n="dMakerV">Mix and Match, the nail care division of COSMAX</dd>
-              </dl>
-            </div>
-          </details>
-        </div>
-      </div>
-    </div>
+  <section class="closing wrap" aria-labelledby="closing-h">
     <div class="facts">
       <div><p class="k">Maker</p><p class="v">Mix and Match</p><p data-i18n="m1">The nail care division of COSMAX.</p></div>
       <div><p class="k">Standard</p><p class="v">COSMAX</p><p data-i18n="m2">Made to global beauty brand standards.</p></div>
       <div><p class="k">Formula</p><p class="v" data-i18n="m3v">Plant oils</p><p data-i18n="m3">Cold-pressed olive and avocado at the base.</p></div>
       <div><p class="k">Checkout</p><p class="v" data-i18n="m4v">Secure checkout</p><p data-i18n="m4">PayPal · Cards</p></div>
+    </div>
+    <div class="closing-cta">
+      <img src="../images/cutout.webp" width="564" height="1374" loading="lazy" alt="">
+      <div>
+        <h2 id="closing-h" data-i18n="closingT">One drop a day, starting today</h2>
+        <p data-i18n="closingD">Glow Drop · Nail &amp; body care oil · 15ml</p>
+      </div>
+      <a class="pill dark" id="buy-end" href="checkout.html?qty=1" data-i18n="buyNow">Buy now</a>
     </div>
   </section>
 
@@ -659,6 +680,7 @@ if(!location.hash){window.scrollTo(0,0);addEventListener('load',()=>{window.scro
       chk2t:"나만의 방식으로 힐링", chk2d:"아침이든 잠들기 전이든, 햇볕과 일에 지친 손을 위한 작은 쉼.",
       altModel:"테이블에 앉아 스포이트로 손톱에 글로우 드롭 오일을 바르는 모델", altBanner:"햇살 드는 테라스에서 손톱에 글로우 드롭을 바르는 손",
       altEye:"머리를 쓸어 올리는 모델의 뒷모습",
+      closingT:"오늘부터 하루 한 방울", closingD:"글로우 드롭 · 네일 &amp; 바디 케어 오일 · 15ml",
       dropK:"손톱 &amp; 큐티클", dropT:"손톱마다 한 방울", dropD:"큐티클에 한 방울 콕 올리고 지그시 눌러 주세요. 콜드프레스 올리브와 아보카도 오일이 빠르게 스며들어, 끈적임 없이 손톱을 부드럽고 윤기 있게 가꿉니다.", altDrop:"스포이트로 큐티클에 글로우 드롭 오일 한 방울을 올리는 모습", altCuticle:"햇살 드는 리넨 위에 편하게 놓인 손"
     },
     ja: {
@@ -708,6 +730,7 @@ if(!location.hash){window.scrollTo(0,0);addEventListener('load',()=>{window.scro
       chk2t:"あなたらしく、癒す", chk2d:"朝でも寝る前でも。日差しや仕事で疲れた手のための、小さなひと休み。",
       altModel:"テーブルでスポイトを使い爪にGlow Dropオイルを塗るモデル", altBanner:"陽ざしのテラスで爪にGlow Dropを塗る手",
       altEye:"髪をかき上げるモデルの後ろ姿",
+      closingT:"今日から、1日1滴", closingD:"Glow Drop · ネイル＆ボディケアオイル · 15ml",
       dropK:"爪 &amp; 甘皮", dropT:"爪に一滴ずつ", dropD:"甘皮に一滴のせて、やさしく押し込むだけ。コールドプレスのオリーブとアボカドオイルがすっとなじみ、べたつかずに爪をやわらかくつややかに整えます。", altDrop:"スポイトで甘皮にGlow Dropオイルを一滴のせる様子", altCuticle:"陽ざしの差すリネンの上でくつろぐ手"
     }
   };
@@ -738,6 +761,7 @@ if(!location.hash){window.scrollTo(0,0);addEventListener('load',()=>{window.scro
     qEl.textContent = qty;
     tEl.textContent = (qty*PRICE_WON).toLocaleString('ko-KR') + '원';
     buy.href = 'checkout.html?qty=' + qty;
+    var buyEnd = document.getElementById('buy-end'); if(buyEnd) buyEnd.href = buy.href;
   }
 
   function setLang(l){
