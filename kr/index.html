@@ -70,13 +70,6 @@ h1,h2,h3{margin:0;font-family:var(--sans);font-weight:400;line-height:1.2;letter
 .film-toggle{border:1px solid rgba(255,255,255,.7);background:transparent;color:var(--white);border-radius:999px;width:30px;height:30px;display:grid;place-items:center;cursor:pointer}
 .film-toggle svg{width:12px;height:12px;fill:currentColor}
 
-/* brand — giant wordmark with the model breaking through it */
-.brand{padding-top:clamp(16px,2vw,24px)}
-.hero-stage{position:relative;height:clamp(440px,66vw,880px);overflow:hidden;border-radius:18px;background:#EDE7DD}
-.hero-stage .stage-photo,.hero-stage .hero-model{position:absolute;inset:0;width:100%;height:100%;max-width:none;object-fit:cover;object-position:62% 45%}
-.hero-word{position:absolute;left:0;right:0;top:3%;margin:0;text-align:center;white-space:nowrap;font-family:var(--display);font-weight:500;font-size:clamp(84px,19.5vw,272px);line-height:.9;letter-spacing:-.035em;color:var(--sage-deep);text-transform:lowercase;user-select:none}
-.hero-word{z-index:1;color:#FBF8F1;opacity:.94;text-shadow:0 2px 24px rgba(40,44,28,.18)}
-.hero-model{z-index:2;pointer-events:none}
 
 /* rhode-style rounded cards */
 .uses{display:grid;grid-template-columns:repeat(3,1fr);gap:clamp(12px,2vw,24px);padding-block:clamp(32px,4vw,56px)}
@@ -104,7 +97,7 @@ h1,h2,h3{margin:0;font-family:var(--sans);font-weight:400;line-height:1.2;letter
 
 /* full-bleed model banner */
 .banner{margin:0;background:var(--night)}
-.banner img{width:100%;aspect-ratio:21/8;object-fit:cover;object-position:88% 18%}
+.banner img{width:100%;aspect-ratio:21/8;object-fit:cover;object-position:50% 100%}
 
 /* one drop — nail close-up */
 .drop{display:grid;grid-template-columns:1.35fr 1fr;gap:clamp(24px,4vw,64px);align-items:center;padding-block:clamp(16px,3vw,40px) clamp(40px,6vw,80px)}
@@ -258,7 +251,7 @@ footer{background:var(--night);color:#D8D4C8}
   .checker-grid{grid-template-columns:1fr}
   .checker-grid .c2{order:4}
   .hero-meta span{display:none}
-  .banner img{aspect-ratio:16/9;object-position:100% 18%}
+  .banner img{aspect-ratio:16/9;object-position:100% 100%}
   .drop{grid-template-columns:1fr}
 }
 @media (max-width:420px){
@@ -274,8 +267,6 @@ footer{background:var(--night);color:#D8D4C8}
   .hero-sub{font-size:13px;line-height:1.55;margin-bottom:18px;max-width:22em}
   .hero-actions .pill{min-height:36px;padding:0 18px;font-size:12px}
   .hero-meta{bottom:18px}
-  .hero-stage{height:min(118vw,560px)}
-  .hero-word{top:5%;font-size:clamp(64px,21vw,120px)}
   .intro{padding-block:48px 56px}
   .intro-grid{grid-template-columns:1fr;row-gap:0}
   .float{order:-1;justify-self:center;width:84px;margin:4px 0 40px}
@@ -393,7 +384,7 @@ if(!location.hash){window.scrollTo(0,0);addEventListener('load',()=>{window.scro
 
 <main id="top">
   <section class="hero" aria-labelledby="hero-h">
-    <video id="film" src="../images/grove-walk.mp4" poster="../images/grove-walk-poster.webp" muted loop playsinline preload="metadata" aria-hidden="true"></video>
+    <video id="film" src="../images/grove-walk.mp4" poster="../images/grove-walk-poster.webp" autoplay muted loop playsinline webkit-playsinline preload="auto" disablepictureinpicture aria-hidden="true"></video>
     <div class="hero-copy">
       <div class="wrap">
         <h1 id="hero-h" data-i18n="heroTitle">Good ingredients for a gentler tomorrow</h1>
@@ -410,26 +401,18 @@ if(!location.hash){window.scrollTo(0,0);addEventListener('load',()=>{window.scro
     </div>
   </section>
 
-  <section class="brand wrap" aria-label="Olive Skin">
-    <div class="hero-stage">
-      <img class="stage-photo" src="../images/apply.webp" width="2304" height="1856" loading="lazy" alt="Model at a table applying Glow Drop oil to her nails with the glass dropper" data-i18n-alt="altModel">
-      <p class="hero-word" aria-hidden="true">olive skin</p>
-      <img class="hero-model" src="../images/apply-cut.webp" width="2304" height="1856" loading="lazy" alt="">
-    </div>
-  </section>
-
   <section class="uses wrap" aria-label="Where to use it">
     <a class="use" href="#shop">
-      <div class="use-img"><img src="../images/bottle.webp" width="300" height="440" loading="lazy" alt="A hand holding the Glow Drop bottle" data-i18n-alt="altBottle"></div>
-      <div class="use-row"><p class="panel-word" data-i18n="p1">nails</p><span>Glow Drop →</span></div>
+      <div class="use-img"><img src="../images/bottle-hand.webp" width="1000" height="1000" loading="lazy" alt="A hand holding the Glow Drop bottle" data-i18n-alt="altBottle"></div>
+      <div class="use-row"><p class="panel-word" data-i18n="p1">nails</p></div>
     </a>
     <a class="use" href="#how">
       <div class="use-img"><img src="../images/picking.webp" width="430" height="574" loading="lazy" alt="Hands picking olives in sunlight" data-i18n-alt="altPicking"></div>
-      <div class="use-row"><p class="panel-word" data-i18n="p2">hands</p><span>Glow Drop →</span></div>
+      <div class="use-row"><p class="panel-word" data-i18n="p2">hands</p></div>
     </a>
     <a class="use" href="#shop">
-      <div class="use-img"><img src="../images/face.webp" width="470" height="660" loading="lazy" alt="Model with dewy skin in sunlight" data-i18n-alt="altFace"></div>
-      <div class="use-row"><p class="panel-word" data-i18n="p3">dry skin</p><span>Glow Drop →</span></div>
+      <div class="use-img"><img src="../images/elbow.webp" width="1000" height="1000" loading="lazy" alt="Smoothing Glow Drop oil onto a dry elbow" data-i18n-alt="altFace"></div>
+      <div class="use-row"><p class="panel-word" data-i18n="p3">dry skin</p></div>
     </a>
   </section>
 
@@ -439,7 +422,6 @@ if(!location.hash){window.scrollTo(0,0);addEventListener('load',()=>{window.scro
         <h2 id="intro-h" data-i18n="introTitle">A small, healing ritual for dry nails and skin</h2>
         <p data-i18n="introLead">Olive Skin is about simple care — two cold-pressed plant oils, a light texture that sinks right in, and one drop a day.</p>
         <p data-i18n="introLead2">Inspired by the olive groves of Napa Valley.</p>
-        <a class="pill primary" href="#shop" data-i18n="btnShop">Shop Glow Drop</a>
       </div>
       <div class="float" aria-hidden="true">
         <img class="cast" src="../images/cutout.webp" width="564" height="1374" alt="">
@@ -451,7 +433,6 @@ if(!location.hash){window.scrollTo(0,0);addEventListener('load',()=>{window.scro
   <section class="tiles wrap" aria-label="Glow Drop">
     <div class="tile">
       <img src="../images/ledge.webp" width="430" height="575" loading="lazy" alt="Glow Drop on a stone ledge above olive hills" data-i18n-alt="altLedge">
-      <a class="pill" href="#shop" data-i18n="btnShop">Shop Glow Drop</a>
     </div>
     <div class="tile dict">
       <p class="dict-label" data-i18n="dictLabel">olive skin dictionary</p>
@@ -466,23 +447,22 @@ if(!location.hash){window.scrollTo(0,0);addEventListener('load',()=>{window.scro
   </section>
 
   <figure class="banner">
-    <img src="../images/banner.webp" width="2400" height="1018" loading="lazy" alt="Model in a sleeveless knit top applying Glow Drop to her nails on a sunny terrace" data-i18n-alt="altBanner">
+    <img src="../images/banner.webp" width="2400" height="935" loading="lazy" alt="Hands applying Glow Drop to the nails on a sunny terrace" data-i18n-alt="altBanner">
   </figure>
 
   <section class="checker wrap" aria-label="Glow Drop ritual">
     <div class="checker-grid">
-      <img src="../images/shoulder.webp" width="1400" height="1400" loading="lazy" alt="Model glancing back over her shoulder" data-i18n-alt="altEye">
+      <img src="../images/back.webp" width="1400" height="1400" loading="lazy" alt="Model seen from behind, lifting her hair" data-i18n-alt="altEye">
       <div class="chk">
         <h3 data-i18n="chk1t">Drop, press, glow</h3>
         <p data-i18n="chk1d">One drop a day melts into nails and skin and keeps them soft until tomorrow.</p>
-        <a class="pill" href="#shop" data-i18n="btnShop">Shop Glow Drop</a>
       </div>
       <div class="chk c2">
         <h3 data-i18n="chk2t">Heal it your way</h3>
         <p data-i18n="chk2d">Morning or before bed — a small pause for hands worn by sun and work.</p>
         <a class="pill" href="#story" data-i18n="btnLearn">Learn more</a>
       </div>
-      <img src="../images/lounger.webp" width="1400" height="1400" loading="lazy" alt="Model relaxing on a sunlit lounger" data-i18n-alt="altCuticle">
+      <img src="../images/hand-linen.webp" width="1400" height="1400" loading="lazy" alt="A relaxed hand resting on sunlit linen" data-i18n-alt="altCuticle">
     </div>
   </section>
 
@@ -526,7 +506,6 @@ if(!location.hash){window.scrollTo(0,0);addEventListener('load',()=>{window.scro
         <div class="thumbs" role="group" aria-label="Product photos">
           <button type="button" class="cut" aria-pressed="true" data-src="../images/cutout.webp" data-alt="altCutout" data-cut="1"><img src="../images/cutout.webp" width="565" height="1380" alt=""></button>
           <button type="button" aria-pressed="false" data-src="../images/ledge.webp" data-alt="altLedge"><img src="../images/ledge.webp" width="430" height="575" alt=""></button>
-          <button type="button" aria-pressed="false" data-src="../images/hero.webp" data-alt="altHero"><img src="../images/hero.webp" width="1250" height="1250" alt=""></button>
           <button type="button" aria-pressed="false" data-src="../images/poster2.webp" data-alt="altPoster"><img src="../images/poster2.webp" width="430" height="575" alt=""></button>
         </div>
         <figure class="main-img is-cutout" id="main-fig"><img id="main-img" src="../images/cutout.webp" width="565" height="1380" alt="Glow Drop 15ml dropper bottle with a green label"></figure>
@@ -673,14 +652,14 @@ if(!location.hash){window.scrollTo(0,0);addEventListener('load',()=>{window.scro
       altBottle:"글로우 드롭 병을 든 손", altLedge:"올리브 언덕이 내려다보이는 돌 위의 글로우 드롭",
       altPoster:"올리브 숲 속 글로우 드롭 캠페인 포스터", altPainting:"유화 속 그릇에 담긴 초록 올리브",
       altGrove:"해 질 녘 올리브 나무와 포도밭이 펼쳐진 언덕", altNapa:"'City of Napa Street Dept 1952'가 새겨진 보도블록",
-      altPicking:"햇살 속에서 올리브를 따는 손", altFace:"햇살 아래 촉촉한 피부의 모델",
+      altPicking:"햇살 속에서 올리브를 따는 손", altFace:"건조한 팔꿈치에 글로우 드롭 오일을 펴 바르는 모습",
       altHero:"올리브 나무 아래에서 글로우 드롭을 든 모델", altCutout:"초록 라벨의 글로우 드롭 15ml 스포이트 병", altProduct:"돌 위에 놓인 글로우 드롭 15ml 병",
       dictLabel:"올리브 스킨 사전", dictDef:"매일 쓰는 힐링 케어 오일. 콜드프레스 올리브와 아보카도를 담은 한 방울이 빠르게 스며들어, 손톱과 큐티클, 건조한 곳 어디든 촉촉하게.", btnLearn:"더 알아보기",
       chk1t:"한 방울, 꾹, 반짝", chk1d:"하루 한 방울이 손톱과 피부에 스며들어 내일까지 부드럽게 지켜 줍니다.",
       chk2t:"나만의 방식으로 힐링", chk2d:"아침이든 잠들기 전이든, 햇볕과 일에 지친 손을 위한 작은 쉼.",
-      altModel:"테이블에 앉아 스포이트로 손톱에 글로우 드롭 오일을 바르는 모델", altBanner:"햇살 드는 테라스에서 민소매 니트를 입고 손톱에 글로우 드롭을 바르는 모델",
-      altEye:"어깨 너머로 돌아보는 모델",
-      dropK:"손톱 &amp; 큐티클", dropT:"손톱마다 한 방울", dropD:"큐티클에 한 방울 콕 올리고 지그시 눌러 주세요. 콜드프레스 올리브와 아보카도 오일이 빠르게 스며들어, 끈적임 없이 손톱을 부드럽고 윤기 있게 가꿉니다.", altDrop:"스포이트로 큐티클에 글로우 드롭 오일 한 방울을 올리는 모습", altCuticle:"햇살 드는 라운저에서 쉬는 모델"
+      altModel:"테이블에 앉아 스포이트로 손톱에 글로우 드롭 오일을 바르는 모델", altBanner:"햇살 드는 테라스에서 손톱에 글로우 드롭을 바르는 손",
+      altEye:"머리를 쓸어 올리는 모델의 뒷모습",
+      dropK:"손톱 &amp; 큐티클", dropT:"손톱마다 한 방울", dropD:"큐티클에 한 방울 콕 올리고 지그시 눌러 주세요. 콜드프레스 올리브와 아보카도 오일이 빠르게 스며들어, 끈적임 없이 손톱을 부드럽고 윤기 있게 가꿉니다.", altDrop:"스포이트로 큐티클에 글로우 드롭 오일 한 방울을 올리는 모습", altCuticle:"햇살 드는 리넨 위에 편하게 놓인 손"
     },
     ja: {
       announce:"世界中へお届け",
@@ -722,14 +701,14 @@ if(!location.hash){window.scrollTo(0,0);addEventListener('load',()=>{window.scro
       altBottle:"Glow Dropのボトルを持つ手", altLedge:"オリーブの丘を見下ろす石の上のGlow Drop",
       altPoster:"オリーブの森のGlow Dropキャンペーンポスター", altPainting:"油絵に描かれた器の中の緑のオリーブ",
       altGrove:"夕暮れのオリーブの木とぶどう畑の丘", altNapa:"「City of Napa Street Dept 1952」と刻まれた歩道",
-      altPicking:"陽ざしの中でオリーブを摘む手", altFace:"陽ざしの中のうるおい肌のモデル",
+      altPicking:"陽ざしの中でオリーブを摘む手", altFace:"乾燥したひじにGlow Dropオイルをなじませる様子",
       altHero:"オリーブの木の下でGlow Dropを持つモデル", altCutout:"緑のラベルのGlow Drop 15mlスポイトボトル", altProduct:"石の上に置かれたGlow Drop 15mlボトル",
       dictLabel:"オリーブスキン辞典", dictDef:"毎日のヒーリングケアオイル。コールドプレスのオリーブとアボカドの一滴がすっとなじみ、爪・甘皮・乾燥が気になる場所をうるおします。", btnLearn:"詳しく見る",
       chk1t:"一滴、押して、輝く", chk1d:"1日1滴が爪と肌にとけこみ、明日までやわらかく守ります。",
       chk2t:"あなたらしく、癒す", chk2d:"朝でも寝る前でも。日差しや仕事で疲れた手のための、小さなひと休み。",
-      altModel:"テーブルでスポイトを使い爪にGlow Dropオイルを塗るモデル", altBanner:"陽ざしのテラスでノースリーブニット姿で爪にGlow Dropを塗るモデル",
-      altEye:"肩越しに振り返るモデル",
-      dropK:"爪 &amp; 甘皮", dropT:"爪に一滴ずつ", dropD:"甘皮に一滴のせて、やさしく押し込むだけ。コールドプレスのオリーブとアボカドオイルがすっとなじみ、べたつかずに爪をやわらかくつややかに整えます。", altDrop:"スポイトで甘皮にGlow Dropオイルを一滴のせる様子", altCuticle:"陽ざしの入るラウンジャーでくつろぐモデル"
+      altModel:"テーブルでスポイトを使い爪にGlow Dropオイルを塗るモデル", altBanner:"陽ざしのテラスで爪にGlow Dropを塗る手",
+      altEye:"髪をかき上げるモデルの後ろ姿",
+      dropK:"爪 &amp; 甘皮", dropT:"爪に一滴ずつ", dropD:"甘皮に一滴のせて、やさしく押し込むだけ。コールドプレスのオリーブとアボカドオイルがすっとなじみ、べたつかずに爪をやわらかくつややかに整えます。", altDrop:"スポイトで甘皮にGlow Dropオイルを一滴のせる様子", altCuticle:"陽ざしの差すリネンの上でくつろぐ手"
     }
   };
   ['ko','ja'].forEach(function(l){ I18N[l].heroTitle = mk(I18N[l].heroTitle); I18N[l].storyTitle = mk(I18N[l].storyTitle); });
@@ -806,8 +785,20 @@ if(!location.hash){window.scrollTo(0,0);addEventListener('load',()=>{window.scro
 
   var reduce = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
   film.addEventListener('play', filmLabel); film.addEventListener('pause', filmLabel);
-  if(!reduce){ var pr = film.play(); if(pr && pr.catch) pr.catch(filmLabel); }
-  ft.addEventListener('click', function(){ if(film.paused) film.play(); else film.pause(); });
+  film.muted = true; film.defaultMuted = true;
+  var userPaused = false;
+  function tryPlay(){ if(reduce || userPaused || !film.paused) return; var pr = film.play(); if(pr && pr.catch) pr.catch(filmLabel); }
+  if(reduce){ film.pause(); film.removeAttribute('autoplay'); }
+  else {
+    tryPlay();
+    film.addEventListener('loadeddata', tryPlay);
+    /* 저전력 모드·인앱 브라우저처럼 자동재생이 막힌 경우: 첫 터치/스크롤 때 재생 */
+    ['touchstart','pointerdown','scroll','keydown'].forEach(function(ev){
+      window.addEventListener(ev, function once(){ tryPlay(); window.removeEventListener(ev, once); }, {passive:true});
+    });
+    document.addEventListener('visibilitychange', function(){ if(!document.hidden) tryPlay(); });
+  }
+  ft.addEventListener('click', function(){ if(film.paused){ userPaused = false; film.play(); } else { userPaused = true; film.pause(); } });
 
   var head = document.getElementById('site-head');
   function onScroll(){ head.classList.toggle('solid', window.scrollY > 10); }
