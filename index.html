@@ -9,7 +9,7 @@
 <link rel="alternate" hreflang="ko" href="https://www.theoliveskin.com/kr/">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400&family=Noto+Sans+KR:wght@300;400;500&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Noto+Sans+KR:wght@300;400;500;600&display=swap">
 <style>
 :root{
   --bg:#F6F1EA; --cell:#F2EBE3; --white:#FFFFFF; --ink:#27251F; --ink-soft:#6A655B;
@@ -398,6 +398,40 @@ main small,main .b2b-link,main .b2b-link span{font-size:var(--fs-b)!important}
   .c-c{left:30%;width:44%;height:40%}
   .c-d{left:0;width:36%;height:30%;bottom:6%}
 }
+
+/* system pass (2026-11): 8pt spacing, one button size, one image gap & radius, English type weight/tracking */
+:root{--sec:96px;--gap:24px;--r:16px;--btn:48px}
+@media (max-width:760px){:root{--sec:64px;--gap:16px}}
+/* section rhythm */
+.pdp{padding-block:var(--sec) 32px}
+.perks{padding-bottom:0}
+.story,.uses-wrap,.intro,.checker{padding-block:var(--sec) 0}
+.drop{padding-block:var(--sec)}
+.intro{padding-bottom:0}
+main > section:last-of-type{padding-bottom:var(--sec)}
+.sec-title,.story .story-text{margin-bottom:40px}
+/* images: same gap and corner everywhere */
+.uses{gap:var(--gap)}
+.use{padding:8px 8px 14px;border-radius:var(--r)}
+.use-img,.use-img img{border-radius:calc(var(--r) - 6px)}
+.checker-grid{gap:var(--gap);background:transparent;border-radius:0;overflow:visible}
+.checker-grid > *{border-radius:var(--r);overflow:hidden}
+.chk{background:var(--sage)}
+.drop{gap:calc(var(--gap) * 2)}
+.drop img,.main-img,.collage img{border-radius:var(--r)}
+.thumbs{gap:8px}
+/* buttons: one size */
+main .pill,.hero .pill{min-height:var(--btn)!important;padding:0 28px!important;font-size:16px!important;font-weight:500;letter-spacing:.01em;border-radius:999px}
+.buy .pill{flex:1 1 200px}
+.stepper button{width:var(--btn);height:var(--btn)}
+/* English: bolder large type, moderate small type, tuned tracking (Korean unchanged) */
+html:lang(en) main h1,html:lang(en) main h2,html:lang(en) main h3,html:lang(en) .sec-title,html:lang(en) main .price,html:lang(en) .logo{font-weight:600!important;letter-spacing:-.012em!important}
+html:lang(en) .hero h1{font-weight:600!important;letter-spacing:-.018em!important}
+html:lang(en) main p,html:lang(en) main li,html:lang(en) main summary,html:lang(en) main dd,html:lang(en) main dt{font-weight:400;letter-spacing:.003em}
+html:lang(en) .perks li{font-weight:600;letter-spacing:0}
+html:lang(en) main .tag,html:lang(en) .use-row .panel-word,html:lang(en) main .pill,html:lang(en) .nav a{font-weight:500;letter-spacing:.06em}
+html:lang(en) .use-row .panel-word,html:lang(en) main .tag{text-transform:uppercase}
+html:lang(en) main .pill{text-transform:none;letter-spacing:.02em}
 </style>
 <script>
 /* 새로고침해도 항상 맨 위에서 시작 (주소에 #가 붙은 경우만 예외) */
@@ -410,7 +444,6 @@ if(!location.hash){window.scrollTo(0,0);addEventListener('load',()=>{window.scro
 <body>
 
 
-<div class="announce" data-i18n="announce">Now shipping worldwide</div>
 
 <header class="site-head" id="site-head">
   <div class="head-bar wrap">
@@ -530,6 +563,21 @@ if(!location.hash){window.scrollTo(0,0);addEventListener('load',()=>{window.scro
     </ul>
   </section>
 
+  <section class="story" id="story" aria-labelledby="story-h">
+    <div class="wrap">
+      <div class="story-text">
+        <h2 id="story-h" data-i18n="storyTitle">A healing oil from Napa Valley</h2>
+        <p class="copy-p" data-i18n="storyLead">Olive oil has soothed sun-worn hands for centuries. We put that pause into one small bottle.</p>
+      </div>
+      <div class="collage">
+        <img class="c-a" src="images/grove.webp" width="1254" height="1254" loading="lazy" alt="Olive trees and vineyards on hills at sunset" data-i18n-alt="altGrove">
+        <img class="c-b" src="images/napa.webp" width="1086" height="1448" loading="lazy" alt="Sidewalk stamped 'City of Napa Street Dept 1952'" data-i18n-alt="altNapa">
+        <img class="c-c" src="images/ledge.webp" width="430" height="575" loading="lazy" alt="Glow Drop on a stone ledge above olive hills" data-i18n-alt="altLedge">
+        <img class="c-d" src="images/painting.webp" width="428" height="574" loading="lazy" alt="Green olives in a bowl, in an oil painting" data-i18n-alt="altPainting">
+      </div>
+    </div>
+  </section>
+
   <section class="uses-wrap wrap" aria-labelledby="uses-h">
     <h2 class="sec-title" id="uses-h" data-i18n="usesT">One drop, three ways to care</h2>
     <div class="uses">
@@ -581,21 +629,6 @@ if(!location.hash){window.scrollTo(0,0);addEventListener('load',()=>{window.scro
     <div>
       <h3 id="drop-h" data-i18n="dropT">One drop on every nail</h3>
       <p data-i18n="dropD">Touch one drop to the cuticle, then press it in.</p>
-    </div>
-  </section>
-
-  <section class="story" id="story" aria-labelledby="story-h">
-    <div class="wrap">
-      <div class="story-text">
-        <h2 id="story-h" data-i18n="storyTitle">A healing oil from Napa Valley</h2>
-        <p class="copy-p" data-i18n="storyLead">Olive oil has soothed sun-worn hands for centuries. We put that pause into one small bottle.</p>
-      </div>
-      <div class="collage">
-        <img class="c-a" src="images/grove.webp" width="1254" height="1254" loading="lazy" alt="Olive trees and vineyards on hills at sunset" data-i18n-alt="altGrove">
-        <img class="c-b" src="images/napa.webp" width="1086" height="1448" loading="lazy" alt="Sidewalk stamped 'City of Napa Street Dept 1952'" data-i18n-alt="altNapa">
-        <img class="c-c" src="images/ledge.webp" width="430" height="575" loading="lazy" alt="Glow Drop on a stone ledge above olive hills" data-i18n-alt="altLedge">
-        <img class="c-d" src="images/painting.webp" width="428" height="574" loading="lazy" alt="Green olives in a bowl, in an oil painting" data-i18n-alt="altPainting">
-      </div>
     </div>
   </section>
 
